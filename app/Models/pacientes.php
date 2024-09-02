@@ -16,12 +16,6 @@ class Pacientes extends Model
         'fecha_nacimiento',
         'edad',
         'sexo',
-        'tipo_sangre'
+        'tipo_sangre',
     ];
-
-    // Si necesitas relaciones, como consultas médicas previas, puedes agregarlas aquí.
-    public function consultas()
-    {
-        return $this->hasMany(Consulta::class);
-    }
 }

@@ -311,7 +311,7 @@
                             <!-- Botón para editar el modal -->
                             <a href="#editPatientModal-{{ $paciente->id }}" class="btn btn-edit">Editar</a>
 
-                            <form action="{{ route('paciente.destroy', $paciente->id) }}" method="POST"
+                            <form action="{{ route('doctor.pacientes.destroy', $paciente->id) }}" method="POST"
                                 style="display: inline-block;">
                                 @csrf
                                 @method('DELETE')
@@ -329,7 +329,7 @@
                                     <a href="#" class="close">&times;</a>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('paciente.update', $paciente->id) }}" method="POST"
+                                    <form action="{{ route('doctor.pacientes.update', $paciente->id) }}" method="POST"
                                         enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
@@ -407,7 +407,7 @@
             <a href="#" class="close">&times;</a>
         </div>
         <div class="modal-body">
-            <form action="{{ route('paciente.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('doctor.pacientes.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-row">

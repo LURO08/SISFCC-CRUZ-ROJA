@@ -15,6 +15,8 @@ class PacientesController extends Controller
 
     public function store(Request $request)
     {
+
+
         // Validación de los datos del formulario
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -26,8 +28,18 @@ class PacientesController extends Controller
             'tipo_sangre' => 'required|string|max:3',
         ]);
 
-        // Creación del paciente en la base de datos
-        Pacientes::create($request->all());
+
+
+         // Creación del producto en la base de datos
+         Pacientes::create([
+        'nombre' => $request->nombre,
+        'apellidopaterno' => $request->apellidopaterno,
+        'apellidomaterno' => $request->apellidomaterno,
+        'fecha_nacimiento' => $request->fecha_nacimiento,
+        'edad' => $request->edad,
+        'sexo' => $request->sexo,
+        'tipo_sangre' => $tipo_sangre,
+    ]);
 
         return redirect()->route('doctor.pacientes.index')->with('success', 'Paciente registrado con éxito.');
     }

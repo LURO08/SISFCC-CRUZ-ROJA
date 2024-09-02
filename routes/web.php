@@ -59,7 +59,8 @@ Route::middleware(['auth', RedirectIfNotProperRole::class])->group(function () {
         ->middleware('auth');
 
 
-    //farmacia
+
+        //farmacia
     Route::get('/farmacia/productos', [ProductoController::class,'index'])
     ->name('farmacia.product.index')
     ->middleware('auth');
@@ -88,10 +89,6 @@ Route::middleware(['auth', RedirectIfNotProperRole::class])->group(function () {
 
     Route::delete('/Pacientes/{paciente}', [PacientesController::class, 'destroy'])
     ->name('doctor.pacientes.destroy');
-
-    Route::get('/doctor/Pacientes/create', [PacientesController::class, 'create'])
-    ->name('doctor.pacientes.create')
-    ->middleware('auth');
     Route::post('/doctor/Pacientes', [PacientesController::class, 'store'])
     ->name('doctor.pacientes.store')
     ->middleware('auth');

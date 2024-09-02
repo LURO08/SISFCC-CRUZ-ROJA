@@ -45,13 +45,26 @@
         <!-- Doctor-Specific Links -->
         @role('doctor')
         <div class="hidden sm:flex space-x-8">
-            @foreach(['Inicio', 'Pacientes', 'Historial'] as $section)
-                <x-nav-link href="{{ route('doctor.index') }}" :active="request()->routeIs('doctor.index')" class="hover:text-gray-300">
+            @php
+                // Definir las secciones y sus respectivas rutas
+                $sections = [
+                    'Inicio' => 'doctor.index', // Puedes agregar la ruta correspondiente
+                    'Pacientes' => 'doctor.pacientes.index',
+                    'Historial' => 'doctor.index',
+                ];
+            @endphp
+
+            @foreach($sections as $section => $route)
+                <x-nav-link
+                    href="{{ route($route) }}"
+                    :active="request()->routeIs($route)"
+                    class="hover:text-gray-300">
                     {{ __($section) }}
                 </x-nav-link>
             @endforeach
         </div>
-        @endrole
+    @endrole
+
 
         <!-- User Dropdown & Actions -->
         <div class="hidden sm:flex sm:items-center space-x-4">

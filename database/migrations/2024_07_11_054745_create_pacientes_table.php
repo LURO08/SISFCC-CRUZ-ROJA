@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('edad');
             $table->string('sexo');
             $table->string('tipo_sangre');
-            $table->string('imagen')->nullable(); // Campo para la imagen del paciente
             $table->timestamps();
         });
     }
