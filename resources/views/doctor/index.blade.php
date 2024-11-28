@@ -23,110 +23,11 @@ body {
     background-color: #190101;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #d32f2f;
-    color: white;
-    padding: 15px;
-}
-
-header .logo {
-    display: flex;
-    align-items: center;
-}
-
-header .logo img {
-    width: 50px;
-    margin-right: 10px;
-}
-
-header nav ul {
-    list-style: none;
-    display: flex;
-}
-
-header nav ul li {
-    margin-right: 20px;
-}
-
-header nav ul li a {
-    color: white;
-    text-decoration: none;
-}
-
-header .user-info {
-    display: flex;
-    align-items: center;
-}
-
-header .user-info span {
-    margin-right: 20px;
-}
-
-header .user-info button {
-    padding: 5px 10px;
-    background-color: white;
-    color: #d32f2f;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
 main {
     display: flex;
+    height: 50;
 }
 
-aside {
-    width: 200px;
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-}
-
-aside ul {
-    list-style: none;
-    padding: 0;
-}
-
-aside ul li {
-    margin-bottom: 10px;
-}
-
-aside ul li a {
-    text-decoration: none;
-    color: #d32f2f;
-    font-weight: bold;
-}
-
-.content {
-    flex: 1;
-    padding: 20px;
-}
-
-.content h2 {
-    color: #d32f2f;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table, th, td {
-    border: 1px solid #ddd;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
-}
 footer {
     text-align: center;
     padding: 10px;
@@ -134,6 +35,7 @@ footer {
     color: white;
     bottom: 0;
     width: 100%;
+    height: 20%;
 }
     </style>
     </head>

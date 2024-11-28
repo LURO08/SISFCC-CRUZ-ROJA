@@ -41,6 +41,32 @@
 
             <!-- Page Content -->
             <main  class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+
+                @if (session('success'))
+                <div id="successNotification" class="notification alert alert-success alert-dismissible fade show" role="alert"
+                    style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
+                    background-color: #4CAF50; color: white; border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
+                    <a type="button" class="btn-close" href=""
+                    style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
+                    text-decoration: none; opacity: 0.8;">
+                        &times;</a>
+                    <strong>Éxito!</strong> {{ session('success') }}
+                </div>
+                <script>
+                    // Oculta la notificación después de 5 segundos (5000 ms)
+                    setTimeout(() => {
+                        const notification = document.getElementById('successNotification');
+                        if (notification) {
+                            notification.style.transition = "opacity 0.5s ease";
+                            notification.style.opacity = "0"; // Transición de desvanecimiento
+                            setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
+                        }
+                    }, 3000);
+                </script>
+                @endif
+
+
              @include('farmacia.productos.productos')
 
 

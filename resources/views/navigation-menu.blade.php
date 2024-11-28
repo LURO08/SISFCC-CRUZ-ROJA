@@ -41,6 +41,87 @@
         </div>
 
 
+        <!-- farmacia Opciones -->
+    @role('admin')
+
+    <div class="hidden sm:flex space-x-8">
+        @php
+            // Definir las secciones y sus respectivas rutas
+            $sections = [
+                'Inicio' => 'admin.index', // Puedes agregar la ruta correspondiente
+
+            ];
+
+        @endphp
+
+        @foreach($sections as $section => $route)
+            <x-nav-link
+                href="{{ route($route) }}"
+                :active="request()->routeIs($route)"
+                class="hover:text-gray-300">
+                {{ __($section) }}
+            </x-nav-link>
+        @endforeach
+
+        <x-dropdown width="48">
+            <x-slot name="trigger">
+                    <button class="inline-flex items-center px-3 py-2 border-b-2 border-transparent hover:border-white focus:outline-none focus:border-white">
+                         {{ 'Area de Personal' }}
+                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+            </x-slot>
+
+            <x-slot name="content">
+                <div class="block px-4 py-2 text-xs text-gray-600 text-white">
+                    {{ __('Area de Personal') }}
+                </div>
+                <x-dropdown-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
+                    {{ __('Usuarios') }}
+                </x-dropdown-link>
+                <x-dropdown-link href="{{ route('admin.personal.index') }}" :active="request()->routeIs('admin.personal.index')">
+                    {{ __('Personal') }}
+                </x-dropdown-link>
+                <x-dropdown-link href="{{ route('farmacia.proveedores.index') }}" :active="request()->routeIs('farmacia.proveedores.index')">
+                    {{ __('Proveedores') }}
+                </x-dropdown-link>
+
+            </x-slot>
+        </x-dropdown>
+
+        <x-dropdown  width="48">
+            <x-slot name="trigger">
+                    <button class="inline-flex items-center px-3 py-2 border-b-2 border-transparent hover:border-white focus:outline-none focus:border-white">
+                         {{ 'Caja de Cobros ' }}
+                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+            </x-slot>
+
+            <x-slot name="content">
+                <div class="block px-4 py-2 text-xs text-gray-600 text-white">
+                    {{ __('Caja de Cobro') }}
+                </div>
+                <x-dropdown-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
+                    {{ __('Facturas') }}
+                </x-dropdown-link>
+                <x-dropdown-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
+                    {{ __('Cobros') }}
+                </x-dropdown-link>
+
+            </x-slot>
+        </x-dropdown>
+
+
+
+    </div>
+
+
+
+    @endrole
+
 
         <!-- Doctor-Specific Links -->
         @role('doctor')
@@ -50,8 +131,9 @@
                 $sections = [
                     'Inicio' => 'doctor.index', // Puedes agregar la ruta correspondiente
                     'Pacientes' => 'doctor.pacientes.index',
-                    'Historial' => 'doctor.index',
                 ];
+
+
             @endphp
 
             @foreach($sections as $section => $route)
@@ -63,6 +145,32 @@
                 </x-nav-link>
             @endforeach
         </div>
+    @endrole
+
+
+    <!-- farmacia Opciones -->
+    @role('farmacia')
+
+    <div class="hidden sm:flex space-x-8">
+        @php
+            // Definir las secciones y sus respectivas rutas
+            $sections = [
+                'Inicio' => 'farmacia.index', // Puedes agregar la ruta correspondiente
+                'Inventario' => 'farmacia.product.index',
+            ];
+
+
+        @endphp
+
+        @foreach($sections as $section => $route)
+            <x-nav-link
+                href="{{ route($route) }}"
+                :active="request()->routeIs($route)"
+                class="hover:text-gray-300">
+                {{ __($section) }}
+            </x-nav-link>
+        @endforeach
+    </div>
     @endrole
 
 
@@ -107,24 +215,6 @@
                     </x-slot>
                 </x-dropdown>
             @endif
-
-            <!-- Admin Register Users Link -->
-            @role('admin')
-
-            <x-nav-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
-                {{ __('Usuarios') }}
-            </x-nav-link>
-            @endrole
-
-            <!-- farmacia Opciones -->
-            @role('farmacia')
-            <x-nav-link href="{{ route('farmacia.product.index') }}" :active="request()->routeIs('farmacia.product.index')">
-                {{ __('Inventario') }}
-            </x-nav-link>
-            @endrole
-
-
-
 
 
             <!-- Settings Dropdown -->

@@ -37,8 +37,6 @@
                 @include('cajero.dashboard')
             </main>
         </div>
-
-
         @livewireScripts
     </body>
 </html>

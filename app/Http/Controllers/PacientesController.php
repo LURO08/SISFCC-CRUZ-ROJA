@@ -14,35 +14,30 @@ class PacientesController extends Controller
     }
 
     public function store(Request $request)
-    {
+{
+    // Validar los datos
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'apellidopaterno' => 'required|string|max:255',
+        'apellidomaterno' => 'required|string|max:255',
+        'edad' => 'required|integer',
+        'sexo' => 'required|string|in:Masculino,Femenino',
+        'tipo_sangre' => 'required|string|max:3',
+    ]);
 
-
-        // Validación de los datos del formulario
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'apellidopaterno' => 'required|string|max:255',
-            'apellidomaterno' => 'required|string|max:255',
-            'fecha_nacimiento' => 'required|date',
-            'edad' => 'required|integer',
-            'sexo' => 'required|string|in:Masculino,Femenino',
-            'tipo_sangre' => 'required|string|max:3',
-        ]);
-
-
-
-         // Creación del producto en la base de datos
-         Pacientes::create([
+    // Crear el registro en la base de datos
+    Pacientes::create([
         'nombre' => $request->nombre,
         'apellidopaterno' => $request->apellidopaterno,
         'apellidomaterno' => $request->apellidomaterno,
-        'fecha_nacimiento' => $request->fecha_nacimiento,
         'edad' => $request->edad,
         'sexo' => $request->sexo,
-        'tipo_sangre' => $tipo_sangre,
+        'tipo_sangre' => $request->tipo_sangre,
     ]);
 
-        return redirect()->route('doctor.pacientes.index')->with('success', 'Paciente registrado con éxito.');
-    }
+    // Redirigir con un mensaje de éxito
+    return redirect()->route('doctor.pacientes.index')->with('success', 'Paciente registrado con éxito.');
+}
 
     public function update(Request $request, $id)
     {
@@ -53,7 +48,6 @@ class PacientesController extends Controller
             'nombre' => 'required|string|max:255',
             'apellidopaterno' => 'required|string|max:255',
             'apellidomaterno' => 'required|string|max:255',
-            'fecha_nacimiento' => 'required|date',
             'edad' => 'required|integer',
             'sexo' => 'required|string|in:Masculino,Femenino',
             'tipo_sangre' => 'required|string|max:3',
@@ -65,18 +59,12 @@ class PacientesController extends Controller
         return redirect()->route('doctor.pacientes.index')->with('success', 'Paciente actualizado correctamente.');
     }
 
-    public function destroy(Pacientes $paciente)
+    public function destroy($id)
     {
-        // Mensaje de depuración: Paciente recibido
-        logger()->info('Intentando eliminar al paciente: ' . $paciente->id);
-
-        // Verifica que el paciente se ha encontrado correctamente
-        if (!$paciente) {
-            logger()->error('Paciente no encontrado: ' . $paciente->id);
-            return redirect()->route('doctor.pacientes.index')->with('error', 'Paciente no encontrado.');
-        }
-
         try {
+            // Intenta encontrar el paciente por su ID o arroja una excepción si no se encuentra
+            $paciente = Pacientes::findOrFail($id);
+
             // Mensaje de depuración: Intentando eliminar al paciente
             logger()->info('Intentando eliminar al paciente de la base de datos: ' . $paciente->id);
 
@@ -88,10 +76,17 @@ class PacientesController extends Controller
 
             // Redirige a la lista de pacientes con un mensaje de éxito
             return redirect()->route('doctor.pacientes.index')->with('success', 'Paciente eliminado con éxito.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Maneja el caso en que el paciente no se encuentra
+            logger()->error('Paciente no encontrado con ID: ' . $id);
+            return redirect()->route('doctor.pacientes.index')->with('error', 'Paciente no encontrado.');
         } catch (\Exception $e) {
-            // Captura cualquier excepción y muestra un mensaje de error
+            // Captura cualquier otra excepción y muestra un mensaje de error
             logger()->error('Error al eliminar al paciente: ' . $e->getMessage());
             return redirect()->route('doctor.pacientes.index')->with('error', 'Error al eliminar al paciente: ' . $e->getMessage());
         }
     }
+
+
+
 }

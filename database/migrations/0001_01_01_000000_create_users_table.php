@@ -11,6 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('personal', function (Blueprint $table) {
+            $table->id();
+            $table->string('Nombre');
+            $table->string('apellido_paterno');
+            $table->string('apellido_materno');
+            $table->integer('Edad');
+            $table->string('Sexo');
+            $table->date('FechaNacimiento');
+            $table->string('Departamento');
+            $table->string('Cargo');
+            $table->string('Turno');
+            $table->integer('Telefono');
+            $table->string('Direccion');
+            $table->unsignedBigInteger('userid')->nullable()->index();
+            $table->timestamps();
+
+            $table->foreign('userid')->references('id')->on('users')->onDelete('cascade');
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -37,6 +56,17 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        Schema::create('doctores', function (Blueprint $table) {
+            $table->id()->primary();
+
+            $table->unsignedBigInteger('personalid')->nullable()->index();
+            $table->string('cedulaProfesional');
+            $table->string('rutafirma')->nullable();  // Campo de firma opcional
+            $table->timestamps();
+            $table->foreign('personalid')->references('id')->on('personal')->onDelete('cascade');
+
+        });
     }
 
     /**
@@ -44,8 +74,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('doctores');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

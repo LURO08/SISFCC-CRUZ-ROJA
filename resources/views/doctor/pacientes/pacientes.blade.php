@@ -1,14 +1,5 @@
 <!-- Custom CSS -->
 <style>
-    .slick-slide img {
-        width: 100%;
-        height: auto;
-    }
-
-    .img-thumbnail {
-        max-width: 90%;
-        max-height: 150px;
-    }
 
     /* Estilos para el modal */
     .modal {
@@ -103,111 +94,42 @@
         opacity: 0.8;
     }
 
-    /* Estilos para la tabla de productos */
-    .tableProductos {
+    /* Estilos para la tabla de pacientes */
+    .tablePacientes {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
+        height: 40vh;
+        overflow-y: auto;
     }
 
-    .tableProductos thead {
-        background-color: #f8f9fa;
-        color: #343a40;
+    .tablePacientes thead {
+        background-color: #d32f2f;
+        color: white;
     }
 
-    .tableProductos th,
-    .tableProductos td {
-        padding: 10px;
-        text-align: left;
-        border: 1px solid #dee2e6;
+    .tablePacientes th, .tablePacientes td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    .tableProductos th {
+    .tablePacientes th {
         font-weight: bold;
     }
 
-    .tableProductos td img {
-        border-radius: 4px;
-        max-width: 100px;
-    }
-
-    .tableProductos td button {
+    .tablePacientes td button {
         margin-right: 5px;
-    }
-
-    /* Estilo para la previsualización de fotos */
-    .img-thumbnail {
-        max-width: 90%;
-        max-height: 150px;
-        border-radius: 4px;
-        border: 1px solid #dee2e6;
-        margin: 5px;
     }
 
     .form-row {
         display: flex;
     }
 
-
     .form-group .form-control {
         width: 100%;
     }
-
-    /* Estilos para el panel izquierdo */
-    .PanelIzquierdo {
-        width: 80%;
-        margin: 0 auto;
-        /* Centra el panel en su contenedor */
-        text-align: left;
-        /* Centra el texto y los elementos internos */
-    }
-
-    /* Estilos para la foto */
-    .PanelIzquierdo .form-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        /* Centra el contenido dentro del grupo de formulario */
-    }
-
-    /* Estilos para la foto */
-    .PanelIzquierdo .form-group-label {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        /* Centra el contenido dentro del grupo de formulario */
-        margin-left: 15%;
-    }
-
-    /* Estilo para la imagen de vista previa */
-    #foto-preview-edit- {
-        margin-bottom: 15px;
-    }
-
-    /* Estilo para la etiqueta */
-    .PanelIzquierdo label {
-        margin-bottom: 10px;
-        display: block;
-        text-align: left;
-    }
-
-    /* Estilo para el input de archivo */
-    .PanelIzquierdo .form-control-file {
-        width: 100%;
-        /* Asegura que el input de archivo ocupe todo el ancho del contenedor */
-        max-width: 500px;
-        /* Puedes ajustar este valor según tus necesidades */
-    }
-
-    /* Estilo para las imágenes previas */
-    .img-thumbnail {
-        border-radius: 4px;
-        border: 1px solid #dee2e6;
-        max-width: 100%;
-        height: auto;
-    }
-
-
 
     .PanelDerecho {
         width: 100%;
@@ -224,8 +146,6 @@
     .modal-footer button {
         margin: 10px;
     }
-
-
 
     /* Estilos para los botones */
     .btn-edit {
@@ -264,32 +184,35 @@
     }
 </style>
 
-
 <!-- Contenido HTML -->
-<div class="row">
-    <div class="col-md-12">
+<div>
+
+    @if (session('success'))
+        <div class="notification alert alert-success alert-dismissible fade show" role="alert"
+            style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
+            background-color: #4CAF50; color: white; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
+            <a type="button" class="btn-close" href=""
+            style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
+            text-decoration: none; opacity: 0.8;">
+                &times;</a>
+            <strong>Éxito!</strong> {{ session('success') }}
+        </div>
+    @endif
+
+    <div>
         <h2>Lista de Pacientes</h2>
         <br>
-
         <!-- Botón para abrir el modal -->
-        <a href="#addPatientModal" class="btn btn-primary">Agregar Paciente</a>
-
+        <a href="#addPatientModal" class="btn-primary">Agregar Paciente</a>
         <br><br>
-
-        @if (session('success'))
-            <div class="alert alert-success mt-3">
-                {{ session('success') }}
-            </div>
-        @endif
 
         <table class="tablePacientes">
             <thead>
                 <tr>
-                    <th>Id</th>
                     <th>Nombre</th>
                     <th>Apellido Paterno</th>
                     <th>Apellido Materno</th>
-                    <th>Fecha de Nacimiento</th>
                     <th>Edad</th>
                     <th>Sexo</th>
                     <th>Tipo de Sangre</th>
@@ -299,11 +222,9 @@
             <tbody>
                 @foreach ($pacientes as $paciente)
                     <tr>
-                        <td>{{ $paciente->id }}</td>
                         <td>{{ $paciente->nombre }}</td>
                         <td>{{ $paciente->apellidopaterno }}</td>
                         <td>{{ $paciente->apellidomaterno }}</td>
-                        <td>{{ $paciente->fecha_nacimiento }}</td>
                         <td>{{ $paciente->edad }}</td>
                         <td>{{ $paciente->sexo }}</td>
                         <td>{{ $paciente->tipo_sangre }}</td>
@@ -322,7 +243,7 @@
 
                     <!-- Edit Patient Modal -->
                     <div class="modal" id="editPatientModal-{{ $paciente->id }}">
-                        <div class="modal-dialog modal-lg">
+
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" style="padding-left: 10px;">Editar Paciente</h5>
@@ -353,11 +274,6 @@
                                                         value="{{ $paciente->apellidomaterno }}" required>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="fecha_nacimiento">Fecha de Nacimiento</label><br>
-                                                    <input type="date" name="fecha_nacimiento" class="form-control"
-                                                        value="{{ $paciente->fecha_nacimiento }}" required>
-                                                </div>
-                                                <div class="form-group">
                                                     <label for="edad">Edad</label><br>
                                                     <input type="number" name="edad" class="form-control"
                                                         value="{{ $paciente->edad }}" required>
@@ -365,19 +281,30 @@
                                                 <div class="form-group">
                                                     <label for="sexo">Sexo</label><br>
                                                     <select name="sexo" class="form-control" required>
-                                                        <option value="M"
+                                                        <option value="Masculino"
                                                             {{ $paciente->sexo == 'M' ? 'selected' : '' }}>Masculino
                                                         </option>
-                                                        <option value="F"
+                                                        <option value="Femenino"
                                                             {{ $paciente->sexo == 'F' ? 'selected' : '' }}>Femenino
                                                         </option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="tipo_sangre">Tipo de Sangre</label><br>
-                                                    <input type="text" name="tipo_sangre" class="form-control"
-                                                        value="{{ $paciente->tipo_sangre }}" required>
+                                                    <select name="tipo_sangre" id="tipo_sangre" class="form-control" required>
+                                                        <option value="">Seleccione el tipo de sangre</option>
+                                                        <option value="A+" {{ $paciente->tipo_sangre == 'A+' ? 'selected' : '' }}>A+</option>
+                                                        <option value="A-" {{ $paciente->tipo_sangre == 'A-' ? 'selected' : '' }}>A-</option>
+                                                        <option value="B+" {{ $paciente->tipo_sangre == 'B+' ? 'selected' : '' }}>B+</option>
+                                                        <option value="B-" {{ $paciente->tipo_sangre == 'B-' ? 'selected' : '' }}>B-</option>
+                                                        <option value="O+" {{ $paciente->tipo_sangre == 'O+' ? 'selected' : '' }}>O+</option>
+                                                        <option value="O-" {{ $paciente->tipo_sangre == 'O-' ? 'selected' : '' }}>O-</option>
+                                                        <option value="AB+" {{ $paciente->tipo_sangre == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                                        <option value="AB-" {{ $paciente->tipo_sangre == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                                    </select>
+                                                    <small id="tipo_sangreHelp" class="form-text text-muted">Seleccione el tipo de sangre del paciente.</small>
                                                 </div>
+
                                             </div>
                                         </div>
 
@@ -390,7 +317,6 @@
                                     </form>
                                 </div>
                             </div>
-                        </div>
                     </div>
                     <!-- Fin Edit Patient Modal -->
                 @endforeach
@@ -428,11 +354,7 @@
                             <input type="text" name="apellidomaterno" class="form-control" id="apellidomaterno"
                                 placeholder="Ingrese el apellido materno" required>
                         </div>
-                        <div class="form-group">
-                            <label for="fecha_nacimiento">Fecha de Nacimiento</label><br>
-                            <input type="date" name="fecha_nacimiento" class="form-control" id="fecha_nacimiento"
-                                required>
-                        </div>
+
                         <div class="form-group">
                             <label for="edad">Edad</label><br>
                             <input type="number" name="edad" class="form-control" id="edad"
@@ -441,15 +363,26 @@
                         <div class="form-group">
                             <label for="sexo">Sexo</label><br>
                             <select name="sexo" class="form-control" id="sexo" required>
-                                <option value="M">Masculino</option>
-                                <option value="F">Femenino</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="tipo_sangre">Tipo de Sangre</label><br>
-                            <input type="text" name="tipo_sangre" class="form-control" id="tipo_sangre"
-                                placeholder="Ingrese el tipo de sangre" required>
+                            <select name="tipo_sangre" id="tipo_sangre" class="form-control" required>
+                                <option value="">Seleccione el tipo de sangre</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                            <small id="tipo_sangreHelp" class="form-text text-muted">Seleccione el tipo de sangre del paciente.</small>
                         </div>
+
                     </div>
                 </div>
 

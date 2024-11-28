@@ -16,11 +16,26 @@
 
         <!-- Styles -->
         @livewireStyles
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <style>
+
+            footer {
+                text-align: center;
+                padding: 10px;
+                background-color: #d32f2f;
+                color: white;
+                bottom: 0;
+                width: 100%;
+            }
+        </style>
+
     </head>
     <body class="font-sans antialiased">
         <x-banner />
 
-        <div class="min-h-screen bg-gray-100">
+        <div class=" bg-gray-100">
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
@@ -33,12 +48,15 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main class="max-w">
                 @include('farmacia.dashboard')
             </main>
         </div>
 
-
+        <footer style="height: 10vh;">
+            <p>&copy; 2024 Cruz Roja Mexicana - Delegación Chilpancingo</p>
+            <p style="padding-top: 10px;"> <b> Creado por: </b> Jose Luis Romero Palacios</p>
+        </footer>
         @livewireScripts
     </body>
 </html>

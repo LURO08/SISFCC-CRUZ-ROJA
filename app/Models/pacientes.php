@@ -13,9 +13,18 @@ class Pacientes extends Model
         'nombre',
         'apellidopaterno',
         'apellidomaterno',
-        'fecha_nacimiento',
         'edad',
         'sexo',
         'tipo_sangre',
     ];
+
+    /**
+     * Formatea el ID como un número de tres dígitos, e.g., "001".
+     *
+     * @return string
+     */
+    public function getID()
+    {
+        return str_pad($this->attributes['id'], 3, '0', STR_PAD_LEFT);
+    }
 }
