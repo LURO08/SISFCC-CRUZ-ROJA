@@ -30,7 +30,6 @@ use Carbon\Carbon;  // Importa Carbon
 class AdminController extends Controller
 {
     public function index(Request $request)
-
     {
         $medicamentos = Medicamentos::paginate(3);
         $todosLosMedicamentos  = Medicamentos::all();
@@ -40,7 +39,6 @@ class AdminController extends Controller
 
         return view('admin.index',compact('facturas', 'medicamentos','pacientes','servicios','todosLosMedicamentos'));
     }
-
 
     public function register()
     {
@@ -79,85 +77,88 @@ class AdminController extends Controller
     }
 
     public function generarReporte(Request $request)
-{
-    // Validación de los datos recibidos
-    $request->validate([
-        'tipo_reporte' => 'required|string|in:pacientes,medicamentos,doctores,cobros',
-        'rango_fecha' => 'nullable|string|in:todos,desde_fecha,rango_fechas',
-        'fecha_inicio' => 'nullable|date',
-        'fecha_fin' => 'nullable|date',
-        'filtro_avanzado' => 'nullable|string',
-    ]);
+    {
+        // Validación de los datos recibidos
+        $request->validate([
+            'tipo_reporte' => 'required|string|in:pacientes,medicamentos,doctores,cobros,facturas',
+            'rango_fecha' => 'nullable|string|in:todos,desde_fecha,rango_fechas',
+            'fecha_inicio' => 'nullable|date',
+            'fecha_fin' => 'nullable|date',
+            'filtro_avanzado' => 'nullable|string',
+        ]);
 
-    // Inicializamos la variable de consulta dependiendo del tipo de reporte
-    $reporte = null;
+        // Inicializamos la variable de consulta dependiendo del tipo de reporte
+        $reporte = null;
 
-    // Obtener el tipo de reporte
-    switch ($request->tipo_reporte) {
-        case 'pacientes':
-            $reporte = Pacientes::query();
-            break;
+        // Obtener el tipo de reporte
+        switch ($request->tipo_reporte) {
+            case 'pacientes':
+                $reporte = Pacientes::query();
+                break;
 
-        case 'medicamentos':
-            $reporte = Medicamentos::query();
-            break;
+            case 'medicamentos':
+                $reporte = Medicamentos::query();
+                break;
 
-        case 'doctores':
-            $reporte = Doctores::query();
-            break;
+            case 'doctores':
+                $reporte = Doctores::query();
+                break;
 
-        case 'cobros':
-            $reporte = Cobros::query();
-            break;
+            case 'cobros':
+                $reporte = Cobros::query();
+                break;
+            case 'facturas':
+                $reporte = SolicitudFactura::query();
+                break;
+        }
+
+        // Filtrar por fechas si se aplica
+        if ($request->rango_fecha == 'desde_fecha' && $request->fecha_inicio) {
+            $reporte->whereDate('created_at', '>=', Carbon::parse($request->fecha_inicio)->toDateString());
+        } elseif ($request->rango_fecha == 'rango_fechas' && $request->fecha_inicio && $request->fecha_fin) {
+            $reporte->whereDate('created_at', '>=', Carbon::parse($request->fecha_inicio)->toDateString())
+                ->whereDate('created_at', '<=', Carbon::parse($request->fecha_fin)->toDateString());
+        }
+
+        // Filtro avanzado (por nombre, ID, etc.)
+        if ($request->filtro_avanzado) {
+            $reporte->where(function ($query) use ($request) {
+                $query->where('nombre', 'like', '%' . $request->filtro_avanzado . '%')
+                    ->orWhere('id', 'like', '%' . $request->filtro_avanzado . '%');
+            });
+        }
+
+        // Obtener los resultados
+        $resultados = $reporte->get();
+
+        // Formatear los datos adicionales para el caso de 'cobros'
+        if ($request->tipo_reporte == 'cobros') {
+            $resultados = $resultados->map(function ($repor) {
+                $repor->folio = $repor->getID();
+                $repor->fecha = $repor->getFecha();
+                $repor->hora = $repor->getHora();
+                foreach ($repor->receta->medicamentos as $medica) {
+                    $cantidad = $medica->cantidad ?? 0;
+                    $precioUnitario = $medica->medicamento->precio ?? 0;
+                    $repor->preciototal +=  $cantidad * $precioUnitario;
+                }
+
+                $repor->facturo = $repor->facturación == 1 ? 'Si' : 'No';
+
+                return $repor;
+            });
+        }
+
+
+
+        $pdf = PDF::loadView('pdf.resultados_pdf', compact('resultados'));
+        return $pdf->download('reporte-' . $request->tipo_reporte . '.pdf');
     }
 
-    // Filtrar por fechas si se aplica
-    if ($request->rango_fecha == 'desde_fecha' && $request->fecha_inicio) {
-        $reporte->whereDate('created_at', '>=', Carbon::parse($request->fecha_inicio)->toDateString());
-    } elseif ($request->rango_fecha == 'rango_fechas' && $request->fecha_inicio && $request->fecha_fin) {
-        $reporte->whereDate('created_at', '>=', Carbon::parse($request->fecha_inicio)->toDateString())
-            ->whereDate('created_at', '<=', Carbon::parse($request->fecha_fin)->toDateString());
+    public function reportes(){
+
+        return view('admin.reportes.index');
     }
-
-    // Filtro avanzado (por nombre, ID, etc.)
-    if ($request->filtro_avanzado) {
-        $reporte->where(function ($query) use ($request) {
-            $query->where('nombre', 'like', '%' . $request->filtro_avanzado . '%')
-                  ->orWhere('id', 'like', '%' . $request->filtro_avanzado . '%');
-        });
-    }
-
-    // Obtener los resultados
-    $resultados = $reporte->get();
-
-    // Formatear los datos adicionales para el caso de 'cobros'
-    if ($request->tipo_reporte == 'cobros') {
-        $resultados = $resultados->map(function ($repor) {
-            $repor->folio = $repor->getID();
-            $repor->fecha = $repor->getFecha();
-            $repor->hora = $repor->getHora();
-            foreach ($repor->receta->medicamentos as $medica) {
-                $cantidad = $medica->cantidad ?? 0;
-                $precioUnitario = $medica->medicamento->precio ?? 0;
-                $repor->preciototal +=  $cantidad * $precioUnitario;
-            }
-            if($repor->facturación = 1){
-                $repor->facturo = "Si";
-            }else{
-                $repor->facturo = "No";
-            }
-
-            return $repor;
-        });
-    }
-
-
-
-    $pdf = PDF::loadView('pdf.resultados_pdf', compact('resultados'));
-
-    // Descargar el PDF
-    return $pdf->stream('reporte-' . $request->tipo_reporte . '.pdf');
-}
 
     public function personal(){
         $personals = Personal::all();
@@ -165,6 +166,73 @@ class AdminController extends Controller
         $usuarios  = User::all();
 
         return view('admin.personal.index', compact('personals','usuarios'));
+    }
+
+    public function facturas(){
+        $solicitudesFactura  = SolicitudFactura::all();
+
+        return view('admin.facturas.index', compact('solicitudesFactura'));
+    }
+
+    public function facturadownload($id)
+    {
+        // Obtén la solicitud de factura
+        $solicitud = SolicitudFactura::findOrFail($id);
+        // Cambiar el estatus a 'procesando'
+        $solicitud->estatus = 'procesada';
+        $solicitud->save();  // Si deseas guardar el cambio en la base de datos
+
+        // Inicializar preciototal
+        $solicitud->preciototal = 0;
+
+        // Verificar si el cobro y la receta están presentes
+        if ($solicitud->cobro && $solicitud->cobro->receta && $solicitud->cobro->receta->medicamentos) {
+            foreach ($solicitud->cobro->receta->medicamentos as $medica) {
+                $cantidad = $medica->cantidad ?? 0;
+                $precioUnitario = $medica->medicamento->precio ?? 0;
+                $solicitud->preciototal += $cantidad * $precioUnitario;
+            }
+        }
+
+        // Cargar la vista para generar el PDF
+        $pdf = PDF::loadView('pdf.factura', compact('solicitud'));
+
+        // Descargar el archivo PDF
+        return $pdf->download('solicitud_factura_' . $solicitud->id . '.pdf');
+    }
+
+    public function subirFactura(Request $request, $id)
+    {
+        // Validación del archivo
+        $request->validate([
+            'factura' => 'required|file|mimes:pdf,jpeg,png,jpg|max:10240', // Solo PDF y imágenes, máximo 10MB
+        ]);
+
+        // Encuentra la solicitud correspondiente
+        $solicitud = SolicitudFactura::findOrFail($id);
+
+        // Verifica si ya existe una factura asociada y la elimina
+        if ($solicitud->rutafactura && file_exists(public_path('facturas/' . $solicitud->rutafactura))) {
+            // Elimina el archivo anterior si existe
+            unlink(public_path($solicitud->rutafactura));
+        }
+        // Procesamiento de la nueva factura
+        if ($request->hasFile('factura')) {
+            // Genera un nombre único para el archivo
+            $nombreImagen = time() . '_' . $id . '.pdf';
+            $rutaImagen = 'facturas/' . $nombreImagen;
+
+            // Mueve el archivo a la carpeta 'facturas' en 'public'
+            $request->file('factura')->move(public_path('facturas'), $nombreImagen);
+        }
+
+        // Actualiza la ruta de la factura en la solicitud
+        $solicitud->rutafactura = $rutaImagen;
+        $solicitud->estatus = 'lista';
+        $solicitud->save();
+
+        // Redirige con un mensaje de éxito
+        return redirect()->back()->with('success', 'Factura subida con éxito');
     }
 
     public function usuarios()
@@ -175,7 +243,6 @@ class AdminController extends Controller
         return view('admin.usuarios.index', compact('users','doctores'));
 
     }
-
 
     public function create()
     {
@@ -305,48 +372,7 @@ class AdminController extends Controller
     }
 
 
-     // Métodos para Servicio
-     public function storeServicio(Request $request)
-     {
-         $request->validate([
-             'nombre' => 'required|string|max:255',
-             'icono' => 'required|string',
-             'costo' => 'nullable|numeric|between:0,999999.99',
-             'descripcion' => 'required|string',
-         ]);
 
-         $servicio = new Servicio();
-         $servicio->nombre = $request->nombre;
-         $servicio->icono = $request->icono;
-         $servicio->costo = $request->costo;
-         $servicio->descripcion = $request->descripcion;
-         $servicio->save();
-
-         return response()->json(['message' => 'Servicio creado exitosamente']);
-     }
-
-     public function updateServicio(Request $request, $id)
-     {
-         $request->validate([
-             'nombre' => 'required|string|max:255',
-             'icono' => 'required|string',
-             'costo' => 'nullable|numeric|between:0,999999.99',
-             'descripcion' => 'required|string',
-         ]);
-
-         $servicio = Servicio::findOrFail($id);
-         $servicio->update($request->all());
-
-         return response()->json(['message' => 'Servicio actualizado exitosamente']);
-     }
-
-     public function destroyServicio($id)
-     {
-         $servicio = Servicio::findOrFail($id);
-         $servicio->delete();
-
-         return response()->json(['message' => 'Servicio eliminado exitosamente']);
-     }
 
        // Métodos para Factura
     public function storeFactura(Request $request)
@@ -393,6 +419,57 @@ class AdminController extends Controller
 
         return view('admin.farmacia.admin');
     }
+
+
+    // Métodos para Servicio
+
+    public function indexServicios(){
+        $serviciosall = Servicio::all();
+        $servicios = Servicio::paginate(4);
+        return view('admin.servicios.index', compact('servicios', 'serviciosall'));
+    }
+
+    public function storeServicio(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'icono' => 'nullable|string',
+            'costo' => 'nullable|numeric|between:0,999999.99',
+            'descripcion' => 'required|string',
+        ]);
+
+        $servicio = new Servicio();
+        $servicio->nombre = $request->nombre;
+        $servicio->icono = $request->icono;
+        $servicio->costo = $request->costo;
+        $servicio->descripcion = $request->descripcion;
+        $servicio->save();
+
+        return redirect()->back()->with('success', 'Servicio creado exitosamente');
+    }
+
+      public function updateServicio(Request $request, $id)
+      {
+          $request->validate([
+              'nombre' => 'required|string|max:255',
+              'icono' => 'nullable|string',
+              'costo' => 'nullable|numeric|between:0,999999.99',
+              'descripcion' => 'required|string',
+          ]);
+
+          $servicio = Servicio::findOrFail($id);
+          $servicio->update($request->all());
+
+          return redirect()->back()->with('success', 'Servicio actualizado con éxito');
+      }
+
+      public function destroyServicio($id)
+      {
+          $servicio = Servicio::findOrFail($id);
+          $servicio->delete();
+
+          return redirect()->back()->with('success', 'Servicio eliminado con éxito');
+      }
 
 
 

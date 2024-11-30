@@ -104,8 +104,6 @@ class PersonalController extends Controller
                $nombreImagen = time() . '_' . $request->file('rutafirma')->getClientOriginalName();
                $rutaImagen = 'images/doctores/firmas/' . $nombreImagen;
                $request->file('rutafirma')->move(public_path('images/doctores/firmas/'), $nombreImagen);
-           } else {
-               $rutaImagen = 'images/doctores/firmas/default.png'; // Imagen por defecto si no se proporciona una
            }
 
            Doctores::create([
@@ -123,7 +121,7 @@ class PersonalController extends Controller
     {
 
         $personal = Personal::findOrFail($id);
-        $doctor = Doctores::where('personalid', $personal->id)->first();
+        $doctor = Doctores::where('personalid', $id)->first();
         // Validar los datos actualizados
         $request->validate([
             'Nombre' => 'required|string|max:255',
@@ -137,7 +135,7 @@ class PersonalController extends Controller
             'Telefono' => 'required|max:10',
             'Direccion' => 'required|string|max:255',
             'cedulaProfesional' => 'nullable|string|max:255',
-            'rutafirma' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'rutafima' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'user_id' => 'nullable|exists:users,id',
         ]);
 
@@ -150,20 +148,19 @@ class PersonalController extends Controller
 
         if ($request->Cargo == 'doctor') {
 
+            $rutaImagen = $doctor->rutafirma;
+
             // Procesamiento de la imagen
            if ($request->hasFile('rutafirma')) {
                $nombreImagen = time() . '_' . $request->file('rutafirma')->getClientOriginalName();
                $rutaImagen = 'images/doctores/firmas/' . $nombreImagen;
                $request->file('rutafirma')->move(public_path('images/doctores/firmas/'), $nombreImagen);
-           } else {
-               $rutaImagen = 'images/doctores/firmas/default.png'; // Imagen por defecto si no se proporciona una
            }
 
-           $doctor->update([
-               'personalid' => $personal->id,
-               'cedulaProfesional' => $request->cedulaProfesional,
-               'rutafirma' => $rutaImagen,
-           ]);
+           $doctor->cedulaProfesional = $request->cedulaProfesional;
+           $doctor->rutafirma = $rutaImagen;
+
+           $doctor->save();
        }
 
 

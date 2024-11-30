@@ -674,7 +674,7 @@
                                                 href="#solicitarFacturaModal-{{ $cobro->id }}">Facturar</a>
                                         @endif
                                         <a class="btn" href="#modalInfoCobro-{{ $cobro->id }}">Ver</a>
-                                        <a class="btn descargar-btn"  href="{{ route('ticket.descargar', $cobro->id) }}">Descargar</a>
+                                        <a class="btn descargar-btn"  href="{{ route('ticket.descargar', $cobro->id) }}" target="_blank">>Descargar</a>
                                     </td>
 
                                 </tr>
@@ -799,17 +799,17 @@
                                                     @php
                                                         $subtotal =
                                                             $recetaSurtida->cantidad *
-                                                            $recetaSurtida->medicamentos->precio;
+                                                            $recetaSurtida->medicamento->precio;
                                                         $totalMedicamentos += $subtotal;
                                                     @endphp
                                                     <div
                                                         style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin-bottom: 10px;">
                                                         <p style="margin: 0;"><strong>Medicamento:</strong>
-                                                            {{ $recetaSurtida->medicamentos->nombre }}</p>
+                                                            {{ $recetaSurtida->medicamento->nombre }}</p>
                                                         <p style="margin: 0;"><strong>Cantidad:</strong>
                                                             {{ $recetaSurtida->cantidad }}</p>
                                                         <p style="margin: 0;"><strong>Precio Unitario:</strong>
-                                                            ${{ number_format($recetaSurtida->medicamentos->precio, 2) }}
+                                                            ${{ number_format($recetaSurtida->medicamento->precio, 2) }}
                                                         </p>
                                                         <p style="margin: 0;"><strong>Subtotal:</strong>
                                                             ${{ number_format($subtotal, 2) }}</p>
@@ -904,7 +904,7 @@
                             <td>{{ $factura->estatus }}</td>
                             <td style="display: flex;">
                                 <a href="#modalSolicitudFactura-{{ $factura->id }}" class="btn ver-btn">Ver</a>
-                                <a class="btn descargar-btn"  href="{{ route('factura.descargar', $factura->id) }}">Descargar</a>
+                                <a class="btn descargar-btn" href="{{ $factura->rutafactura }}" target="_blank">Descargar</a>
                             </td>
                         </tr>
 
@@ -1111,15 +1111,15 @@
                                                                     @php
                                                                         $subtotal =
                                                                             $recetaSurtida->cantidad *
-                                                                            $recetaSurtida->medicamentos->precio;
+                                                                            $recetaSurtida->medicamento->precio;
                                                                         $totalMedicamentos += $subtotal;
                                                                     @endphp
 
                                                                     <tr>
-                                                                        <td>{{ $recetaSurtida->medicamentos->nombre }}
+                                                                        <td>{{ $recetaSurtida->medicamento->nombre }}
                                                                         </td>
                                                                         <td>{{ $recetaSurtida->cantidad }}</td>
-                                                                        <td>${{ number_format($recetaSurtida->medicamentos->precio, 2) }}
+                                                                        <td>${{ number_format($recetaSurtida->medicamento->precio, 2) }}
                                                                         </td>
                                                                         <td><input type="number" name="CantidadTotal"
                                                                                 class="CantidadTotal"

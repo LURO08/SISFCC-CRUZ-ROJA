@@ -148,11 +148,11 @@
             @foreach ($medicamentos as $medicamento)
                 @if ($medicamento->receta_id == $cobro->receta_id)
                     @php
-                        $subtotal = $medicamento->cantidad * $medicamento->medicamentos->precio;
+                        $subtotal = $medicamento->cantidad * $medicamento->medicamento->precio;
                         $totalMedicamentos += $subtotal;
                     @endphp
                     <tr>
-                        <td style="text-align: left;">{{ $medicamento->medicamentos->nombre }}</td>
+                        <td style="text-align: left;">{{ $medicamento->medicamento->nombre }}</td>
                         <td>{{ $medicamento->cantidad }}</td>
                         <td>${{ number_format($subtotal, 2) }}</td>
                     </tr>

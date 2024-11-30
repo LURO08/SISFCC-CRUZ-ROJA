@@ -24,19 +24,13 @@ class SolicitudFactura extends Model
         'estatus',
     ];
 
-    // Define los valores posibles para el campo 'estatus'
-    const ESTATUS_PENDIENTE = 'pendiente';
-    const ESTATUS_PROCESADA = 'procesada';
-    const ESTATUS_LISTA = 'lista';
-
-    // Casting para tipos de datos específicos
-    protected $casts = [
-        'fecha_solicitud' => 'datetime',
-        'monto' => 'decimal:2',
-    ];
-
     public function cobro()
     {
         return $this->belongsTo(Cobros::class, 'cobro_id');
+    }
+
+    public function getID()
+    {
+        return str_pad($this->attributes['id'], 3, '0', STR_PAD_LEFT);
     }
 }

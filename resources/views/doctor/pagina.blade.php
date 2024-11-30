@@ -882,7 +882,7 @@
                                             </div>
                                             <div style="display: flex; gap: 1rem;">
                                                 <div style="flex: 1;">
-                                                    <a href="{{ route('receta.descargar', $receta->id) }}"
+                                                    <a href="{{ route('receta.descargar', $receta->id) }} " target="_blank"
                                                         style="display: flex; align-items: center; justify-content: center; background-color: #2196F3; color: white; padding: 0.5rem; border-radius: 4px; text-decoration: none;">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                                             fill="white" width="24" height="24"

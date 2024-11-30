@@ -1,0 +1,203 @@
+    :root {
+        --primary-color: #007bff;
+        --hover-color: #0056b3;
+        --Secundary-color: #6c757d;
+        --hover-secondary-color: #3b3c3d;
+        --text-color: #fff;
+        --modal-overlay-color: rgba(0, 0, 0, 0.7);
+        --modal-border-radius: 10px;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --color: #333;
+    }
+
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--modal-overlay-color);
+        z-index: 999;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal:target {
+        display: flex;
+    }
+
+    /* Contenido del modal */
+    .modal-content {
+        background-color: var(--text-color);
+        width: 100%;
+        max-width: 350px;
+        border-radius: var(--modal-border-radius);
+        box-shadow: 0px 4px 10px var();
+        overflow: hidden;
+        animation: slideDown 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Cabecera del modal */
+    .modal-header {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        border-top-left-radius: var(--modal-border-radius);
+        border-top-right-radius: var(--modal-border-radius);
+    }
+
+    .modal-header .close {
+        font-size: 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .modal-header .close:hover {
+        color: var(--hover-color);
+    }
+
+    /* Cuerpo del modal */
+    .modal-body {
+        color: var(--color);
+        line-height: 1.6;
+        width: 100%;
+        padding: 10px 0px 10px;
+        text-align: left;
+    }
+    .form-group{
+        padding: 0px 20px 0px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        justify-content: center;
+
+    }
+
+    .PanelModal {
+        max-height: 60vh;
+        overflow-y: auto;
+
+    }
+
+    /* Pie del modal */
+    .modal-footer {
+        display: flex; /* Activar Flexbox */
+        justify-content: center; /* Centrar horizontalmente */
+        align-items: center; /* Centrar verticalmente */
+        gap: 15px; /* Espaciado entre botones */
+        padding: 20px; /* Espaciado interno */
+        background-color: #f8f9fa; /* Fondo claro */
+        border-top: 1px solid #dee2e6; /* Línea superior */
+        flex-wrap: wrap; /* Asegurar que los botones no se desborden */
+        width: 100%; /* Asegurar que ocupe todo el ancho */
+        box-sizing: border-box; /* Incluir padding en el ancho total */
+    }
+
+    /* Botones */
+    .modal-footer .btn-primary,
+    .modal-footer .btn-secondary {
+        min-width: 120px; /* Asegurar tamaño mínimo */
+        text-align: center; /* Centrar texto */
+        margin: 0; /* Eliminar márgenes innecesarios */
+        padding: 10px 20px; /* Espaciado interno */
+        border-radius: 5px; /* Bordes redondeados */
+        font-size: 1rem; /* Tamaño de fuente */
+        cursor: pointer; /* Indicador interactivo */
+        border: none; /* Eliminar bordes */
+        transition: all 0.3s ease; /* Animación suave */
+    }
+
+    /* Botón principal */
+    .modal-footer .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+    }
+
+    .modal-footer .btn-primary:hover {
+        background-color: var(--hover-color);
+    }
+
+    /* Botón secundario */
+    .modal-footer .btn-secondary {
+        background-color: var(--Secundary-color);
+        color: var(--text-color);
+        text-decoration: none;
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background-color: var(--hover-secondary-color);
+
+    }
+
+
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-header {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 5px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .modal-footer button {
+        width: 90%;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .modal, .modal-content {
+        animation: none;
+    }
+}
+
+ /* Animación */
+ @keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

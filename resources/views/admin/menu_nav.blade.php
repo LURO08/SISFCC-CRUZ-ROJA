@@ -152,14 +152,14 @@
             </a>
         </li>
         <li>
-            <a class="btn" href="#" onclick="showSection(event, 'PanelServicios')">
+            <a class="btn" href="{{route('admin.servicios.index')}}">
                 <span class="icon">📋</span>
                 <span class="text" style="font-weight: bold;">Servicios</span>
             </a>
         </li>
 
         <li>
-            <a class="btn" id="btnreportes" onclick="showSection(event, 'reportes')">
+            <a class="btn" id="btnreportes" href="{{route('admin.reportes.index')}}">
                 <span class="icon">💵</span>
                 <span class="text" style="font-weight: bold;">Reportes</span>
             </a>
@@ -186,12 +186,12 @@
             if (isCollapsed) {
                 aside.style.width = '7%'; // Ancho del menú colapsado
                 menu.querySelectorAll(".text").forEach(item => item.style.display = "none"); // Ocultar el texto
-                icon.innerHTML = "→"; // Cambiar el icono al estado colapsado
+                icon.innerHTML = "➡️"; // Cambiar el icono al estado colapsado
                 icon.setAttribute("aria-expanded", "false"); // Accesibilidad
             } else {
                 aside.style.width = '16%'; // Ancho del menú expandido
                 menu.querySelectorAll(".text").forEach(item => item.style.display = "block"); // Mostrar el texto
-                icon.innerHTML = "←"; // Cambiar el icono al estado expandido
+                icon.innerHTML = "⬅️"; // Cambiar el icono al estado expandido
                 icon.setAttribute("aria-expanded", "true"); // Accesibilidad
             }
 

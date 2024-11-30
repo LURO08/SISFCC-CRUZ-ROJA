@@ -30,19 +30,38 @@ Route::middleware('auth')->group(function () {
             Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create')->middleware('auth');
             Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store')->middleware('auth');
 
-            // Admin farmacia
+            //Farmacia
             Route::get('/admin/farmacia', [AdminController::class, 'farmaciaDash'])->name('admin.farmacia.index');
             Route::get('/admin/consultorio/pacientes', [AdminController::class, 'consultorioIndex'])->name('admin.consultorio.index');
             Route::post('/verificar-stock', [TuControlador::class, 'verificarStock'])->name('verificar.stock');
-
             Route::get('/farmacia/recetas', [AdminController::class, 'index'])->name('farmacia.recetas.index');
             Route::get('/farmacia/reportes', [AdminController::class, 'index'])->name('farmacia.reportes.index');
             Route::post('admin/reporte/descargar', [AdminController::class, 'generarReporte'])->name('admin.reporte.descargar');
 
+            //Personal
             Route::get('/admin/personal', [PersonalController::class, 'index'])->name('admin.personal.index');
             Route::post('/admin/personal', [PersonalController::class, 'storePersonal'])->name('admin.personals.store');
             Route::put('/admin/personal/{user}', [PersonalController::class, 'update'])->name('admin.personals.update');
-        Route::delete('/admin/personal/{personal}', [PersonalController::class, 'destroy'])->name('admin.personals.destroy');
+            Route::delete('/admin/personal/{personal}', [PersonalController::class, 'destroy'])->name('admin.personals.destroy');
+
+            //Facturas
+            Route::get('admin/facturas', [AdminController::class, 'facturas'])->name('facturas.index');
+            Route::get('admin//factura/{id}/download', [AdminController::class, 'facturadownload'])->name('admin.factura.download');
+            Route::post('/admin/factura/{solicitud}/subir-factura', [AdminController::class, 'subirFactura'])->name('admin.facturas.subir');
+
+            //Reportes
+            Route::get('admin/reportes', [AdminController::class, 'reportes'])->name('admin.reportes.index');
+
+            //Servicios
+            Route::get('/admin/servicios', [AdminController::class, 'indexServicios'])->name('admin.servicios.index');
+            Route::post('/admin/servicios', [AdminController::class, 'storeServicio'])->name('admin.servicio.store');
+            Route::put('/admin/servicios/{servicio}', [AdminController::class, 'updateServicio'])->name('admin.servicio.update');
+            Route::delete('/admin/servicios/{servicio}', [AdminController::class, 'destroyServicio'])->name('admin.servicio.destroy');
+
+
+
+
+
         });
 
     // Doctor

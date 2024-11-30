@@ -422,7 +422,7 @@
                                                                             @endif
                                                                         </div>
                                                                         <input type="file" name="rutafirma"
-                                                                            id="rutafirma-{{ $doctor->id }}"
+                                                                            id="rutafirma"
                                                                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
                                                                     focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm hover:border-red-500
                                                                     @error('rutafirma') border-red-500 @enderror">
@@ -714,7 +714,6 @@
                                                     @endforeach
                                                 </select>
                                         </div>
-                                    </div>
 
                                         <!-- Campos adicionales para el rol de Doctor -->
                                         <div id="hidden-form2"
@@ -728,13 +727,10 @@
                                                     id="cedulaProfesional"
                                                     name="cedulaProfesional"
                                                     placeholder="Ingrese su cédula profesional"
-
                                                     minlength="7"
                                                     maxlength="12"
                                                     pattern="[0-9]+"
-                                                    class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                                >
-
+                                                    class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                             </div>
 
                                             <div class="mt-4">
@@ -744,13 +740,12 @@
                                                     id="rutafirma"
                                                     name="rutafirma"
                                                     accept="image/png, image/jpeg"
-
-                                                    class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                                >
-
+                                                    class="block mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                             </div>
-
                                         </div>
+                                    </div>
+
+
                                     </div>
 
                                     <div class="flex justify-center space-x-4 mt-4">

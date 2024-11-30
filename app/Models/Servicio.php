@@ -11,7 +11,6 @@ class Servicio extends Model
 
     // Define los atributos que son asignables
     protected $fillable = [
-        'id',
         'nombre',
         'costo',
         'descripcion',
@@ -25,5 +24,10 @@ class Servicio extends Model
     public function __toString()
     {
         return $this->nombre;
+    }
+
+    public function getID()
+    {
+        return str_pad($this->attributes['id'], 3, '0', STR_PAD_LEFT);
     }
 }

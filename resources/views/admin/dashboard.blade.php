@@ -446,43 +446,20 @@
 
     .modal-content {
         background-color: #fff;
-        padding: 20px 20px 0;
+        padding: 20px;
         border-radius: 8px;
         width: 100%;
+        max-width: 600px;
         position: relative;
         justify-content: space-between;
     }
 
-    .tratamientoModal .modal-content {
-        max-width: 700px;
-    }
-
-    .modalNuevoProveedor .modal-content {
-        max-width: 600px;
-    }
-
-    .modalProductoadd .modal-content {
-        max-width: 650px;
-    }
-
-    .modalMedicamentosSurtidos .modal-content {
-        max-width: 480px;
-    }
-
-    .modalDonaciones .modal-content {
-        max-width: 500px;
-    }
-
-    .modalDonaciones .modal-body,
-    .modalMedicamentosSurtidos .modal-body {
-        padding: 20px;
-        max-height: 50vh;
+    .ModalContenedorDatos {
+        max-height: 70vh;
         overflow-y: auto;
-        height: 50vh;
     }
 
-    .modalNuevoProveedor .modal-header,
-    .modalProductoadd .modal-header,
+
     .modal-header {
         display: flex;
         justify-content: space-between;
@@ -495,13 +472,11 @@
         padding: 5px;
     }
 
-    .modal-title,
-    .modalNuevoProveedor .modal-title {
+    .modal-title{
         font-size: 1.25rem;
         margin: 0;
     }
 
-    .modalNuevoProveedor .close,
     .close {
         font-size: 1.5rem;
         color: #fff;
@@ -510,28 +485,12 @@
         margin-right: 10px;
     }
 
-    .modalNuevoProveedor .close:hover,
     .close:hover {
         color: #dcdcdc;
     }
 
     .form-group {
         margin-bottom: 15px;
-    }
-
-    .modal-footer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;
-    }
-
-    .modal-footer button {
-        margin: 10px;
-    }
-
-    .modal-footer a {
-        margin-top: 15px;
     }
 
     .modalNuevoProveedor .modalProveedor-body {
@@ -1155,7 +1114,7 @@
                                     style="text-align: center; align-items: center; justify-content: center;">
                                     <!-- Botón para abrir el modal -->
                                     <a class="btn btn-info view-treatment-btn"
-                                        href="#tratamientoModal-{{ $factura->id }}">
+                                        href="#facturaModal-{{ $factura->id }}">
                                         👁️
                                     </a>
                                 </td>
@@ -1167,64 +1126,77 @@
                                 </td>
                             </tr>
 
-                            <div class=" fade tratamientoModal" id="tratamientoModal-{{ $factura->id }}"
-                                tabindex="-1" role="dialog"
-                                aria-labelledby="tratamientoModalLabel-{{ $factura->id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="tratamientoModalLabel-{{ $factura->id }}">
-                                                Tratamiento
-                                                para {{ $factura->cobro->paciente->nombre }}</h5>
-                                            <button type="button" class="close" data-id="{{ $factura->id }}"
-                                                aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            </button>
+                            <div class="modal" id="facturaModal-{{ $factura->id }}">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content" style="height: 90vh;">
+                                        <div class="bg-blue-500 modal-header">
+                                            <h5 class="modal-title text-white">Detalles de la Solicitud de Factura
+                                            </h5>
+                                            <a href="#" class="close text-white"
+                                                onclick="closeModal('#facturaModal-{{ $factura->id }}')">&times;</a>
                                         </div>
-                                        <div class="modal-body" style=" height: 85vh; overflow: auto;">
-                                            <form action="{{ route('farmacia.surtir.receta') }}"method="POST"
-                                                enctype="multipart/form-data">
-                                                @csrf
-                                                <div class="tratamiento-container"
-                                                    style="margin: 10px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-                                                    <h3 style="margin-bottom: 8px; color: #2c3e50;">Tratamiento</h3>
+                                        <div class="modal-body" style="overflow-y: auto; height: 65vh;">
+                                            <h3 class="text-lg font-semibold mb-2">
+                                                Solicitud de Factura de {{ $factura->nombre }}
+                                            </h3>
 
-                                                    @if (!empty($factura->receta->tratamiento))
-                                                        <p style="line-height: 1.6; font-size: 16px; color: #34495e;">
-                                                            {{ $factura->receta->tratamiento }}
-                                                        </p>
-                                                    @else
-                                                        <p style="font-style: italic; color: #7f8c8d;">No se ha
-                                                            especificado ningún
-                                                            tratamiento.</p>
-                                                    @endif
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <strong>RFC:</strong>
+                                                    <p>{{ $factura->rfc }}</p>
                                                 </div>
-
-                                                <br>
-                                                <!-- Barra de búsqueda -->
-                                                <div class="form-group">
-                                                    <strong>Buscar: </strong>
-                                                    <input type="search" class="form-control"
-                                                        id="searchMedicamento-{{ $factura->id }}"
-                                                        placeholder="Buscar medicamento"
-                                                        onkeyup="filterMedicamentos({{ $factura->id }})">
+                                                <div>
+                                                    <strong>Dirección:</strong>
+                                                    <p>{{ $factura->direccion }}</p>
                                                 </div>
-
-
-                                                <!-- Sección para mostrar los medicamentos agregados -->
-                                                <h5>Medicamentos Agregados</h5>
-
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-success">
-                                                        Surtir Receta
-                                                    </button>
-                                                    <button type="button" class="close"
-                                                        data-id="{{ $factura->id }}" aria-label="Close">
-                                                        <span aria-hidden="true">Cerrar</span>
-                                                    </button>
+                                                <div>
+                                                    <strong>Teléfono:</strong>
+                                                    <p>{{ $factura->telefono }}</p>
                                                 </div>
-                                            </form>
+                                                <div>
+                                                    <strong>Correo:</strong>
+                                                    <p>{{ $factura->correo }}</p>
+                                                </div>
+                                                <div>
+                                                    <strong>Monto:</strong>
+                                                    <p>${{ number_format($factura->monto, 2) }}</p>
+                                                </div>
+                                                <div>
+                                                    <strong>Estatus:</strong>
+                                                    <p>{{ ucfirst($factura->estatus) }}</p>
+                                                </div>
+                                                <div>
+                                                    <strong>Cobro Asociado:</strong>
+                                                    <p>{{ $factura->cobro->getID() }}</p>
+                                                </div>
+                                                <div>
+                                                    <strong>Paciente: </strong>
+                                                    <p>{{ $factura->cobro->paciente->nombre }}
+                                                        {{ $factura->cobro->paciente->apellidopaterno }}
+                                                        {{ $factura->cobro->paciente->apellidomaterno }}</p>
+                                                </div>
+                                                <div>
+                                                    <strong>Fecha de Solicitud:</strong>
+                                                    <p>{{ $factura->created_at->format('d/m/Y H:i') }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer flex justify-center w-full"
+                                            style="margin-top: 20px;">
+                                            <!-- Botón Cancelar -->
+                                            <!-- Botón para Descargar PDF -->
+                                            <a href="{{ route('admin.factura.download', $factura->id) }}"
+                                                class="px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600"
+                                                target="_blank">
+                                                Descargar PDF
+                                            </a>
+                                            <a href="#" style="margin-left: 10px;"
+                                                class=" px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
+                                                data-dismiss="modal">
+                                                Cerrar
+                                            </a>
+
+
                                         </div>
                                     </div>
                                 </div>

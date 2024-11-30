@@ -262,21 +262,30 @@ class CajeroController extends Controller
     // ]);
 }
 
-    public function DescargarFactura($facturaid)
-    {
-        // Define la ruta donde se guardará el PDF
-        $filename = "factura-$facturaid.pdf";
-        $filePath = public_path("facturas/{$filename}");
+public function DescargarFactura($id)
+{
+    // Busca la solicitud con el ID proporcionado
+    $solicitud = SolicitudFactura::findOrFail($id);
 
-        // Verifica si el archivo ya existe en el almacenamiento
-        if (file_exists($filePath)) {
-            // Retorna el archivo existente para descarga
-            return response()->download($filePath, $filename, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $filename . '"'
-            ]);
-        }
+    // Verifica si la ruta de la factura está disponible
+    $rutaFactura = storage_path('app/public/' . $solicitud->rutafactura);
+
+    // Verifica si el archivo existe
+    if (file_exists($rutaFactura)) {
+        // Obtiene el nombre del archivo desde la ruta
+        $filename = basename($solicitud->rutafactura);
+
+        // Retorna el archivo para descarga
+        return response()->download($rutaFactura, $filename, [
+            'Content-Type' => 'application/pdf', // Cambiar si es otro tipo de archivo
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
     }
+
+    // Si el archivo no existe, retorna un error
+    return response()->json(['error' => 'Factura no encontrada o no disponible.'], 404);
+}
+
 
     public function generarReporteDiario(Request $request)
 {

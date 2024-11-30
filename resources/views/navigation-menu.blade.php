@@ -104,7 +104,7 @@
                 <div class="block px-4 py-2 text-xs text-gray-600 text-white">
                     {{ __('Caja de Cobro') }}
                 </div>
-                <x-dropdown-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
+                <x-dropdown-link href="{{ route('facturas.index') }}" :active="request()->routeIs('facturas.index')">
                     {{ __('Facturas') }}
                 </x-dropdown-link>
                 <x-dropdown-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
