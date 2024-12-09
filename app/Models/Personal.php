@@ -33,4 +33,19 @@ class Personal extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function getFecha()
+    {
+        return $this->created_at->format('d/m/Y');
+    }
+
+    public function getHora()
+    {
+        return $this->created_at->format('H:i');
+    }
+
+    public function getID()
+    {
+        return str_pad($this->attributes['id'], 3, '0', STR_PAD_LEFT);
+    }
+
 }

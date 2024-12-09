@@ -164,8 +164,9 @@ class AdminController extends Controller
         $personals = Personal::all();
         $doctores = Doctores::all();
         $usuarios  = User::all();
+        $personalsall = Personal::paginate(3);
 
-        return view('admin.personal.index', compact('personals','usuarios'));
+        return view('admin.personal.index', compact('personals','usuarios','personalsall'));
     }
 
     public function facturas(){
@@ -373,7 +374,6 @@ class AdminController extends Controller
 
 
 
-
        // Métodos para Factura
     public function storeFactura(Request $request)
     {
@@ -423,7 +423,8 @@ class AdminController extends Controller
 
     // Métodos para Servicio
 
-    public function indexServicios(){
+    public function indexServicios()
+    {
         $serviciosall = Servicio::all();
         $servicios = Servicio::paginate(4);
         return view('admin.servicios.index', compact('servicios', 'serviciosall'));
@@ -470,6 +471,16 @@ class AdminController extends Controller
 
           return redirect()->back()->with('success', 'Servicio eliminado con éxito');
       }
+
+    // Métodos para Cobros
+
+    public function indexCobros()
+    {
+        $cobrosall = Cobros::all();
+        $cobros = Cobros::paginate(4);
+        $servicios = servicio::all();
+        return view('admin.cobros.index', compact('cobros', 'cobrosall','servicios'));
+    }
 
 
 

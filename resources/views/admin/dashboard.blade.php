@@ -911,8 +911,8 @@
 
     <div class="central">
 
-        <section id="inicio" class="section active flex flex-col items-center justify-center text-center">
-            <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <section id="inicio" class="section active flex flex-col items-center justify-center text-center" style="justify-content: center; align-items: center; align-content: center;">
+            <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto;">
                 <!-- Cuadrado superior -->
                 <rect x="35" y="10" width="30" height="30" fill="red" stroke="white" stroke-width="4" />
                 <!-- Cuadrados laterales -->
@@ -925,9 +925,9 @@
                 <!-- Cuadrado central alargado vertical -->
                 <rect x="37" y="30" width="26" height="40" fill="red" />
             </svg>
-            <h1 style="margin: 0; text-align: center;">SISTEMA DE ADMINISTRADOR</h1>
-            <h3 style="margin: 0; text-align: center; font-size: 25px;">DE LA </h3>
-            <h2 style="margin: 0; text-align: center; font-size: 27px;">CRUZ ROJA MEXICANA DELEGACIÓN CHILPANCINGO
+            <h1 style="margin: 0; text-align: center; font-size: 30px; font-weight: 800; color: #1a73e8;">SISTEMA DE ADMINISTRADOR</h1>
+            <h3 style="margin: 0; text-align: center; font-size: 25px; font-weight: 800;  color: #1a73e8;">DE LA </h3>
+            <h2 style="margin: 0; text-align: center; font-size: 27px;  color: #1a73e8;">CRUZ ROJA MEXICANA DELEGACIÓN CHILPANCINGO
             </h2>
         </section>
 
@@ -1106,6 +1106,8 @@
                 <div class="list-group">
                     <table class="tableConsultas">
                         @foreach ($facturas as $factura)
+                            @if ($factura->estatus == 'pendiente')
+
                             <tr style="text-align: center; align-items: center; justify-content: center;">
                                 <td><strong>{{ $factura->nombre }}</strong><br>
                                     <strong>{{ $factura->rfc }}</strong>
@@ -1201,6 +1203,11 @@
                                     </div>
                                 </div>
                             </div>
+                            @else
+                            <p>Ninguna factura a realizar</p>
+
+                            @endif
+
                         @endforeach
                     </table>
                 </div>

@@ -16,7 +16,6 @@ class Cobros extends Model
         'nombre',
         'servicio',
         'monto',
-        'fecha',
         'facturacion',
         'rutaticket',
     ];

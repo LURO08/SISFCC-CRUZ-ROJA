@@ -1,0 +1,109 @@
+/* Modal container */
+
+:root {
+    --primary-color: #007bff;
+    --hover-color: #0056b3;
+    --Secundary-color: #6c757d;
+    --hover-secondary-color: #3b3c3d;
+    --text-color: #fff;
+    --modal-overlay-color: rgba(0, 0, 0, 0.7);
+    --modal-border-radius: 10px;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --color: #333;
+}
+
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Slightly lighter background */
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    }
+
+    /* Show modal when targeted */
+    .modal:target {
+    display: flex;
+    }
+
+    /* Modal content */
+    .modal-content {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Modal header */
+    .modal-header {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        border-top-left-radius: var(--modal-border-radius);
+        border-top-right-radius: var(--modal-border-radius);
+    }
+
+    /* Modal title */
+    .modal-title {
+    font-size: 1.2rem; /* Larger title font */
+    margin: 0;
+    }
+
+    /* Close button */
+    .close {
+    font-size: 2rem;
+    color: #5a5a5ac3;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: color 0.3s;
+    }
+
+    /* Hover effect for close button */
+    .modal-header .close:hover {
+        color: var(--hover-color);
+    }
+
+    /* Modal body */
+    .modal-body {
+    padding: 10px;
+
+    }
+
+    /* Modal dialog */
+    .modal-dialog {
+    width: 80%; /* Full width to handle responsive layouts */
+    max-width: 600px;
+    }
+
+    /* Additional styling for modal content if needed */
+    .modal-content form {
+    display: flex;
+    flex-direction: column;
+    }
+
+    .modal-content form div {
+    margin-bottom: 5px;
+    }
+
+    .modal-content form .block {
+    width: calc(100% - 20px); /* Full width with padding adjustment */
+    }
+
+    .modal-content .btn {
+    align-self: flex-end;
+    }

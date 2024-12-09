@@ -12,11 +12,16 @@ class PersonalController extends Controller
 {
     public function index()
     {
-        $personals = Personal::all();
         $doctores = Doctores::all();
         $usuarios = User::all();
+        $personals = Personal::paginate(2);
 
-    return view('admin.personal.index', compact('personals', 'doctores','usuarios'));
+        $personalsall = Personal::all()->map(function($Personal) {
+            $Personal->eliminarruta = route('admin.personals.destroy', $Personal->id);
+            return $Personal;
+        });
+
+    return view('admin.personal.index', compact('personals', 'doctores','usuarios','personalsall'));
     }
 
     /**

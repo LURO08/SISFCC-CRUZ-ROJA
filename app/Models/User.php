@@ -65,4 +65,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getFecha()
+    {
+        return $this->created_at->format('d/m/Y');
+    }
+
+    public function getHora()
+    {
+        return $this->created_at->format('H:i');
+    }
 }

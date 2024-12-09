@@ -168,6 +168,7 @@
 </aside>
 
 
+
 <script>
       var menuDatos = document.getElementById('MenuDatos');
         var derecha = document.querySelectorAll('.derecha');

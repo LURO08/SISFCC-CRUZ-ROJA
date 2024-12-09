@@ -275,9 +275,9 @@
 
         <div class="final">
             <div class="doctor-info" >
-                <h3 style="margin-bottom: 5px;">Dr. {{ $doctor->nombre }} {{ $doctor->apellidoPaterno }} {{ $doctor->apellidoMaterno }}</h3>
+                <h3 style="margin-bottom: 5px;">Dr. {{ $doctor->personal->ombre }} {{ $doctor->personal->apellidoPaterno }} {{ $doctor->personal->apellidoMaterno }}</h3>
                 <h4 style="margin-bottom: 20px;">Cédula: {{ $doctor->cedulaProfesional }}</h4>
-                <img src="{{ public_path($doctor->rutafirma) }}" alt="Firma del Dr. {{ $doctor->nombre }} {{ $doctor->apellidoPaterno }}" width="150">
+                <img src="{{ public_path($doctor->rutafirma) }}" alt="Firma del Dr. {{ $doctor->personal->nombre }} {{ $doctor->personal->apellidoPaterno }}" width="150">
             </div>
             <div class="footer" style="width: 20%;">
                 <p style="margin: 0;">FAVOR DE PRESENTAR SU RECETA EN LA PRÓXIMA CONSULTA</p>

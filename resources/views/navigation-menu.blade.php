@@ -30,7 +30,7 @@
 
             <!-- Navigation Links for Desktop -->
             <div class="hidden sm:flex space-x-8 text-white mx-1">
-                @foreach(['admin' => 'Admin', 'doctor' => 'Doctor', 'cajero' => 'Cajero', 'farmacia' => 'farmacia'] as $role => $label)
+                @foreach(['admin' => 'Admin', 'doctor' => 'Doctor', 'cajero' => 'Cajero', 'farmacia' => 'farmacia','almacenista' => 'Almacenista', 'socorros' => 'socorros'] as $role => $label)
                     @role($role)
                         <x-nav-link href="{{ route($role . '.index') }}" :active="request()->routeIs($role . '.index')">
                             {{ __($label . ' Dashboard') }}
@@ -107,7 +107,7 @@
                 <x-dropdown-link href="{{ route('facturas.index') }}" :active="request()->routeIs('facturas.index')">
                     {{ __('Facturas') }}
                 </x-dropdown-link>
-                <x-dropdown-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
+                <x-dropdown-link href="{{ route('admin.cobros.index') }}" :active="request()->routeIs('admin.cobros.index')">
                     {{ __('Cobros') }}
                 </x-dropdown-link>
 
@@ -230,6 +230,7 @@
                             @role('doctor') {{ 'Doctor: ' . Auth::user()->name }} @endrole
                             @role('farmacia') {{ 'Farmaceutico: ' . Auth::user()->name }} @endrole
                             @role('cajero') {{ 'Cajero: ' . Auth::user()->name }} @endrole
+                            @role('almacenista') {{ 'Almacenista: ' . Auth::user()->name }} @endrole
                             <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                             </svg>
@@ -301,6 +302,13 @@
 
                         @role('cajero')
                             {{ __('Cajero') }}: {{  Auth::user()->name }}
+                        @endrole
+
+                        @role('almacenista')
+                            {{ __('almacenista') }}: {{  Auth::user()->name }}
+                        @endrole
+                        @role('socorros')
+                            {{ __('Socorros') }}: {{  Auth::user()->name }}
                         @endrole
                     </div>
                 </div>

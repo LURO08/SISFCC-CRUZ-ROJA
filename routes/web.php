@@ -1,15 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\PersonalController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\CajeroController;
-use App\Http\Controllers\farmaciaController;
-use App\Http\Controllers\MedicamentoController;
-use App\Http\Controllers\PacientesController;
-use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\{
+    AdminController,
+    PersonalController,
+    DashboardController,
+    DoctorController,
+    CajeroController,
+    FarmaciaController,
+    MedicamentoController,
+    PacientesController,
+    ProveedorController,
+    AlmacenController,
+    EmergenciasController
+};
+
+
 
 // Rutas protegidas por autenticación y rol
 Route::middleware('auth')->group(function () {
@@ -58,72 +64,148 @@ Route::middleware('auth')->group(function () {
             Route::put('/admin/servicios/{servicio}', [AdminController::class, 'updateServicio'])->name('admin.servicio.update');
             Route::delete('/admin/servicios/{servicio}', [AdminController::class, 'destroyServicio'])->name('admin.servicio.destroy');
 
+            Route::get('admin/cobros', [AdminController::class, 'IndexCobros'])->name('admin.cobros.index');
+            Route::post('/admin/cobros', [AdminController::class, 'storeCobros'])->name('admin.cobro.store');
+            Route::put('/admin/cobros/{cobro}', [AdminController::class, 'updateCobros'])->name('admin.cobro.update');
+            Route::delete('/admin/cobros/{cobro}', [AdminController::class, 'destroyCobros'])->name('admin.cobro.destroy');
 
+        });
+
+        // Doctor
+        Route::middleware('role:doctor')->group(function () {
+            Route::get('/doctor', [DoctorController::class, 'index'])->name('doctor.index');
+            Route::get('/doctor/Pacientes', [PacientesController::class, 'index'])->name('doctor.pacientes.index')->middleware('auth');
+            Route::resource('Pacientes', PacientesController::class);
+            Route::delete('/Pacientes/{paciente}', [PacientesController::class, 'destroy'])->name('doctor.pacientes.destroy');
+            Route::post('/doctor/pacientes/store', [PacientesController::class, 'store'])->name('doctor.pacientes.store');
+            Route::get('/doctor/Pacientes/edit/{id}', [PacientesController::class, 'edit'])->name('doctor.pacientes.edit')->middleware('auth');
+            Route::put('/doctor/Pacientes/update/{id}', [PacientesController::class, 'update'])->name('doctor.pacientes.update')->middleware('auth');
+
+            Route::delete('/doctor/receta/{receta}', [DoctorController::class, 'destroy'])->name('doctor.receta.destroy');
+            Route::post('/doctor/receta/store', [DoctorController::class, 'store'])->name('doctor.receta.store');
+            Route::put('/doctor/receta/update/{id}', [DoctorController::class, 'update'])->name('doctor.receta.update')->middleware('auth');
+            Route::get('/receta/{id}/descargar', [DoctorController::class, 'descargarReceta'])->name('receta.descargar');
+
+            Route::get('/doctor/recetaview/{receta}', [DoctorController::class, 'recetaview'])->name('doctor.receta.view');
+
+        });
+
+        // Cajero
+        Route::middleware('role:cajero')->group(function () {
+            Route::get('/cajero', [CajeroController::class, 'index'])->name('cajero.index');
+
+            Route::post('/cajero/cobros', [CajeroController::class, 'storeCobro'])->name('cajero.cobros.store')->middleware('auth');
+            Route::put('/cajero/cobros/update/{id}', [CajeroController::class, 'updateCobro'])->name('cajero.cobros.update')->middleware('auth');
+
+            Route::post('/cajero/facturas', [CajeroController::class, 'storeSolicitudFactura'])->name('cajero.solicitar.factura.store')->middleware('auth');
+
+            Route::get('/ticket/{id}/descargar', [CajeroController::class, 'DescargarPdf'])->name('ticket.descargar');
+            Route::get('/factura/{id}/descargar', [CajeroController::class, 'DescargarFactura'])->name('factura.descargar');
+            Route::get('/cobros/reporte', [CajeroController::class, 'generarReporteDiario'])->name('reporte.diario');
+            Route::post('/cobros/reporte/descargar', [CajeroController::class, 'descargarReporte'])->name('cobros.reporte.descargar');
 
 
 
         });
 
-    // Doctor
-    Route::middleware('role:doctor')->group(function () {
-        Route::get('/doctor', [DoctorController::class, 'index'])->name('doctor.index');
-        Route::get('/doctor/Pacientes', [PacientesController::class, 'index'])->name('doctor.pacientes.index')->middleware('auth');
-        Route::resource('Pacientes', PacientesController::class);
-        Route::delete('/Pacientes/{paciente}', [PacientesController::class, 'destroy'])->name('doctor.pacientes.destroy');
-        Route::post('/doctor/pacientes/store', [PacientesController::class, 'store'])->name('doctor.pacientes.store');
-        Route::get('/doctor/Pacientes/edit/{id}', [PacientesController::class, 'edit'])->name('doctor.pacientes.edit')->middleware('auth');
-        Route::put('/doctor/Pacientes/update/{id}', [PacientesController::class, 'update'])->name('doctor.pacientes.update')->middleware('auth');
+        // Farmacia
+        Route::middleware('role:admin,farmacia')->group(function () {
+            Route::get('/farmacia', [farmaciaController::class, 'index'])->name('farmacia.index');
+            Route::get('/farmacia/productos', [MedicamentoController::class, 'index'])->name('farmacia.product.index')->middleware('auth');
+            Route::resource('productos', MedicamentoController::class);
+            Route::delete('/productos/{producto}', [MedicamentoController::class, 'destroy'])->name('farmacia.product.destroy');
+            Route::get('/farmacia/productos/create', [MedicamentoController::class, 'create'])->name('farmacia.product.create')->middleware('auth');
+            Route::post('/farmacia/productos', [MedicamentoController::class, 'store'])->name('farmacia.product.store')->middleware('auth');
+            Route::get('/farmacia/productos/edit/{id}', [MedicamentoController::class, 'edit'])->name('farmacia.product.edit')->middleware('auth');
+            Route::put('/farmacia/productos/update/{id}', [MedicamentoController::class, 'update'])->name('farmacia.product.update')->middleware('auth');
 
-        Route::delete('/doctor/receta/{receta}', [DoctorController::class, 'destroy'])->name('doctor.receta.destroy');
-        Route::post('/doctor/receta/store', [DoctorController::class, 'store'])->name('doctor.receta.store');
-        Route::put('/doctor/receta/update/{id}', [DoctorController::class, 'update'])->name('doctor.receta.update')->middleware('auth');
-        Route::get('/receta/{id}/descargar', [DoctorController::class, 'descargarReceta'])->name('receta.descargar');
+            Route::put('/farmacia/proveedores/update/{id}', [ProveedorController::class, 'update'])->name('farmacia.proveedor.update')->middleware('auth');
+            Route::get('/farmacia/proveedores', [ProveedorController::class, 'index'])->name('farmacia.proveedores.index')->middleware('auth');
+            Route::delete('/farmacia/proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('farmacia.proveedor.destroy');
+            Route::post('/farmacia/proveedores', [ProveedorController::class, 'store'])->name('farmacia.proveedor.store')->middleware('auth');
 
-        Route::get('/doctor/recetaview/{receta}', [DoctorController::class, 'recetaview'])->name('doctor.receta.view');
+            Route::post('/surtir/receta', [farmaciaController::class, 'surtirReceta'])->name('farmacia.surtir.receta')->middleware('auth');
+            Route::post('/donaciones/medicamentos', [farmaciaController::class, 'Donaciones'])->name('farmacia.donaciones.medicammentos')->middleware('auth');
+            Route::post('/pedidos/medicamentos', [farmaciaController::class, 'PedidosAProveedor'])->name('farmacia.pedidos.medicammentos')->middleware('auth');
 
-    });
-
-    // Cajero
-    Route::middleware('role:cajero')->group(function () {
-        Route::get('/cajero', [CajeroController::class, 'index'])->name('cajero.index');
-
-        Route::post('/cajero/cobros', [CajeroController::class, 'storeCobro'])->name('cajero.cobros.store')->middleware('auth');
-        Route::put('/cajero/cobros/update/{id}', [CajeroController::class, 'updateCobro'])->name('cajero.cobros.update')->middleware('auth');
-
-        Route::post('/cajero/facturas', [CajeroController::class, 'storeSolicitudFactura'])->name('cajero.solicitar.factura.store')->middleware('auth');
-
-        Route::get('/ticket/{id}/descargar', [CajeroController::class, 'DescargarPdf'])->name('ticket.descargar');
-        Route::get('/factura/{id}/descargar', [CajeroController::class, 'DescargarFactura'])->name('factura.descargar');
-        Route::get('/cobros/reporte', [CajeroController::class, 'generarReporteDiario'])->name('reporte.diario');
-        Route::post('/cobros/reporte/descargar', [CajeroController::class, 'descargarReporte'])->name('cobros.reporte.descargar');
+            Route::post('/recetas/{id}/cobrar', [farmaciaController::class, 'cobrar'])->name('recetas.cobrar');
 
 
+        });
 
-    });
+          // Rutas específicas para el rol almacen
+          Route::middleware('role:almacenista')->group(function () {
+            Route::get('/almacen', [AlmacenController::class, 'index'])->name('almacenista.index');
 
-    // Farmacia
-    Route::middleware('role:admin,farmacia')->group(function () {
-        Route::get('/farmacia', [farmaciaController::class, 'index'])->name('farmacia.index');
-        Route::get('/farmacia/productos', [MedicamentoController::class, 'index'])->name('farmacia.product.index')->middleware('auth');
-        Route::resource('productos', MedicamentoController::class);
-        Route::delete('/productos/{producto}', [MedicamentoController::class, 'destroy'])->name('farmacia.product.destroy');
-        Route::get('/farmacia/productos/create', [MedicamentoController::class, 'create'])->name('farmacia.product.create')->middleware('auth');
-        Route::post('/farmacia/productos', [MedicamentoController::class, 'store'])->name('farmacia.product.store')->middleware('auth');
-        Route::get('/farmacia/productos/edit/{id}', [MedicamentoController::class, 'edit'])->name('farmacia.product.edit')->middleware('auth');
-        Route::put('/farmacia/productos/update/{id}', [MedicamentoController::class, 'update'])->name('farmacia.product.update')->middleware('auth');
+            // Rutas para el inventario vehicular
+            Route::prefix('almacen/vehicular')->group(function () {
+                Route::get('/', [AlmacenController::class, 'index'])->name('almacen.vehicular.index');
+                Route::post('/', [AlmacenController::class, 'storeVehicular'])->name('almacen.vehicular.store');
+                Route::get('/{id}/edit', [AlmacenController::class, 'editVehicular'])->name('almacen.vehicular.edit');
+                Route::put('/{id}', [AlmacenController::class, 'updateVehicular'])->name('almacen.vehicular.update');
+                Route::delete('/{id}', [AlmacenController::class, 'destroyVehicular'])->name('almacen.vehicular.destroy');
+                Route::get('/almacen/vehicular/pdf', [AlmacenController::class, 'generateVehicularPDF'])->name('almacen.vehicular.pdf');
+            });
 
-        Route::put('/farmacia/proveedores/update/{id}', [ProveedorController::class, 'update'])->name('farmacia.proveedor.update')->middleware('auth');
-        Route::get('/farmacia/proveedores', [ProveedorController::class, 'index'])->name('farmacia.proveedores.index')->middleware('auth');
-        Route::delete('/farmacia/proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('farmacia.proveedor.destroy');
-        Route::post('/farmacia/proveedores', [ProveedorController::class, 'store'])->name('farmacia.proveedor.store')->middleware('auth');
+            // Rutas para el inventario médico
+            Route::prefix('almacen/medico')->group(function () {
+                Route::get('/', [AlmacenController::class, 'index'])->name('almacen.medico.index');
+                Route::get('/create', [AlmacenController::class, 'createMedico'])->name('almacen.medico.create');
+                Route::post('/', [AlmacenController::class, 'storeMedico'])->name('almacen.medico.store');
+                Route::get('/{id}/edit', [AlmacenController::class, 'editMedico'])->name('almacen.medico.edit');
+                Route::put('/{id}', [AlmacenController::class, 'updateMedico'])->name('almacen.medico.update');
+                Route::delete('/{id}', [AlmacenController::class, 'destroyMedico'])->name('almacen.medico.destroy');
+                Route::get('/almacen/medico/pdf', [AlmacenController::class, 'generateMedicoPDF'])->name('almacen.medico.pdf');
+            });
 
-        Route::post('/surtir/receta', [farmaciaController::class, 'surtirReceta'])->name('farmacia.surtir.receta')->middleware('auth');
-        Route::post('/donaciones/medicamentos', [farmaciaController::class, 'Donaciones'])->name('farmacia.donaciones.medicammentos')->middleware('auth');
-        Route::post('/pedidos/medicamentos', [farmaciaController::class, 'PedidosAProveedor'])->name('farmacia.pedidos.medicammentos')->middleware('auth');
+            // Rutas para el inventario de oficina
+            Route::prefix('almacen/oficina')->group(function () {
+                Route::get('/', [AlmacenController::class, 'index'])->name('almacen.oficina.index');
+                Route::get('/create', [AlmacenController::class, 'createOficina'])->name('almacen.oficina.create');
+                Route::post('/', [AlmacenController::class, 'storeOficina'])->name('almacen.oficina.store');
+                Route::get('/{id}/edit', [AlmacenController::class, 'editOficina'])->name('almacen.oficina.edit');
+                Route::put('/{id}', [AlmacenController::class, 'updateOficina'])->name('almacen.oficina.update');
+                Route::delete('/{id}', [AlmacenController::class, 'destroyOficina'])->name('almacen.oficina.destroy');
+                Route::get('/almacen/oficina/pdf', [AlmacenController::class, 'generateOficinaPDF'])->name('almacen.oficina.pdf');
+            });
 
-        Route::post('/recetas/{id}/cobrar', [farmaciaController::class, 'cobrar'])->name('recetas.cobrar');
+            // Rutas para el inventario de cómputo
+            Route::prefix('almacen/computo')->group(function () {
+                Route::get('/', [AlmacenController::class, 'index'])->name('almacen.computo.index');
+                Route::get('/create', [AlmacenController::class, 'createComputo'])->name('almacen.computo.create');
+                Route::post('/', [AlmacenController::class, 'storeEquipoComputo'])->name('almacen.computo.store');
+                Route::get('/{id}/edit', [AlmacenController::class, 'editComputo'])->name('almacen.computo.edit');
+                Route::put('/{id}', [AlmacenController::class, 'updateComputo'])->name('almacen.computo.update');
+                Route::delete('/{id}', [AlmacenController::class, 'destroyComputo'])->name('almacen.computo.destroy');
+                Route::get('/almacen/computo/pdf', [AlmacenController::class, 'generateComputoPDF'])->name('almacen.computo.pdf');
+            });
+
+            // Rutas para el inventario médico
+            Route::prefix('almacen/limpieza')->group(function () {
+                Route::get('/', [AlmacenController::class, 'index'])->name('almacen.limpieza.index');
+                Route::get('/create', [AlmacenController::class, 'createLimpieza'])->name('almacen.limpieza.create');
+                Route::post('/', [AlmacenController::class, 'storeLimpieza'])->name('almacen.limpieza.store');
+                Route::get('/{id}/edit', [AlmacenController::class, 'editLimpieza'])->name('almacen.limpieza.edit');
+                Route::put('/{id}', [AlmacenController::class, 'updateLimpieza'])->name('almacen.limpieza.update');
+                Route::delete('/{id}', [AlmacenController::class, 'destroyLimpieza'])->name('almacen.limpieza.destroy');
+                Route::get('/almacen/limpieza/pdf', [AlmacenController::class, 'generateLimpiezaPDF'])->name('almacen.limpieza.pdf');
+            });
 
 
-    });
+        });
+
+          // Rutas específicas para el rol emergencias
+        Route::middleware('role:socorros')->group(function () {
+            Route::get('/Socorros', [EmergenciasController::class, 'index'])->name('socorros.index');
+
+
+            Route::get('/Socorros/ambulance_services', [EmergenciasController::class, 'indexAmbulancesServices'])->name('socorros.ambulances.services.index');
+            Route::post('/socorros/ambulance_services/store', [EmergenciasController::class, 'storeAmbulanceServices'])->name('ambulance_services.store');
+            Route::post('/socorros/ambulance_services/end/{id}', [EmergenciasController::class, 'endService'])->name('ambulance_services.end');
+
+            Route::post('/emergency', [EmergenciasController::class, 'emergencyStore'])->name('emergencia.store');
+            Route::put('/emergency/update/{id}', [EmergenciasController::class, 'emergencyUpdate'])->name('emergencia.update');
+        });
+
 
 });

@@ -11,25 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('personal', function (Blueprint $table) {
-            $table->id();
-            $table->string('Nombre');
-            $table->string('apellido_paterno');
-            $table->string('apellido_materno');
-            $table->integer('Edad');
-            $table->string('Sexo');
-            $table->date('FechaNacimiento');
-            $table->string('Departamento');
-            $table->string('Cargo');
-            $table->string('Turno');
-            $table->integer('Telefono');
-            $table->string('Direccion');
-            $table->unsignedBigInteger('userid')->nullable()->index();
-            $table->timestamps();
-
-            $table->foreign('userid')->references('id')->on('users')->onDelete('cascade');
-        });
-
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -41,6 +22,27 @@ return new class extends Migration
             $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
         });
+
+        Schema::create('personal', function (Blueprint $table) {
+            $table->id();
+            $table->string('Nombre');
+            $table->string('apellido_paterno');
+            $table->string('apellido_materno');
+            $table->integer('Edad');
+            $table->string('Sexo');
+            $table->date('FechaNacimiento');
+            $table->string('Departamento');
+            $table->string('Cargo');
+            $table->string('Turno');
+            $table->string('Telefono');
+            $table->string('Direccion');
+            $table->unsignedBigInteger('user_id')->nullable()->index();
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
+
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

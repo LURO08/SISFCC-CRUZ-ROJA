@@ -29,6 +29,8 @@ class RolesUsersSeeder extends Seeder
             $this->createUser('Farmacia User', 'farmacia@gmail.com', 'farmacia');
             $this->createUser('Doctor User', 'doctor@gmail.com', 'doctor');
             $this->createUser('Cajero User', 'cajero@gmail.com', 'cajero');
+            $this->createUser('Almacenista User', 'almacenista@gmail.com', 'almacenista');
+            $this->createUser('Jefe de Socorros User', 'socorros@gmail.com', 'socorros');
         });
     }
 
@@ -41,6 +43,8 @@ class RolesUsersSeeder extends Seeder
         Role::firstOrCreate(['name' => 'doctor']);
         Role::firstOrCreate(['name' => 'cajero']);
         Role::firstOrCreate(['name' => 'farmacia']);
+        Role::firstOrCreate(['name' => 'almacenista']);
+        Role::firstOrCreate(['name' => 'socorros']);
     }
 
     /**

@@ -172,6 +172,326 @@ return new class extends Migration
             $table->foreign('cobro_id')->references('id')->on('cobros')->onDelete('cascade');
         });
 
+        //Almacenista
+
+        Schema::create('inventario_vehiculos', function (Blueprint $table) {
+            $table->id();
+            $table->string('marca');
+            $table->string('modelo');
+            $table->string('tipo');
+            $table->string('placa')->unique();
+            $table->integer('año');
+            $table->string('cantidad');
+            $table->string('estado');
+            $table->string('rutaimg');
+            $table->timestamps();
+        });
+
+        Schema::create('inventario_oficinas', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('tipo');  // Ejemplo: muebles, papelería, equipo de computo, etc.
+            $table->integer('cantidad');
+            $table->string('estado');  // Ejemplo: nuevo, usado, en reparación, etc.
+            $table->string('rutaimg');
+            $table->timestamps();
+        });
+
+        Schema::create('inventario_medicos', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->text('descripcion')->nullable(); // Descripción detallada del material
+            $table->string('tipo');
+            $table->integer('cantidad');
+            $table->date('fecha_caducidad');
+            $table->string('rutaimg');
+            $table->timestamps();
+        });
+
+        Schema::create('inventario_equipo_computos', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('marca');
+            $table->string('modelo');
+            $table->string('tipo');
+            $table->string('numero_serie')->unique();  // Número de serie único
+            $table->integer('cantidad')->default(1);
+            $table->string('estado');  // Ejemplo: en uso, en reparación, disponible, etc.
+            $table->string('rutaimg');
+            $table->timestamps();
+        });
+
+        Schema::create('equipos_limpieza', function (Blueprint $table) {
+            $table->id(); // Clave primaria
+            $table->string('articulo'); // Nombre del equipo de limpieza
+            $table->string('marca'); // Marca
+            $table->string('tipo');// Modelo, puede ser opcional
+            $table->string('presentacion');
+            $table->integer('cantidad'); // Cantidad
+            $table->string('rutaimg');
+            $table->timestamps(); // created_at y updated_at
+        });
+
+        Schema::create('documentos', function (Blueprint $table) {
+            $table->id();
+            $table->date('fecha');
+            $table->string('tipodocumento');
+            $table->string('motivo');
+            $table->string('rutaimg');
+            $table->timestamps();
+        });
+
+        Schema::create('ambulance_services', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('ambulance_id')->nullable()->index();
+            $table->datetime('start_time');
+            $table->datetime('end_time')->nullable();
+            $table->enum('status', ['En servicio', 'Finalizado'])->default('En servicio');
+            $table->timestamps();
+
+            $table->foreign('ambulance_id')->references('id')->on('inventario_vehiculos')->onDelete('cascade');
+        });
+
+
+        //Emergency Phase
+        //Fase 1
+        Schema::create('emergency_phase1', function (Blueprint $table) {
+            $table->id();
+            $table->time('hora_llamada')->nullable();
+            $table->time('hora_despacho')->nullable();
+            $table->time('hora_arribo')->nullable();
+            $table->time('hora_traslado')->nullable();
+            $table->time('hora_hospital')->nullable();
+            $table->time('hora_disponible')->nullable();
+            $table->string('motivo_atencion')->nullable();
+            $table->string('direccion_accidente')->nullable();
+            $table->string('entre_calles_accidente')->nullable();
+            $table->string('colonia_accidente')->nullable();
+            $table->string('municipio_accidente')->nullable();
+            $table->string('lugar_ocurrencia')->nullable();
+            $table->string('otro_lugar')->nullable();
+            $table->timestamps();
+        });
+        //Fase 2
+        Schema::create('emergency_phase2', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->unsignedBigInteger('ambulance_id')->nullable();
+            $table->unsignedBigInteger('chofer_id')->nullable();
+            $table->unsignedBigInteger('paramedico_id')->nullable();
+            $table->unsignedBigInteger('helicoptero_id')->nullable();
+            $table->timestamps();
+            // Claves foráneas
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+            $table->foreign('ambulance_id')->references('id')->on('inventario_vehiculos')->onDelete('set null');
+            $table->foreign('chofer_id')->references('id')->on('personal')->onDelete('set null');
+            $table->foreign('paramedico_id')->references('id')->on('personal')->onDelete('set null');
+            $table->foreign('helicoptero_id')->references('id')->on('inventario_vehiculos')->onDelete('set null');
+        });
+        //Fase 3
+        Schema::create('emergency_phase3', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio')->nullable();
+            $table->string('nombre')->nullable();
+            $table->string('apellido_paterno')->nullable();
+            $table->string('apellido_materno')->nullable();
+            $table->integer('edad')->nullable();
+            $table->integer('meses')->nullable();
+            $table->enum('sexo', ['masculino', 'femenino', 'otro'])->nullable();
+            $table->string('tipo_sangre')->nullable();
+            $table->string('domicilio')->nullable();
+            $table->string('colonia')->nullable();
+            $table->string('alcaldia')->nullable();
+            $table->string('telefono')->nullable();
+            $table->string('ocupacion')->nullable();
+            $table->string('derechohabiente')->nullable();
+            $table->string('compania_seguro')->nullable();
+            $table->timestamps();
+
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+        //Fase 4
+        Schema::create('emergency_phase4', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->string('agente_causal')->nullable();
+            $table->string('especificar')->nullable();
+            $table->string('lesionescausadas')->nullable();
+            $table->string('tipo_accidente')->nullable();
+            $table->string('atropelladopor')->nullable();
+            $table->string('colision')->nullable();
+            $table->string('contraobjeto')->nullable();
+            $table->string('impacto')->nullable();
+            $table->integer('hundimiento')->nullable();
+            $table->string('parabrisas')->nullable();
+            $table->string('volante')->nullable();
+            $table->string('bolsaaire')->nullable();
+            $table->string('cinturon')->nullable();
+            $table->string('dentrovehiculo')->nullable();
+            $table->timestamps();
+
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+        //Fase 5
+        Schema::create('emergency_phase5', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->string('agente_causal')->nullable();
+            $table->string('especificar')->nullable();
+            $table->string('lesionescausadas')->nullable();
+            $table->string('tipo_accidente')->nullable();
+            $table->string('atropelladopor')->nullable();
+            $table->string('colision')->nullable();
+            $table->string('contraobjeto')->nullable();
+            $table->string('impacto')->nullable();
+            $table->integer('hundimiento')->nullable();
+            $table->string('parabrisas')->nullable();
+            $table->string('volante')->nullable();
+            $table->string('bolsaaire')->nullable();
+            $table->string('cinturon')->nullable();
+            $table->string('dentrovehiculo')->nullable();
+
+            // Nueva información de fase 5
+            $table->string('origen_probable')->nullable();
+            $table->string('especificarOrigen')->nullable();
+            $table->string('primeravez')->nullable();
+            $table->string('subsecuente')->nullable();
+            $table->timestamps();
+
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+        //Fase 6
+        Schema::create('emergency_phase6', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            // Datos de la madre
+            $table->string('gesta')->nullable();
+            $table->string('cesareas')->nullable();
+            $table->string('para')->nullable();
+            $table->string('aborto')->nullable();
+            $table->string('semanas')->nullable();
+            $table->date('fechaParto')->nullable();
+            $table->string('membranas')->nullable();
+            $table->date('fum')->nullable();
+            $table->time('horaContracciones')->nullable();
+            $table->string('frecuencia')->nullable();
+            $table->string('duracion')->nullable();
+
+            // Datos post-parto
+            $table->time('horanacimiento')->nullable();
+            $table->string('lugar_post_parto')->nullable();
+            $table->string('placenta_expulsada')->nullable();
+
+            // Datos del recién nacido
+            $table->string('estado_producto')->nullable();
+            $table->string('genero_producto')->nullable();
+            $table->unsignedTinyInteger('apgar1')->nullable();
+            $table->unsignedTinyInteger('apgar5')->nullable();
+            $table->timestamps();
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+        //Fase 7
+        Schema::create('emergency_phase7', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->unsignedBigInteger('paciente_id')->nullable();
+            $table->string('nivel_conciencia')->nullable();
+            $table->string('viaaerea')->nullable();
+            $table->string('reflejo_deglutacion')->nullable();
+            $table->string('ventilacion_observacion')->nullable();
+            $table->string('ventilacion_auscultacion')->nullable();
+            $table->string('ventilacion_hemitorax')->nullable();
+            $table->string('ventilacion_sitio')->nullable();
+            $table->string('circulacion_pulsos')->nullable();
+            $table->string('circulacion_calidad')->nullable();
+            $table->string('circulacion_piel')->nullable();
+            $table->string('circulacion_caracteristicas')->nullable();
+            $table->timestamps();
+
+            // Llave foránea
+            $table->foreign('paciente_id')->references('id')->on('emergency_phase3')->onDelete('cascade');
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+        //Fase 8
+        Schema::create('emergency_phase8', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->json('exploracion_fisica')->nullable();  // Descripción de la exploración física
+            $table->enum('valor', ['1', '2','3','4','5'])->nullable(); // valor de pupilas
+            $table->time('hora_es')->nullable();
+            $table->decimal('fr', 5, 2)->nullable();
+            $table->decimal('fc', 5, 2)->nullable();
+            $table->decimal('tas', 5, 2)->nullable();
+            $table->decimal('tad', 5, 2)->nullable();
+            $table->decimal('spo2', 5, 2)->nullable();
+            $table->decimal('temp', 5, 2)->nullable();
+            $table->decimal('glasgow', 5, 2)->nullable();
+            $table->decimal('trauma_score', 5, 2)->nullable();
+            $table->decimal('ekg', 5, 2)->nullable();
+            $table->boolean('atendido')->nullable();
+            $table->string('alergias')->nullable();
+            $table->string('medicamentos')->nullable();
+            $table->string('antecedentes')->nullable();
+            $table->string('ultima_comida')->nullable();
+            $table->text('eventos_previos')->nullable();
+            $table->string('condicion')->nullable();
+            $table->string('prioridad')->nullable();
+            $table->timestamps();
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+        //Fase 8_Zonas
+        Schema::create('emergency_phase8_zonas', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->unsignedBigInteger('id_phase')->nullable();
+            $table->string('zona')->nullable();
+            $table->string('coordinate')->nullable();// Coordenadas
+            $table->timestamps();
+
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+            $table->foreign('id_phase')->references('id')->on('emergency_phase8')->onDelete('cascade');
+        });
+        //Fase 9
+        Schema::create('Emergency_Phase9', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('folio');
+            $table->json('via_aerea')->nullable(); // Guardar los valores seleccionados de Vía Aérea
+            $table->string('control_cervical')->nullable(); // Guardar el valor seleccionado de Control Cervical
+            // Asistencia Ventilatoria
+            $table->json('asistencia_ventilatoria')->nullable();
+            $table->string('FREC')->nullable();
+            $table->string('volumen')->nullable();
+            // Oxigenoterapia
+            $table->json('oxigenoterapia')->nullable();
+            $table->string('litros')->nullable();
+            // Procedimientos adicionales
+            $table->json('procedimientos_adicionales')->nullable();
+
+            // Control de Hemorragias
+            $table->json('control_hemorragias')->nullable();
+
+            // Vías Venosas
+            $table->json('vias_venosas')->nullable();
+
+             // Sitio de Aplicación
+            $table->string('sitio_aplicacion')->nullable();
+
+             // Tipos de Soluciones
+            $table->json('tipo_soluciones')->nullable();
+            $table->json('soluciones')->nullable(); // Para detalles adicionales como especificaciones, cantidad, etc.
+
+            // Registro de Medicamentos y Terapia Eléctrica
+            $table->json('medicamentos_terapia')->nullable();
+
+            // RCP y Procedimientos
+            $table->json('rcp_procedimientos')->nullable();
+
+
+            $table->timestamps();
+
+            $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
+        });
+
 
 
 
