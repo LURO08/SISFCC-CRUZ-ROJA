@@ -197,12 +197,11 @@ Route::middleware('auth')->group(function () {
           // Rutas específicas para el rol emergencias
         Route::middleware('role:socorros')->group(function () {
             Route::get('/Socorros', [EmergenciasController::class, 'index'])->name('socorros.index');
-
-
             Route::get('/Socorros/ambulance_services', [EmergenciasController::class, 'indexAmbulancesServices'])->name('socorros.ambulances.services.index');
             Route::post('/socorros/ambulance_services/store', [EmergenciasController::class, 'storeAmbulanceServices'])->name('ambulance_services.store');
             Route::post('/socorros/ambulance_services/end/{id}', [EmergenciasController::class, 'endService'])->name('ambulance_services.end');
 
+            Route::get('/Socorros/emergency', [EmergenciasController::class, 'registerEmergency'])->name('socorros.emergency.register');
             Route::post('/emergency', [EmergenciasController::class, 'emergencyStore'])->name('emergencia.store');
             Route::put('/emergency/update/{id}', [EmergenciasController::class, 'emergencyUpdate'])->name('emergencia.update');
         });

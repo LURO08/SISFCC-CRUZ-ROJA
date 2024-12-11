@@ -923,7 +923,7 @@
             <!-- Tabla de servicios -->
             <div class="table-responsive">
                 <table class="table-auto w-full text-center border-collapse">
-                    <thead class="bg-blue-200">
+                    <thead class="bg-blue-500 " style="color: #fff;">
                         <tr>
                             <th class="px-4 py-2">ID</th>
                             <th class="px-4 py-2">Ambulancia</th>

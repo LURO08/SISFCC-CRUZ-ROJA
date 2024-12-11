@@ -72,7 +72,7 @@ class AlmacenController extends Controller
             'año' => 'required|integer',
             'cantidad' => 'required|integer|min:1',
             'estado' => 'required|string|max:255',
-            'rutaimg' => 'nullable|image|max:2048', // Validación para imagen
+            'rutaimg' => 'nullable|image', // Validación para imagen
         ]);
 
         if ($request->hasFile('rutaimg') && $request->file('rutaimg')->isValid()) {
@@ -98,7 +98,7 @@ class AlmacenController extends Controller
             'tipo' => 'required|string|max:255',
             'cantidad' => 'required|integer|min:1',
             'fecha_caducidad' => 'required|date|after:today',
-            'rutaimg' => 'nullable|image|max:2048', // Validación para imagen
+            'rutaimg' => 'nullable|image', // Validación para imagen
         ]);
 
         if ($request->hasFile('rutaimg') && $request->file('rutaimg')->isValid()) {
@@ -125,18 +125,18 @@ class AlmacenController extends Controller
             'tipo' => 'required|string|max:255',
             'cantidad' => 'required|integer|min:1',
             'estado' => 'required|string|max:255',
-            'rutaimg' => 'nullable|image|max:2048', // Hace que la imagen sea opcional
+            'rutaimg' => 'nullable|image', // Hace que la imagen sea opcional
         ]);
 
         // Verificar si se ha subido una imagen
         // Procesamiento de la imagen
-    if ($request->hasFile('rutaimg')) {
-        $nombreImagen = time() . '_' . $request->nombre . '.' . $request->file('rutaimg')->getClientOriginalExtension();
-        $rutaImagen = 'images/inventario/oficina/' . $nombreImagen;
-        $request->file('rutaimg')->move(public_path('images/inventario/oficina/'), $nombreImagen);
+        if ($request->hasFile('rutaimg')) {
+            $nombreImagen = time() . '_' . $request->nombre . '.' . $request->file('rutaimg')->getClientOriginalExtension();
+            $rutaImagen = 'images/inventario/oficina/' . $nombreImagen;
+            $request->file('rutaimg')->move(public_path('images/inventario/oficina/'), $nombreImagen);
 
-        $validatedData['rutaimg'] = $rutaImagen;
-    }
+            $validatedData['rutaimg'] = $rutaImagen;
+        }
 
         // Crear un nuevo registro en la tabla inventario_oficinas
         InventarioOficina::create($validatedData);
@@ -145,7 +145,6 @@ class AlmacenController extends Controller
         return redirect()->route('almacenista.index', ['category' => 'oficina'])
                          ->with('success', 'Material de oficina creado correctamente.');
     }
-
 
     public function storeEquipoComputo(Request $request)
     {
@@ -158,7 +157,7 @@ class AlmacenController extends Controller
             'numero_serie' => 'required|string|max:255',
             'cantidad' => 'required|integer|min:1',
             'estado' => 'required|string|max:255',
-            'rutaimg' => 'nullable|image|max:2048', // Validación para imagen
+            'rutaimg' => 'nullable|image', // Validación para imagen
         ]);
 
         if ($request->hasFile('rutaimg')) {
@@ -187,7 +186,7 @@ class AlmacenController extends Controller
                 'tipo' => 'required|string|max:255',
                 'presentacion' => 'required|string|max:255',
                 'cantidad' => 'required|integer|min:1',
-                'rutaimg' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación para imagen
+                'rutaimg' => 'nullable|image', // Validación para imagen
          ]);
 
          if ($request->hasFile('rutaimg')) {

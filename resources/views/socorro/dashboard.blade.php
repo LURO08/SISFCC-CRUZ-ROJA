@@ -558,21 +558,14 @@
 @include('socorro.menu_nav')
 
 <div class="principal">
-    <nav class="aside-menu" id="aside">
-        <ul id="menu">
-            <li><a href="#" onclick="showSection(event, 'inicio')">Inicio</a></li>
-            <li><a href="#" onclick="showSection(event, 'ambulancias')">Ambulancias en Servicio</a></li>
-            <li><a href="#" onclick="showSection(event, 'socorros')">Registro de Atención</a></li>
-        </ul>
-    </nav>
 
     <div class="content">
-        <section id="inicio" class="section active flex flex-col items-center justify-center text-center">
+        {{-- <section id="inicio" class="section active flex flex-col items-center justify-center text-center">
             <h1 class="text-3xl font-bold mb-4">Sistema de Administrador</h1>
             <p>Bienvenido al sistema. Desde aquí puedes gestionar el personal, usuarios y adjuntar tickets y notas.</p>
-        </section>
+        </section> --}}
 
-        <section id="socorros" class="section">
+        <section id="socorros" >
             <h2>Registro de Atención Hospitalaria</h2>
 
             <!-- Botón para generar reporte -->
@@ -2570,138 +2563,6 @@
                             </div>
 
                         </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="ambulancias" class="section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 style="color:#c2185b;">Servicios de Ambulancias</h1>
-                <a type="button"
-                    class="inline-block px-4 py-2 mx-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                    data-bs-toggle="modal" href="#registerAmbulanceModal">
-                    <i class="bi bi-plus-circle"></i> Registrar Ambulancia
-                </a>
-            </div>
-
-            <!-- Tabla de servicios -->
-            <div class="table-responsive">
-                <table class="table-auto w-full text-center border-collapse">
-                    <thead class="bg-pink-200">
-                        <tr>
-                            <th class="px-4 py-2">ID</th>
-                            <th class="px-4 py-2">Ambulancia</th>
-                            <th class="px-4 py-2">Inicio</th>
-                            <th class="px-4 py-2">Fin</th>
-                            <th class="px-4 py-2">Estado</th>
-                            <th class="px-4 py-2">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($ambulanceServices as $service)
-                            <tr>
-                                <td class="border px-4 py-2">{{ $service->id }}</td>
-                                <td class="border px-4 py-2">
-                                    @if ($service->ambulancia)
-                                        {{ $service->ambulancia->tipo }} ({{ $service->ambulancia->placa }})
-                                    @else
-                                        <span class="text-gray-500">No asignada</span>
-                                    @endif
-                                </td>
-
-                                <td class="border px-4 py-2">{{ $service->start_time }}</td>
-                                <td class="border px-4 py-2">{{ $service->end_time ?? 'En curso' }}</td>
-                                <td class="border px-4 py-2">
-                                    @if ($service->status === 'En servicio')
-                                        <span class="badge bg-primary">En Servicio</span>
-                                    @else
-                                        <span class="badge bg-success">Finalizado</span>
-                                    @endif
-                                </td>
-                                <td class="border px-4 py-2 flex justify-center gap-2">
-                                    @if ($service->status === 'En servicio')
-                                        <form action="{{ route('ambulance_services.end', $service->id) }}"
-                                            method="POST">
-                                            @csrf
-                                            <button
-                                                class="inline-block px-4 py-2 bg-pink-600 text-white font-semibold rounded-md hover:bg-pink-700">
-                                                <i class="bi bi-stop-circle"></i> Finalizar
-                                            </button>
-                                        </form>
-                                    @else
-                                        ---
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="border px-4 py-2">No hay servicios registrados</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Modal Registrar Ambulancia en Servicio -->
-            <div class="modal fade" id="registerAmbulanceModal" tabindex="-1"
-                aria-labelledby="registerAmbulanceModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <!-- Encabezado -->
-                        <div class="bg-pink-500 modal-header">
-                            <h5 class="modal-title" id="registerAmbulanceModalLabel">
-                                <i class="bi bi-truck"></i> Registrar Ambulancia en Servicio
-                            </h5>
-                            <a href="#" class="close" data-dismiss="modal">&times;</a>
-                        </div>
-
-                        <!-- Cuerpo del Modal -->
-                        <div class="modal-body">
-                            <form action="{{ route('ambulance_services.store') }}" method="POST"
-                                id="registerAmbulanceForm">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="ambulance_id" class="form-label">Selecciona una Ambulancia</label>
-                                    <select name="ambulance_id" id="ambulance_id" class="form-select">
-                                        <option value="" disabled selected>Seleccionar</option>
-                                        @foreach ($ambulances as $ambulance)
-                                            <option value="{{ $ambulance->id }}">
-                                                {{ $ambulance->marca }} ({{ $ambulance->placa }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="start_time" class="form-label">Hora de Inicio</label>
-                                    <input type="datetime-local" name="start_time" id="start_time"
-                                        class="form-control">
-                                </div>
-
-                                <div class="form-group mt-3">
-                                    <label for="status" class="form-label">Estado</label>
-                                    <select name="status" id="status" class="form-select">
-                                        <option value="" disabled selected>Seleccionar</option>
-                                        <option value="En servicio">En servicio</option>
-                                        <option value="Finalizado">Finalizado</option>
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Pie del Modal -->
-                        <div class="flex justify-center space-x-4 mt-4">
-                            <a href="#"
-                                class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
-                                data-dismiss="modal">
-                                Cancelar
-                            </a>
-                            <button type="submit"
-                                class="px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                form="registerAmbulanceForm">
-                                <i class="bi bi-check-circle"></i> Registrar
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>

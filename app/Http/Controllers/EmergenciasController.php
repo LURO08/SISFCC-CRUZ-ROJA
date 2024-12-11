@@ -29,7 +29,7 @@ class EmergenciasController extends Controller
         $ambulanceServices = AmbulanceService::all();
         $phases = EmergencyPhase2::with(['ambulance', 'chofer', 'paramedico', 'helicoptero'])->get();
         $personal = Personal::all();
-        return view('socorro.index', compact('phases','ambulanceServices','ambulances','personal','helicopteros'));
+        return view('socorro.emergencias.index', compact('phases','ambulanceServices','ambulances','personal','helicopteros'));
     }
 
     public function indexAmbulancesServices(){
@@ -55,13 +55,13 @@ class EmergenciasController extends Controller
             ->first();
 
         if ($existingService) {
-            return redirect()->route('Jefe de Socorros.index')->with('error', 'Esta ambulancia ya está en servicio.');
+            return redirect()->route('socorros.index')->with('error', 'Esta ambulancia ya está en servicio.');
         }
 
         // Crear el servicio
         AmbulanceService::create($validatedData);
 
-        return redirect()->route('Jefe de Socorros.index')->with('success', 'Servicio de ambulancia creado con éxito.');
+        return redirect()->back()->with('success', 'Servicio de ambulancia creado con éxito.');
     }
 
     public function endService($id)
@@ -80,9 +80,17 @@ class EmergenciasController extends Controller
             'end_time' => now(), // Establece la hora actual como hora de finalización
         ]);
 
-        return redirect()->route('Jefe de Socorros.index')->with('success', 'El servicio de ambulancia ha sido finalizado con éxito.');
+        return redirect()->back()->with('success', 'El servicio de ambulancia ha sido finalizado con éxito.');
     }
 
+    public function registerEmergency(){
+        $helicopteros = InventarioVehiculos::helicopteros()->get();
+        $ambulances = InventarioVehiculos::ambulancias()->get();
+        $ambulanceServices = AmbulanceService::all();
+        $phases = EmergencyPhase2::with(['ambulance', 'chofer', 'paramedico', 'helicoptero'])->get();
+        $personal = Personal::all();
+        return view('socorro.emergencias.register', compact('phases','ambulanceServices','ambulances','personal','helicopteros'));
+    }
 
     public function emergencyStore(Request $request)
     {
