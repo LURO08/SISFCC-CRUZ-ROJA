@@ -1063,6 +1063,16 @@
                                                     <p style="font-style: italic; color: #7f8c8d;">No se ha
                                                         especificado ningún tratamiento.</p>
                                                 @endif
+
+                                                <h5>Material</h5>
+                                                @if (!empty($receta->material))
+                                                    <p style="line-height: 1.6; font-size: 16px; color: #34495e;">
+                                                        {{ $receta->material }}
+                                                    </p>
+                                                @else
+                                                    <p style="font-style: italic; color: #7f8c8d;">No se ha
+                                                        especificado ningún material.</p>
+                                                @endif
                                             </div>
                                         </div>
 

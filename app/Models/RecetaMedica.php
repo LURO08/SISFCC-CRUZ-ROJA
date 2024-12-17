@@ -25,6 +25,7 @@ class RecetaMedica extends Model
         'saturacion_oxigeno',
         'diagnostico',
         'tratamiento',
+        'material',
     ];
 
     // Relación con el modelo Paciente

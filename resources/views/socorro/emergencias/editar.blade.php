@@ -509,12 +509,13 @@
 
 
 
-                <form action="{{ route('emergencia.store') }}" method="POST"
+                <form action="{{ route('emergencia.update', $phase1->id) }}" method="POST"
                     class=" bg-gray-100 rounded-lg shadow-md "
                     style="width: 100%; max-width: 90%; min-width: 80%; margin: 0 auto; margin-bottom:10px; margin-top: 10px; padding: 10px;">
                     @csrf
+                    @method('PUT')
                     <h1 class="text-4xl font-extrabold text-center text-blue-600 mt-6 mb-4 leading-tight tracking-wide">
-                        REGISTRO DE SOCORRO
+                        EDITAR SOCORRO
                     </h1>
                         <div class="flex flex-wrap justify-center gap-4">
                             <div id="buttons-container" class="flex gap-2" style=" margin: 0 auto; height: 20%; max-width: 100%;">
@@ -598,7 +599,7 @@
                                 <!-- Encabezado -->
                                 <h2 class="text-2xl font-extrabold text-center text-blue-600 mb-4">Datos del
                                     Servicio</h2>
-                                <div class="max-h-[55vh] overflow-y-auto" style="width: 100%; display: flex;">
+                                <div class="max-h-[55vh] " style="width: 100%; display: flex; padding: 10px;">
 
                                     <div style="padding: 0 10px;">
                                         <!-- Cronometría -->
@@ -610,46 +611,53 @@
                                                         class="form-label text-sm font-medium text-gray-600">Hora de
                                                         Llamada</label>
                                                     <input type="time" name="hora_llamada" id="hora_llamada"
-                                                        class="form-control border-gray-300 rounded-lg">
+                                                        class="form-control border-gray-300 rounded-lg" value="{{ $phase1->hora_llamada ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="hora_despacho"
                                                         class="form-label text-sm font-medium text-gray-600">Hora de
                                                         Despacho</label>
                                                     <input type="time" name="hora_despacho" id="hora_despacho"
-                                                        class="form-control border-gray-300 rounded-lg">
+                                                        class="form-control border-gray-300 rounded-lg"
+                                                        value="{{ $phase1->hora_despacho ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="hora_arribo"
                                                         class="form-label text-sm font-medium text-gray-600">Hora de
                                                         Arribo</label>
                                                     <input type="time" name="hora_arribo" id="hora_arribo"
-                                                        class="form-control border-gray-300 rounded-lg">
+                                                        class="form-control border-gray-300 rounded-lg"
+                                                        value="{{ $phase1->hora_arribo ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="hora_traslado"
                                                         class="form-label text-sm font-medium text-gray-600">Hora de
                                                         Traslado</label>
                                                     <input type="time" name="hora_traslado" id="hora_traslado"
-                                                        class="form-control border-gray-300 rounded-lg">
+                                                        class="form-control border-gray-300 rounded-lg"
+                                                        value="{{ $phase1->hora_traslado ?? '' }}">
+
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="hora_hospital"
                                                         class="form-label text-sm font-medium text-gray-600">Hora en
                                                         Hospital</label>
                                                     <input type="time" name="hora_hospital" id="hora_hospital"
-                                                        class="form-control border-gray-300 rounded-lg">
+                                                        class="form-control border-gray-300 rounded-lg"
+                                                        value="{{ $phase1->hora_hospital ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="hora_disponible"
                                                         class="form-label text-sm font-medium text-gray-600">Hora
                                                         Disponible</label>
                                                     <input type="time" name="hora_disponible" id="hora_disponible"
-                                                        class="form-control border-gray-300 rounded-lg">
+                                                        class="form-control border-gray-300 rounded-lg"
+                                                        value="{{ $phase1->hora_disponible ?? '' }}">
                                                 </div>
                                             </div>
                                         </div>
 
+                                        <!-- Motivo de la atención -->
                                         <div class="form-group mb-4">
                                             <label for="motivo_atencion"
                                                 class="form-label text-sm font-medium text-gray-600">Motivo de la
@@ -657,17 +665,22 @@
                                             <select name="motivo_atencion" id="motivo_atencion"
                                                 class="form-select border-gray-300 rounded-lg">
                                                 <option value="" disabled selected>Seleccionar</option>
-                                                <option value="1">Enfermedad</option>
-                                                <option value="2">Traumatismo</option>
-                                                <option value="3">Ginecoobstétrico</option>
-                                                <option value="4">Traslado</option>
-                                                <option value="5">Servicio Especial</option>
+                                                <option value="1"
+                                                {{ ($phase1->motivo_atencion ?? '') == '1' ? 'selected' : '' }}>Enfermedad</option>
+                                                <option value="2"
+                                                {{ ($phase1->motivo_atencion ?? '') == '2' ? 'selected' : '' }}>Traumatismo</option>
+                                                <option value="3"
+                                                {{ ($phase1->motivo_atencion ?? '') == '3' ? 'selected' : '' }}>Ginecoobstétrico</option>
+                                                <option value="4"
+                                                {{ ($phase1->motivo_atencion ?? '') == '4' ? 'selected' : '' }}>Traslado</option>
+                                                <option value="5"
+                                                {{ ($phase1->motivo_atencion ?? '') == '5' ? 'selected' : '' }}>Servicio Especial</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <!-- Motivo de la atención -->
+
                                         <div class="mb-6">
                                             <h6 class="text-lg font-semibold text-gray-700 mb-2">Detalles del Servicio
                                             </h6>
@@ -683,7 +696,7 @@
                                                     <input type="text" name="direccion_accidente"
                                                         id="direccion_accidente"
                                                         class="form-control border-gray-300 rounded-lg"
-                                                        placeholder="Dirección">
+                                                        placeholder="Dirección" value="{{ $phase1->direccion_accidente ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="entre_calles_accidente"
@@ -692,7 +705,7 @@
                                                     <input type="text" name="entre_calles_accidente"
                                                         id="entre_calles_accidente"
                                                         class="form-control border-gray-300 rounded-lg"
-                                                        placeholder="Calles cercanas">
+                                                        placeholder="Calles cercanas" value="{{ $phase1->entre_calles_accidente ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="colonia_accidente"
@@ -700,7 +713,7 @@
                                                     <input type="text" name="colonia_accidente"
                                                         id="colonia_accidente"
                                                         class="form-control border-gray-300 rounded-lg"
-                                                        placeholder="Colonia">
+                                                        placeholder="Colonia" value="{{ $phase1->colonia_accidente ?? '' }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="municipio_accidente"
@@ -708,35 +721,42 @@
                                                     <input type="text" name="municipio_accidente"
                                                         id="municipio_accidente"
                                                         class="form-control border-gray-300 rounded-lg"
-                                                        placeholder="Municipio">
+                                                        placeholder="Municipio" value="{{ $phase1->municipio_accidente ?? '' }}">
                                                 </div>
                                             </div>
                                         </div>
 
 
                                         <!-- Lugar de ocurrencia -->
-                                        <div class="form-group mb-6">
-                                            <label for="lugar_ocurrencia"
+                                        <div class="form-group mb-6" style="display: flex;">
+                                            <div>
+                                                <label for="lugar_ocurrencia"
                                                 class="form-label text-sm font-medium text-gray-600">Lugar de
                                                 Ocurrencia</label>
-                                            <div style="display: flex;">
                                                 <select name="lugar_ocurrencia" id="lugar_ocurrencia"
                                                     class="form-select border-gray-300 rounded-lg">
-                                                    <option value="viapublica">Vía Pública</option>
-                                                    <option value="casa">Casa</option>
-                                                    <option value="trabajo">Trabajo</option>
-                                                    <option value="escuela">Escuela</option>
-                                                    <option value="transportepublico">Transporte Público</option>
-                                                    <option value="otro">Otro</option>
+                                                    <option value="viapublica"
+                                                    {{ ($phase1->lugar_ocurrencia ?? '') == 'viapublica' ? 'selected' : '' }}>Vía Pública</option>
+                                                    <option value="casa"
+                                                    {{ ($phase1->lugar_ocurrencia ?? '') == 'casa' ? 'selected' : '' }}>Casa</option>
+                                                    <option value="trabajo"
+                                                    {{ ($phase1->lugar_ocurrencia ?? '') == 'trabajo' ? 'selected' : '' }}>Trabajo</option>
+                                                    <option value="escuela"
+                                                    {{ ($phase1->lugar_ocurrencia ?? '') == 'escuela' ? 'selected' : '' }}>Escuela</option>
+                                                    <option value="transportepublico"
+                                                    {{ ($phase1->lugar_ocurrencia ?? '') == 'transportepublico' ? 'selected' : '' }}>Transporte Público</option>
+                                                    <option value="otro"
+                                                    {{ ($phase1->lugar_ocurrencia ?? '') == 'otro' ? 'selected' : ''  }}>Otro</option>
                                                 </select>
-
-                                                <input style="display: none; margin-left: 5px;" type="text"
-                                                    name="otro_lugar" id="otro_lugar"
-                                                    class="form-control border-gray-300 rounded-lg"
-                                                    placeholder="Especificar lugar">
                                             </div>
-
-
+                                            <div id="otro_lugar" style="display: none;">
+                                                <label for="labelotro_lugar"
+                                                class="form-label text-sm font-medium text-gray-600">Otro Lugar</label>
+                                                <input style=" margin-left: 5px;" type="text"
+                                                name="otro_lugar" id="otro_lugar_input"
+                                                class="form-control border-gray-300 rounded-lg"
+                                                placeholder="Especificar lugar" value="{{ $phase1->otro_lugar ?? '' }}" >
+                                            </div>
                                         </div>
                                     </div>
 
@@ -746,216 +766,241 @@
                                 </div>
                             </div>
 
-                             <!-- Fase 2: Control y Fase 3: Accidente -->
-                             <div class="phase" id="phase2"
+                            <!-- Fase 2: Control y Fase 3: Accidente -->
+                            <div class="phase" id="phase2"
                                 style="display:none; ">
                                 <h5 class="text-2xl font-extrabold text-center text-blue-600 mb-4">Control y Paciente
                                 </h5>
                                 <div style="height: 60vh; max-height: 60vh; overflow-y: auto;">
-                                 <h6 class="font-extrabold text-center m-1">Control</h6>
+                                    <h6 class="font-extrabold text-center m-1">Control</h6>
 
-                                 <div style="display: flex; width: 100%; min-width: 100%; gap: 20px;">
-                                     <!-- Primera columna -->
-                                     <div style="flex: 1;">
-                                         <!-- Selección de Ambulancia -->
-                                         <div class="form-group">
-                                             <label for="ambulance_id" class="form-label">Selecciona una
-                                                 Ambulancia</label>
-                                             <select name="ambulance_id" id="ambulance_id" class="form-select">
-                                                 <option value="" disabled selected>Seleccionar</option>
-                                                 @foreach ($ambulanceServices as $service)
-                                                     @if (strtolower(trim($service->status)) === 'en servicio' && $service->ambulancia)
-                                                         <option value="{{ $service->ambulancia->id }}">
-                                                             {{ $service->ambulancia->marca }}
-                                                             ({{ $service->ambulancia->placa }})
-                                                         </option>
-                                                     @endif
-                                                 @endforeach
-                                             </select>
-                                         </div>
+                                    <div style="display: flex; width: 100%; min-width: 100%; gap: 20px;">
+                                        <!-- Primera columna -->
+                                        <div style="flex: 1;">
+                                            <!-- Selección de Ambulancia -->
+                                            <div class="form-group">
+                                                <label for="ambulance_id" class="form-label">Selecciona una
+                                                    Ambulancia</label>
+                                                <select name="ambulance_id" id="ambulance_id" class="form-select">
+                                                    <option value="" disabled selected>Seleccionar</option>
+                                                    @foreach ($ambulanceServices as $service)
+                                                        @if (strtolower(trim($service->status)) === 'en servicio' && $service->ambulancia)
+                                                            <option value="{{ $service->ambulancia->id }}"
+                                                                {{ ($phase2->ambulance_id ?? '') === $service->ambulancia->id ? 'selected' : '' }}>
+                                                                {{ $service->ambulancia->marca }}
+                                                                ({{ $service->ambulancia->placa }})
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                         <!-- Selección de Chofer -->
-                                         <div class="form-group">
-                                             <label for="chofer_id" class="form-label">Selecciona un Chofer</label>
-                                             <select name="chofer_id" id="chofer_id" class="form-select">
-                                                 <option value="" disabled selected>Seleccionar</option>
-                                                 @if (!empty($personal))
-                                                     @foreach ($personal as $person)
-                                                         @if (strtolower(trim($person->Cargo)) === 'chofer')
-                                                             <option value="{{ $person->id }}">
-                                                                 {{ $person->Nombre }} {{ $person->apellido_paterno }}
-                                                                 {{ $person->apellido_materno }}
-                                                             </option>
-                                                         @endif
-                                                     @endforeach
-                                                 @else
-                                                     <option value="" disabled>No hay choferes disponibles
-                                                     </option>
-                                                 @endif
-                                             </select>
-                                         </div>
-                                     </div>
+                                            <!-- Selección de Chofer -->
+                                            <div class="form-group">
+                                                <label for="chofer_id" class="form-label">Selecciona un Chofer</label>
+                                                <select name="chofer_id" id="chofer_id" class="form-select">
+                                                    <option value="" disabled selected>Seleccionar</option>
+                                                    @if (!empty($personal))
+                                                        @foreach ($personal as $person)
+                                                            @if (strtolower(trim($person->Cargo)) === 'chofer')
+                                                                <option value="{{ $person->id }}"
+                                                                    {{ ($phase2->chofer_id  ?? '') === $person->id ? 'selected' : '' }}>
+                                                                    {{ $person->Nombre }} {{ $person->apellido_paterno }}
+                                                                    {{ $person->apellido_materno }}
+                                                                </option>
+                                                            @endif
+                                                        @endforeach
+                                                    @else
+                                                        <option value="" disabled>No hay choferes disponibles
+                                                        </option>
+                                                    @endif
+                                                </select>
+                                            </div>
+                                        </div>
 
-                                     <!-- Segunda columna -->
-                                     <div style="flex: 1;">
-                                         <!-- Selección de Paramédico -->
-                                         <div class="form-group">
-                                             <label for="paramedico_id" class="form-label">Selecciona un
-                                                 Paramédico</label>
-                                             <select name="paramedico_id" id="paramedico_id" class="form-select">
-                                                 <option value="" disabled selected>Seleccionar</option>
-                                                 @foreach ($personal as $person)
-                                                     @if (strtolower(trim($person->Cargo)) === 'paramédico')
-                                                         <option value="{{ $person->id }}">
-                                                             {{ $person->Nombre }} {{ $person->apellido_paterno }}
-                                                             {{ $person->apellido_materno }}
-                                                         </option>
-                                                     @endif
-                                                 @endforeach
-                                             </select>
-                                         </div>
+                                        <!-- Segunda columna -->
+                                        <div style="flex: 1;">
+                                            <!-- Selección de Paramédico -->
+                                            <div class="form-group">
+                                                <label for="paramedico_id" class="form-label">Selecciona un
+                                                    Paramédico</label>
+                                                <select name="paramedico_id" id="paramedico_id" class="form-select">
+                                                    <option value="" disabled selected>Seleccionar</option>
+                                                    @foreach ($personal as $person)
+                                                        @if (strtolower(trim($person->Cargo)) === 'paramédico')
+                                                            <option value="{{ $person->id }}"
+                                                                {{ ($phase2->paramedico_id  ?? '') === $person->id ? 'selected' : '' }}>
+                                                                {{ $person->Nombre }} {{ $person->apellido_paterno }}
+                                                                {{ $person->apellido_materno }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                         <!-- Selección de Helicóptero -->
-                                         <div class="form-group">
-                                             <label for="helicoptero_id" class="form-label">Selecciona un Helicóptero
-                                                 (Opcional)</label>
-                                             <select name="helicoptero_id" id="helicoptero_id" class="form-select">
-                                                 <option value="" disabled selected>Seleccionar</option>
-                                                 @foreach ($helicopteros as $helicoptero)
-                                                     @if (strtolower(trim($helicoptero->tipo)) === 'helicoptero')
-                                                         <option value="{{ $helicoptero->id }}">
-                                                             {{ $helicoptero->marca }} ({{ $helicoptero->placa }})
-                                                         </option>
-                                                     @endif
-                                                 @endforeach
-                                             </select>
-                                         </div>
-                                     </div>
-                                 </div>
+                                            <!-- Selección de Helicóptero -->
+                                            <div class="form-group">
+                                                <label for="helicoptero_id" class="form-label">Selecciona un Helicóptero
+                                                    (Opcional)</label>
+                                                <select name="helicoptero_id" id="helicoptero_id" class="form-select">
+                                                    <option value="" disabled selected>Seleccionar</option>
+                                                    @foreach ($helicopteros as $helicoptero)
+                                                        @if (strtolower(trim($helicoptero->tipo)) === 'helicoptero')
+                                                            <option value="{{ $helicoptero->id }}"
+                                                                {{ ($phase2->helicoptero_id   ?? '') === $helicoptero->id ? 'selected' : '' }}>
+                                                                {{ $helicoptero->marca }} ({{ $helicoptero->placa }})
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                 <div>
-                                     <h6 class=" font-extrabold text-center m-1">Datos del Paciente</h6>
+                                    <div>
+                                        <h6 class="font-extrabold text-center m-1">Datos del Paciente</h6>
+                                        <div style="display: flex;">
+                                            <div>
+                                                <div class="form-group mb-3">
+                                                    <label for="nombre" class="form-label">Nombre</label>
+                                                    <input type="text" name="nombre" id="nombre"
+                                                        class="form-control" placeholder="Nombre del paciente"
+                                                        value="{{$phase3->nombre ?? ''}}">
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="apellidopaterno" class="form-label">Apellido
+                                                        Paterno</label>
+                                                    <input type="text" name="apellido_paterno" id="apellidopaterno"
+                                                        class="form-control" placeholder="Apellido paterno"
+                                                        value="{{$phase3->apellido_paterno ?? ''}}">
+                                                </div>
 
-                                     <div style="  display: flex;">
+                                                <div class="form-group mb-3">
+                                                    <label for="apellidomaterno" class="form-label">Apellido
+                                                        Materno</label>
+                                                    <input type="text" name="apellido_materno" id="apellidomaterno"
+                                                        class="form-control" placeholder="Apellido materno"
+                                                        value="{{$phase3->apellido_materno ?? ''}}">
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="edad" class="form-label">Edad</label>
+                                                    <input type="number" name="edad" id="edad"
+                                                        class="form-control" placeholder="Edad del paciente"
+                                                        value="{{$phase3->edad ?? ''}}">
+                                                </div>
 
-                                         <div>
+                                                <div class="form-group mb-3" id="meses-container" style="display: none;">
+                                                    <label for="meses" class="form-label">Meses</label>
+                                                    <input type="number" name="meses" id="meses"
+                                                        class="form-control" placeholder="Meses del paciente"
+                                                        min="1" max="11"
+                                                        value="{{$phase3->meses ?? ''}}">
+                                                </div>
+                                            </div>
 
-                                             <div class="form-group mb-3">
-                                                 <label for="nombre" class="form-label">Nombre</label>
-                                                 <input type="text" name="nombre" id="nombre"
-                                                     class="form-control" placeholder="Nombre del paciente">
-                                             </div>
-                                             <div class="form-group mb-3">
-                                                 <label for="apellidopaterno" class="form-label">Apellido
-                                                     Paterno</label>
-                                                 <input type="text" name="apellido_paterno" id="apellidopaterno"
-                                                     class="form-control" placeholder="Apellido paterno">
-                                             </div>
+                                            <div style="display: flex;">
+                                                <div style="padding: 0 10px;">
 
-                                             <div class="form-group mb-3">
-                                                 <label for="apellidomaterno" class="form-label">Apellido
-                                                     Materno</label>
-                                                 <input type="text" name="apellido_materno" id="apellidomaterno"
-                                                     class="form-control" placeholder="Apellido materno">
-                                             </div>
-                                             <div class="form-group mb-3">
-                                                 <label for="edad" class="form-label">Edad</label>
-                                                 <input type="number" name="edad" id="edad"
-                                                     class="form-control" placeholder="Edad del paciente">
-                                             </div>
-
-                                             <div class="form-group mb-3" id="meses-container" style="display: none;">
-                                                 <label for="meses" class="form-label">Meses</label>
-                                                 <input type="number" name="meses" id="meses"
-                                                     class="form-control" placeholder="Meses del paciente"
-                                                     min="1" max="11">
-                                             </div>
-                                         </div>
-
-                                         <div style="display: flex;">
-                                             <div style="padding: 0 10px;">
-
-                                                 <div class="form-group mb-3">
-                                                     <label for="sexo" class="form-label">Sexo</label>
-                                                     <select name="sexo" id="sexo" class="form-select">
-                                                         <option value="masculino">Masculino</option>
-                                                         <option value="femenino">Femenino</option>
-                                                         <option value="otro">Otro</option>
-                                                     </select>
-                                                 </div>
-                                                 <div class="form-group mb-3">
-                                                     <label for="tipo_sangre" class="form-label">Tipo de Sangre</label>
-                                                     <select name="tipo_sangre" id="tipo_sangre" class="form-control">
-                                                         <option value="" disabled selected>Seleccione un tipo de
-                                                             sangre</option>
-                                                         <option value="A+">A+</option>
-                                                         <option value="A-">A-</option>
-                                                         <option value="B+">B+</option>
-                                                         <option value="B-">B-</option>
-                                                         <option value="AB+">AB+</option>
-                                                         <option value="AB-">AB-</option>
-                                                         <option value="O+">O+</option>
-                                                         <option value="O-">O-</option>
-                                                     </select>
-                                                 </div>
-
-
-                                                 <div class="form-group mb-3">
-                                                     <label for="domicilio" class="form-label">Domicilio</label>
-                                                     <input type="text" name="domicilio" id="domicilio"
-                                                         class="form-control" placeholder="Domicilio del paciente">
-                                                 </div>
-                                                 <div class="form-group mb-3">
-                                                     <label for="colonia" class="form-label">Colonia /
-                                                         Comunidad</label>
-                                                     <input type="text" name="colonia" id="colonia"
-                                                         class="form-control" placeholder="Colonia del paciente">
-                                                 </div>
-                                             </div>
-
-                                             <div style="padding: 0 10px;">
-
-                                                 <div class="form-group mb-3">
-                                                     <label for="alcaldia" class="form-label">Alcaldia /
-                                                         Municipio</label>
-                                                     <input type="text" name="alcaldia" id="alcaldia"
-                                                         class="form-control" placeholder="Alcaldia del paciente">
-                                                 </div>
-                                                 <div class="form-group mb-3">
-                                                     <label for="telefono" class="form-label">Teléfono</label>
-                                                     <input type="text" name="telefono" id="telefono"
-                                                         class="form-control" placeholder="Teléfono de contacto">
-                                                 </div>
-                                                 <div class="form-group mb-3">
-                                                     <label for="ocupacion" class="form-label">Ocupación</label>
-                                                     <input type="text" name="ocupacion" id="ocupacion"
-                                                         class="form-control" placeholder="Ocupación del paciente">
-                                                 </div>
-                                                 <div class="form-group mb-3">
-                                                     <label for="derechohabiente"
-                                                         class="form-label">Derechohabiente</label>
-                                                     <input type="text" name="derechohabiente" id="derechohabiente"
-                                                         class="form-control"
-                                                         placeholder="Institución de derechohabiencia">
-                                                 </div>
-
-                                                 <div class="form-group mb-3">
-                                                     <label for="companiaseguro" class="form-label">Compañia seguro
-                                                         gastos
-                                                         medicos</label>
-                                                     <input type="text" name="compania_seguro" id="companiaseguro"
-                                                         class="form-control"
-                                                         placeholder="Compañ ia de seguro de gastos medicos del paciente"
-                                                         value="{{ $phase2->direccion_accidente ?? '' }}">
-                                                 </div>
-                                             </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="sexo" class="form-label">Sexo</label>
+                                                        <select name="sexo" id="sexo" class="form-select">
+                                                            <option value="masculino"
+                                                            {{ ($phase3->sexo ?? '') === 'masculino' ? 'selected' : '' }}>Masculino</option>
+                                                            <option value="femenino"
+                                                            {{ ($phase3->sexo ?? '') === 'femenino' ? 'selected' : '' }}>Femenino</option>
+                                                            <option value="otro"
+                                                            {{ ($phase3->sexo ?? '') === 'otro' ? 'selected' : '' }}>Otro</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="tipo_sangre" class="form-label">Tipo de Sangre</label>
+                                                        <select name="tipo_sangre" id="tipo_sangre" class="form-control">
+                                                            <option value="" disabled selected>Seleccione un tipo de
+                                                                sangre</option>
+                                                            <option value="A+"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'A+' ? 'selected' : '' }}>A+</option>
+                                                            <option value="A-"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'A-' ? 'selected' : '' }}>A-</option>
+                                                            <option value="B+"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'B+' ? 'selected' : '' }}>B+</option>
+                                                            <option value="B-"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'B-' ? 'selected' : '' }}>B-</option>
+                                                            <option value="AB+"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'AB+' ? 'selected' : '' }}>AB+</option>
+                                                            <option value="AB-"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'AB-' ? 'selected' : '' }}>AB-</option>
+                                                            <option value="O+"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'O+' ? 'selected' : '' }}>O+</option>
+                                                            <option value="O-"
+                                                            {{ ($phase3->tipo_sangre ?? '') === 'O-' ? 'selected' : '' }}>O-</option>
+                                                        </select>
+                                                    </div>
 
 
+                                                    <div class="form-group mb-3">
+                                                        <label for="domicilio" class="form-label">Domicilio</label>
+                                                        <input type="text" name="domicilio" id="domicilio"
+                                                            class="form-control" placeholder="Domicilio del paciente"
+                                                            value="{{$phase3->domicilio ?? ''}}">
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="colonia" class="form-label">Colonia /
+                                                            Comunidad</label>
+                                                        <input type="text" name="colonia" id="colonia"
+                                                            class="form-control" placeholder="Colonia del paciente"
+                                                            value="{{$phase3->colonia ?? ''}}">
+                                                    </div>
+                                                </div>
 
-                                         </div>
-                                     </div>
-                                 </div>
+                                                <div style="padding: 0 10px;">
+
+                                                    <div class="form-group mb-3">
+                                                        <label for="alcaldia" class="form-label">Alcaldia /
+                                                            Municipio</label>
+                                                        <input type="text" name="alcaldia" id="alcaldia"
+                                                            class="form-control" placeholder="Alcaldia del paciente"
+                                                            value="{{$phase3->alcaldia ?? ''}}">
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="telefono" class="form-label">Teléfono</label>
+                                                        <input type="text" name="telefono" id="telefono"
+                                                            class="form-control" placeholder="Teléfono de contacto"
+                                                            value="{{$phase3->telefono ?? ''}}">
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="ocupacion" class="form-label">Ocupación</label>
+                                                        <input type="text" name="ocupacion" id="ocupacion"
+                                                            class="form-control" placeholder="Ocupación del paciente"
+                                                            value="{{$phase3->ocupacion ?? ''}}">
+                                                    </div>
+                                                    <div class="form-group mb-3">
+                                                        <label for="derechohabiente"
+                                                            class="form-label">Derechohabiente</label>
+                                                        <input type="text" name="derechohabiente" id="derechohabiente"
+                                                            class="form-control"
+                                                            placeholder="Institución de derechohabiencia"
+                                                            value="{{$phase3->derechohabiente ?? ''}}">
+                                                    </div>
+
+                                                    <div class="form-group mb-3">
+                                                        <label for="companiaseguro" class="form-label">Compañia seguro
+                                                            gastos
+                                                            medicos</label>
+                                                        <input type="text" name="compania_seguro" id="companiaseguro"
+                                                            class="form-control"
+                                                            placeholder="Compañia de seguro de gastos medicos del paciente"
+                                                            value="{{$phase3->compania_seguro ?? ''}}">
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
+
                             </div>
 
                             <!-- Fase 3: Información de Ubicación y Motivo -->
@@ -974,25 +1019,36 @@
                                                     <select name="agente_causal" id="agente_causal" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="1">1. Arma</option>
-                                                        <option value="2">2. Juguete</option>
-                                                        <option value="3">3. Automotor</option>
-                                                        <option value="4">4. Bicicleta / Scooter</option>
-                                                        <option value="5">5. Producto Biológico /
-                                                            Químico
-                                                        </option>
-                                                        <option value="6">6. Maquinaria</option>
-                                                        <option value="7">7. Herramienta</option>
-                                                        <option value="8">8. Fuego</option>
-                                                        <option value="9">9. Sustancia / Objeto
-                                                            Caliente
-                                                        </option>
-                                                        <option value="10">10. Sustancia Tóxica</option>
-                                                        <option value="11">11. Electricidad</option>
-                                                        <option value="12">12. Explosión</option>
-                                                        <option value="13">13. Ser Humano</option>
-                                                        <option value="14">14. Animal</option>
-                                                        <option value="15">15. Otro</option>
+                                                        <option value="1"
+                                                        {{ ($phase5->agente_causal ?? '') === '1' ? 'selected' : '' }}>1. Arma</option>
+                                                        <option value="2"
+                                                        {{ ($phase5->agente_causal ?? '') === '2' ? 'selected' : '' }}>2. Juguete</option>
+                                                        <option value="3"
+                                                        {{ ($phase5->agente_causal ?? '') === '3' ? 'selected' : '' }}>3. Automotor</option>
+                                                        <option value="4"
+                                                        {{ ($phase5->agente_causal ?? '') === '4' ? 'selected' : '' }}>4. Bicicleta / Scooter</option>
+                                                        <option value="5"
+                                                        {{ ($phase5->agente_causal ?? '') === '5' ? 'selected' : '' }}>5. Producto Biológico / Químico</option>
+                                                        <option value="6"
+                                                        {{ ($phase5->agente_causal ?? '') === '6' ? 'selected' : '' }}>6. Maquinaria</option>
+                                                        <option value="7"
+                                                        {{ ($phase5->agente_causal ?? '') === '7' ? 'selected' : '' }}>7. Herramienta</option>
+                                                        <option value="8"
+                                                        {{ ($phase5->agente_causal ?? '') === '8' ? 'selected' : '' }}>8. Fuego</option>
+                                                        <option value="9"
+                                                        {{ ($phase5->agente_causal ?? '') === '9' ? 'selected' : '' }}>9. Sustancia / Objeto Caliente</option>
+                                                        <option value="10"
+                                                        {{ ($phase5->agente_causal ?? '') === '10' ? 'selected' : '' }}>10. Sustancia Tóxica</option>
+                                                        <option value="11"
+                                                        {{ ($phase5->agente_causal ?? '') === '11' ? 'selected' : '' }}>11. Electricidad</option>
+                                                        <option value="12"
+                                                        {{ ($phase5->agente_causal ?? '') === '12' ? 'selected' : '' }}>12. Explosión</option>
+                                                        <option value="13"
+                                                        {{ ($phase5->agente_causal ?? '') === '13' ? 'selected' : '' }}>13. Ser Humano</option>
+                                                        <option value="14"
+                                                        {{ ($phase5->agente_causal ?? '') === '14' ? 'selected' : '' }}>14. Animal</option>
+                                                        <option value="15"
+                                                        {{ ($phase5->agente_causal ?? '') === '15' ? 'selected' : '' }}>15. Otro</option>
                                                     </select>
                                                 </div>
 
@@ -1000,14 +1056,16 @@
                                                     style="display: none;">
                                                     <label for="especificar" class="form-label">Especifique</label>
                                                     <input type="text" name="especificar" id="especificar"
-                                                        class="form-control" placeholder="Especifique el agente causal">
+                                                        class="form-control" placeholder="Especifique el agente causal"
+                                                        value="{{$phase5->especificar ?? '' }}">
                                                 </div>
 
                                                 <div class="form-group mb-3">
                                                     <label for="lesionescausadas" class="form-label">Lesiones causadas
                                                         por</label>
                                                     <input type="text" name="lesionescausadas" id="lesionescausadas"
-                                                        class="form-control" placeholder="Lesiones causadas por">
+                                                        class="form-control" placeholder="Lesiones causadas por"
+                                                        value="{{$phase5->lesionescausadas ?? ''}}">
                                                 </div>
 
                                                 <div class="form-group">
@@ -1017,8 +1075,11 @@
                                                         class="form-control" onchange="mostrarDetallesAccidente()">
                                                         <option value="" disabled selected>Seleccione el tipo de
                                                             accidente</option>
-                                                        <option value="automovilistico">Automovilístico</option>
-                                                        <option value="atropellado">Atropellado</option>
+                                                        <option value="automovilistico"
+                                                        {{ ($phase5->tipo_accidente ?? '') === 'automovilistico' ? 'selected' : '' }}>Automovilístico</option>
+                                                        <option value="atropellado"
+                                                        {{ ($phase5->tipo_accidente ?? '') === 'atropellado' ? 'selected' : '' }}
+                                                        >Atropellado</option>
                                                     </select>
                                                 </div>
 
@@ -1029,10 +1090,14 @@
                                                         <select id="atropelladopor" name="atropelladopor"
                                                             class="form-control" onchange="mostrarDetallesAccidente()">
                                                             <option value="">Seleccione el tipo de accidente</option>
-                                                            <option value="motocicleta">Motocicleta</option>
-                                                            <option value="automotor">AutoMotor</option>
-                                                            <option value="bicicleta">Bicicleta</option>
-                                                            <option value="maquinaria">Maquinaria</option>
+                                                            <option value="motocicleta"
+                                                            {{($phase5->atropelladopor ?? '') === 'motocicleta' ? 'selected' : '' }}>Motocicleta</option>
+                                                            <option value="automotor"
+                                                            {{($phase5->atropelladopor ?? '') === 'automotor' ? 'selected' : '' }}>AutoMotor</option>
+                                                            <option value="bicicleta"
+                                                            {{($phase5->atropelladopor ?? '') === 'bicicleta' ? 'selected' : '' }}>Bicicleta</option>
+                                                            <option value="maquinaria"
+                                                            {{($phase5->atropelladopor ?? '') === 'maquinaria' ? 'selected' : '' }}>Maquinaria</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -1046,40 +1111,55 @@
                                                     Probable</label>
                                                 <select id="origen_probable" name="origen_probable" class="form-control">
                                                     <option value="">Seleccione el origen probable</option>
-                                                    <option value="neurologica">Neurológica</option>
-                                                    <option value="cardiovascular">Cardiovascular</option>
-                                                    <option value="respiratorio">Respiratorio</option>
-                                                    <option value="metabolico">Metabólico</option>
-                                                    <option value="digestiva">Digestiva</option>
-                                                    <option value="urogenital">Urogenital</option>
-                                                    <option value="gineco_obstetrica">Gineco-Obstetrica</option>
-                                                    <option value="Cognitivo_emocional">Cognitivo / Emocional
+                                                    <option value="neurologica"
+                                                    {{ ($phase5->origen_probable ?? '') === 'neurologica' ? 'selected' : '' }}>Neurológica</option>
+                                                    <option value="cardiovascular"
+                                                    {{ ($phase5->origen_probable ?? '') === 'cardiovascular' ? 'selected' : '' }}>Cardiovascular</option>
+                                                    <option value="respiratorio"
+                                                    {{ ($phase5->origen_probable ?? '') === 'respiratorio' ? 'selected' : '' }}>Respiratorio</option>
+                                                    <option value="metabolico"
+                                                    {{ ($phase5->origen_probable ?? '') === 'metabolico' ? 'selected' : '' }}>Metabólico</option>
+                                                    <option value="digestiva"
+                                                    {{ ($phase5->origen_probable ?? '') === 'digestiva' ? 'selected' : '' }}>Digestiva</option>
+                                                    <option value="urogenital"
+                                                    {{ ($phase5->origen_probable ?? '') === 'urogenital' ? 'selected' : '' }}>Urogenital</option>
+                                                    <option value="gineco_obstetrica"+
+                                                    {{ ($phase5->origen_probable ?? '') === 'gineco_obstetrica' ? 'selected' : '' }}>Gineco-Obstetrica</option>
+                                                    <option value="Cognitivo_emocional"
+                                                    {{ ($phase5->origen_probable ?? '') === 'Cognitivo_emocional' ? 'selected' : '' }}>Cognitivo / Emocional
                                                     </option>
 
-                                                    <option value="musculo_esqueletico">Músculo Esquelético
+                                                    <option value="musculo_esqueletico"
+                                                    {{ ($phase5->origen_probable ?? '') === 'musculo_esqueletico' ? 'selected' : '' }}>Músculo Esquelético
                                                     </option>
-                                                    <option value="infecciosa">Infecciosa</option>
-                                                    <option value="oncologico">Oncológico</option>
-                                                    <option value="otro">Otro</option>
+                                                    <option value="infecciosa"
+                                                    {{ ($phase5->origen_probable ?? '') === 'infecciosa' ? 'selected' : '' }}>Infecciosa</option>
+                                                    <option value="oncologico"
+                                                    {{ ($phase5->origen_probable ?? '') === 'oncologico' ? 'selected' : '' }}>Oncológico</option>
+                                                    <option value="otro"
+                                                    {{ ($phase5->origen_probable ?? '') === 'otro' ? 'selected' : '' }}>Otro</option>
                                                 </select>
                                             </div>
 
                                             <div class="form-group mt-3">
                                                 <label for="especificarOrigen" class="form-label">Especifique</label>
                                                 <input type="text" name="especificarOrigen" id="especificarOrigen"
-                                                    class="form-control" placeholder="Especifique el origen probable">
+                                                    class="form-control" placeholder="Especifique el origen probable"
+                                                    value="{{ ($phase5->especificarOrigen ?? '')}}" >
                                             </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="primeravez" class="form-label">1° Vez</label>
                                                 <input type="text" name="primeravez" id="primeravez"
-                                                    class="form-control" placeholder="1° Vez">
+                                                    class="form-control" placeholder="1° Vez"
+                                                    value="{{$phase5->primeravez ?? ''}}">
                                             </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="subsecuente" class="form-label">Subsecuente</label>
                                                 <input type="text" name="subsecuente" id="subsecuente"
-                                                    class="form-control" placeholder="Subsecuente">
+                                                    class="form-control" placeholder="Subsecuente"
+                                                   value="{{$phase5->subsecuente ?? ''}}" >
                                             </div>
                                         </div>
                                     </div>
@@ -1100,11 +1180,16 @@
                                             <label for="colision" class="form-label">Accidente Automovilístico</label>
                                             <select id="colision" name="colision" class="form-control"
                                                 style="width: 100%; max-width: 500px; margin: 0 auto;">
-                                                <option value="colision">Colisión</option>
-                                                <option value="moto">Motocicleta</option>
-                                                <option value="automotor">Automotor</option>
-                                                <option value="bicicleta">Bicicleta</option>
-                                                <option value="maquinaria">Maquinaria</option>
+                                                <option value="colision"
+                                                {{($phase5->colision ?? '') === 'colision' ? 'selected' : ''}}>Colisión</option>
+                                                <option value="moto"
+                                                {{($phase5->colision ?? '') === 'moto' ? 'selected'  : ''}}>Motocicleta</option>
+                                                <option value="automotor"
+                                                {{($phase5->colision ?? '') === 'automotor' ? 'selected'  : ''}}>Automotor</option>
+                                                <option value="bicicleta"
+                                                {{($phase5->colision ?? '') === 'bicicleta' ? 'selected'  : ''}}>Bicicleta</option>
+                                                <option value="maquinaria"
+                                                {{($phase5->colision ?? '') === 'maquinaria' ? 'selected'  : ''}}>Maquinaria</option>
                                             </select>
                                         </div>
                                         <br>
@@ -1117,8 +1202,10 @@
                                                     <select name="contraobjeto" id="contraobjeto" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="fijo">Fijo</option>
-                                                        <option value="en movimiento">En Movimiento</option>
+                                                        <option value="fijo"
+                                                        {{($phase5->contraobjeto ?? '') === 'fijo' ? 'selected'  : ''}}>Fijo</option>
+                                                        <option value="en movimiento"
+                                                        {{($phase5->contraobjeto ?? '') === 'en movimiento' ? 'selected'  : ''}}>En Movimiento</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -1126,9 +1213,12 @@
                                                     <select name="impacto" id="impacto" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="frontal">Frontal</option>
-                                                        <option value="lateral">Lateral</option>
-                                                        <option value="posterior">Posterior</option>
+                                                        <option value="frontal"
+                                                        {{($phase5->impacto ?? '') === 'frontal' ? 'selected'  : ''}}>Frontal</option>
+                                                        <option value="lateral"
+                                                        {{($phase5->impacto ?? '') === 'lateral' ? 'selected'  : ''}}>Lateral</option>
+                                                        <option value="posterior"
+                                                        {{($phase5->impacto ?? '') === 'posterior' ? 'selected'  : ''}}>Posterior</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group mb-3">
@@ -1137,7 +1227,8 @@
                                                         style="display: flex; align-items: center; justify-content: center;">
                                                         <input type="number" name="hundimiento" id="hundimiento"
                                                             class="form-control" placeholder="Hundimiento"
-                                                            style="max-width: 90%;">
+                                                            style="max-width: 90%;"
+                                                            value="{{$phase5->hundimiento ?? ''}}">
                                                         <span
                                                             style="margin-left: 8px; font-weight: bold; font-size: 1rem;">CMS</span>
                                                     </div>
@@ -1147,8 +1238,10 @@
                                                     <select name="parabrisas" id="parabrisas" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="integro">Integro</option>
-                                                        <option value="rotodoblado">Roto Doblado</option>
+                                                        <option value="integro"
+                                                        {{($phase5->parabrisas ?? '') === 'integro' ? 'selected'  : ''}}>Integro</option>
+                                                        <option value="rotodoblado"
+                                                        {{($phase5->parabrisas ?? '') === 'rotodoblado' ? 'selected'  : ''}}>Roto Doblado</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -1158,8 +1251,10 @@
                                                     <select name="bolsaaire" id="bolsaaire" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="si">Si</option>
-                                                        <option value="no">No</option>
+                                                        <option value="si"
+                                                        {{($phase5->bolsaaire ?? '') === 'si' ? 'selected'  : ''}}>Si</option>
+                                                        <option value="no"
+                                                        {{($phase5->bolsaaire ?? '') === 'no' ? 'selected'  : ''}}>No</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -1169,10 +1264,14 @@
                                                         class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="si">Si</option>
-                                                        <option value="no">No</option>
-                                                        <option value="eyectado">Eyectado</option>
-                                                        <option value="prensado">Prensado</option>
+                                                        <option value="si"
+                                                        {{($phase5->dentrovehiculo ?? '') === 'si' ? 'selected'  : ''}}>Si</option>
+                                                        <option value="no"
+                                                        {{($phase5->dentrovehiculo ?? '') === 'no' ? 'selected'  : ''}}>No</option>
+                                                        <option value="eyectado"
+                                                        {{($phase5->dentrovehiculo ?? '') === 'eyectado' ? 'selected'  : ''}}>Eyectado</option>
+                                                        <option value="prensado"
+                                                        {{($phase5->dentrovehiculo ?? '') === 'prensado' ? 'selected'  : ''}}>Prensado</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -1180,8 +1279,10 @@
                                                     <select name="cinturon" id="cinturon" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="colocado">Colocado</option>
-                                                        <option value="nocolocado">No Colocado</option>
+                                                        <option value="colocado"
+                                                        {{($phase5->cinturon ?? '') === 'colocado' ? 'selected'  : ''}}>Colocado</option>
+                                                        <option value="nocolocado"
+                                                        {{($phase5->cinturon ?? '') === 'nocolocado' ? 'selected'  : ''}}>No Colocado</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
@@ -1189,8 +1290,10 @@
                                                     <select name="volante" id="volante" class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
-                                                        <option value="integro">Integro</option>
-                                                        <option value="doblado">Doblado</option>
+                                                        <option value="integro"
+                                                        {{($phase5->volante ?? '') === 'integro' ? 'selected'  : ''}}>Integro</option>
+                                                        <option value="doblado"
+                                                        {{($phase5->volante ?? '') === 'doblado' ? 'selected'  : ''}}>Doblado</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -2367,15 +2470,28 @@
             </div>
 
             <script>
-                document.getElementById('lugar_ocurrencia').addEventListener('change', function() {
-                    const otroLugarDiv = document.getElementById('otro_lugar');
-                    if (this.value === 'otro') {
-                        otroLugarDiv.style.display = 'block';
-                    } else {
-                        otroLugarDiv.style.display = 'none';
-                        document.getElementById('otro_lugar').value = ''; // Limpia el campo si se oculta
-                    }
-                });
+                 // Función para mostrar/ocultar el campo "Otro Lugar" dependiendo del valor seleccionado.
+                 function manejarLugarOcurrencia() {
+                // Referencias a los elementos del DOM
+                const lugar = document.getElementById('lugar_ocurrencia');
+                const otroLugarDiv = document.getElementById('otro_lugar');
+                const inputOtroLugar = document.getElementById('otro_lugar_input');
+
+                // Verificar si el valor seleccionado es 'otro'
+                if (lugar.value === 'otro') {
+                    otroLugarDiv.style.display = 'block'; // Mostrar el campo "Otro Lugar"
+                } else {
+                    otroLugarDiv.style.display = 'none'; // Ocultar el campo "Otro Lugar"
+                    inputOtroLugar.value = ''; // Limpiar el valor del campo si está oculto
+                }
+            }
+
+            // Evento de cambio para el selector de lugar de ocurrencia
+            document.getElementById('lugar_ocurrencia').addEventListener('change', manejarLugarOcurrencia);
+
+            // Aplicar el estado inicial al cargar la página
+            window.addEventListener('load', manejarLugarOcurrencia);
+
 
                 document.getElementById('origen_probable').addEventListener('change', function() {
                     const btnphase6 = document.getElementById('btnphase6');
@@ -2395,28 +2511,51 @@
                     }
                 });
 
+                // Referencias a los elementos del DOM
                 const edadInput = document.getElementById('edad');
                 const mesesContainer = document.getElementById('meses-container');
                 const mesesInput = document.getElementById('meses');
 
-                edadInput.addEventListener('input', () => {
-                    const edad = parseInt(edadInput.value);
-                    if (edad === 0) {
-                        mesesContainer.style.display = 'block'; // Muestra el campo de meses
-                    } else {
-                        mesesContainer.style.display = 'none'; // Oculta el campo de meses
-                        mesesInput.value = ''; // Limpia el valor del campo de meses
-                    }
-                });
+                // Función para manejar la lógica de mostrar/ocultar el campo de meses
+                function manejarEdadMeses() {
+                    const edad = parseInt(edadInput.value, 10); // Convertir el valor a número entero
 
-                document.getElementById('agente_causal').addEventListener('change', function() {
+                    if (!isNaN(edad) && edad === 0) {
+                        // Mostrar el campo de meses si la edad es exactamente 0
+                        mesesContainer.style.display = 'block';
+                    } else {
+                        // Ocultar el campo de meses y limpiar su valor
+                        mesesContainer.style.display = 'none';
+                        mesesInput.value = ''; // Limpiar el valor del campo meses
+                    }
+                }
+
+                // Asignar la misma función al evento 'change' y 'input'
+                edadInput.addEventListener('input', manejarEdadMeses);
+                edadInput.addEventListener('change', manejarEdadMeses);
+
+                // Llamar a la función al cargar la página para aplicar el estado inicial
+                window.onload = manejarEdadMeses;
+
+
+                function agente_causal(){
+                    const agentecausal = document.getElementById('agente_causal');
                     const especificarOtro = document.getElementById('especificar_otro');
-                    if (this.value === 'otro') {
+                    if (agentecausal.value === '15') {
                         especificarOtro.style.display = 'block';
                     } else {
                         especificarOtro.style.display = 'none';
                     }
-                });
+                }
+
+                document.getElementById('agente_causal').addEventListener('change', agente_causal);
+
+                // Aplicar el estado inicial al cargar la página
+                window.addEventListener('load', agente_causal);
+
+
+
+
 
                 function mostrarDetallesAccidente() {
                     var tipoAccidente = document.getElementById("tipo_accidente").value;
@@ -2433,6 +2572,36 @@
                         detalle.style.display = "block";
                     });
                 }
+
+                function limpiarCamposAccidente() {
+                    var tipoAccidente = document.getElementById("tipo_accidente").value;
+                // Crear un conjunto de IDs de los divs visibles para excluirlos de la limpieza
+                var todosAccidentes = document.querySelectorAll('[id^="accidente_"]');
+                var detallesSeleccionados = document.querySelectorAll('[id^="accidente_' + tipoAccidente + '"]');
+                const idsVisibles = new Set([...detallesSeleccionados].map(detalle => detalle.id));
+
+                    // Limpiar los campos de los divs ocultos (no incluidos en los divs visibles)
+                    todosAccidentes.forEach(detalle => {
+                        if (!idsVisibles.has(detalle.id)) {
+                            const campos = detalle.querySelectorAll("input, select, textarea");
+                            campos.forEach(campo => {
+                                if (campo.type === "checkbox" || campo.type === "radio") {
+                                    campo.checked = false; // Desmarcar checkboxes y radios
+                                } else {
+                                    campo.value = ""; // Limpiar texto, select y otros inputs
+                                }
+                            });
+                        }
+                    });
+                }
+
+            document.getElementById('tipo_accidente').addEventListener('change', () => {
+                    mostrarDetallesAccidente();
+                    limpiarCamposAccidente();
+                });
+
+                // Aplicar el estado inicial al cargar la página
+                window.addEventListener('load', mostrarDetallesAccidente);
 
 
                 function marcarZona(zona) {

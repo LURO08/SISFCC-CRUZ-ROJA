@@ -17,6 +17,8 @@ use App\Models\EmergencyPhase7;
 use App\Models\EmergencyPhase8;
 use App\Models\EmergencyPhase8_Zonas;
 use App\Models\EmergencyPhase9;
+use PDF;
+
 class EmergenciasController extends Controller
 {
     /**
@@ -90,6 +92,41 @@ class EmergenciasController extends Controller
         $phases = EmergencyPhase2::with(['ambulance', 'chofer', 'paramedico', 'helicoptero'])->get();
         $personal = Personal::all();
         return view('socorro.emergencias.register', compact('phases','ambulanceServices','ambulances','personal','helicopteros'));
+    }
+
+
+    public function editarEmergency( $id){
+        $helicopteros = InventarioVehiculos::helicopteros()->get();
+        $ambulances = InventarioVehiculos::ambulancias()->get();
+        $ambulanceServices = AmbulanceService::all();
+
+        $phase1 = EmergencyPhase1::findOrFail($id);
+        $phase2 = EmergencyPhase2::where('folio', $id)->first();
+        $phase3 = EmergencyPhase3::where('folio', $id)->first();
+        $phase4 = EmergencyPhase4::where('folio', $id)->first();
+        $phase5 = EmergencyPhase5::where('folio', $id)->first();
+        $phase6 = EmergencyPhase6::where('folio', $id)->first();
+        $phase7 = EmergencyPhase7::where('folio', $id)->first();
+        $phase8 = EmergencyPhase8::where('folio', $id)->first();
+        $phase8_zona = EmergencyPhase8_Zonas::where('folio', $id)->first();
+        $phase9 = EmergencyPhase9::where('folio', $id)->first();
+
+        $personal = Personal::all();
+        return view('socorro.emergencias.editar', compact(
+            'phase1',
+            'phase2',
+            'phase3',
+            'phase4',
+            'phase5',
+            'phase6',
+            'phase7',
+            'phase8',
+            'phase8_zona',
+            'phase9',
+            'ambulanceServices',
+            'ambulances',
+            'personal',
+            'helicopteros'));
     }
 
     public function emergencyStore(Request $request)
@@ -444,11 +481,13 @@ class EmergenciasController extends Controller
 
 
 
-        return redirect()->back()->with('success', 'Emergencia guardados correctamente.');
+        return redirect()->route('socorros.index')->with('success', 'Emergencia guardados correctamente.');
     }
 
     public function emergencyUpdate(Request $request, $id)
     {
+
+
         // //Fase 1
         // $validatedPhase1 = $request->validate([
         //     'hora_llamada' => 'nullable|date_format:H:i',
@@ -614,29 +653,30 @@ class EmergenciasController extends Controller
 
         // ]);
 
+        try{
          // Actualizar datos de la Fase 1
         $phase1 = EmergencyPhase1::findOrFail($id);
         $phase1->update($request->all());
         // Actualizar datos de la Fase 2
-        $phase2 = EmergencyPhase2::findOrFail($phase1->id);
+        $phase2 = EmergencyPhase2::where('folio', $id)->first();
         $phase2->update($request->all());
         // Actualizar datos de la Fase 3
-        $phase3 = EmergencyPhase3::findOrFail($phase1->id);
+        $phase3 = EmergencyPhase3::where('folio', $id)->first();
         $phase3->update($request->all());
         // Actualizar datos de la Fase 4
-        $phase4 = EmergencyPhase4::findOrFail($phase1->id);
+        $phase4 = EmergencyPhase4::where('folio', $id)->first();
         $phase4->update($request->all());
         // Actualizar datos de la Fase 5
-        $phase5 = EmergencyPhase5::findOrFail($phase1->id);
-        $phase5->update($$request->all());
+        $phase5 = EmergencyPhase5::where('folio', $id)->first();
+        $phase5->update($request->all());
         // Actualizar datos de la Fase 6
-        $phase6 = EmergencyPhase6::findOrFail($phase1->id);
+        $phase6 = EmergencyPhase6::where('folio', $id)->first();
         $phase6->update($request->all());
         // Actualizar datos de la Fase 7
-        $phase7 = EmergencyPhas7::findOrFail($phase1->id);
+        $phase7 = EmergencyPhase7::where('folio', $id)->first();
         $phase7->update($request->all());
         // Actualizar datos de la Fase 8
-        $phase8 = EmergencyPhas8::findOrFail($phase1->id);
+        $phase8 = EmergencyPhase8::where('folio', $id)->first();
 
         $phase8->update([
             'exploracion_fisica' => isset($validatedData['exploracion_fisica'])
@@ -667,7 +707,7 @@ class EmergenciasController extends Controller
             'prioridad' => $request['prioridad'],
         ]);
 
-        $phase8_zona = EmergencyPhas8_Zonas::findOrFail($phase8->id);
+        $phase8_zona = EmergencyPhase8_Zonas::where('folio', $id)->first();
 
         $phase8_zona->update([
             'id_phase' => $phase8->id,
@@ -675,7 +715,7 @@ class EmergenciasController extends Controller
             'coordinate' => $request['coordinate'],
         ]);
 
-        $phase9 = EmergencyPhas9::findOrFail($phase1->id);
+        $phase9 = EmergencyPhase9::where('folio', $id)->first();
         $phase9->update([
             'via_aerea' => json_encode($request['via_aerea'] ?? []), // Convertir el array en JSON
             'control_cervical' => $request['control_cervical'] ?? null,
@@ -694,10 +734,43 @@ class EmergenciasController extends Controller
             'rcp_procedimientos' => $request['rcp_procedimientos'] ?? [],
         ]);
 
-
-
-        return redirect()->back()->with('success', 'Emergencia actualizo correctamente.');
+    } catch (\Exception $e) {
+        return redirect()->route('socorros.index')->with('error', 'Error al actualizar la emergencia: ' . $e->getMessage());
     }
+
+
+    return redirect()->route('socorros.index')->with('success', 'Emergencia actualizo correctamente.');
+    }
+
+    public function generatePDF($id)
+    {
+        \Carbon\Carbon::setLocale('es');
+
+        // Obtener dinámicamente todas las fases relacionadas
+        $phases = [];
+        for ($i = 1; $i <= 9; $i++) {
+            $modelClass = "App\\Models\\EmergencyPhase{$i}";
+            $phases["phase{$i}"] = $i == 1
+                ? $modelClass::findOrFail($id)
+                : $modelClass::where('folio', $id)->first();
+        }
+
+        // Generar el PDF con los datos y enviarlo a la vista
+
+        // Configurar para reducir márgenes y bordes en la página
+        $pdf = Pdf::loadView('pdf.emergency', $phases)
+            ->setPaper('A4', 'portrait')
+            ->setOption('margin-top', '0mm')       // Eliminar margen superior
+            ->setOption('margin-right', '0mm')     // Eliminar margen derecho
+            ->setOption('margin-bottom', '0mm')    // Eliminar margen inferior
+            ->setOption('margin-left', '0mm')      // Eliminar margen izquierdo
+            ->setOption('disable-smart-shrinking', true) // Desactiva el ajuste automático
+            ->setOption('viewport-size', '1024x768');    // Mejora renderizado del tamaño de vista
+
+        // Stream del PDF
+        return $pdf->stream('emergency_report.pdf');
+    }
+
 
 
 }

@@ -29,13 +29,14 @@ class EmergencyPhase1 extends Model
 
     public function phases2()
     {
-        return $this->hasMany(EmergencyPhase2::class, 'folio');
+        return $this->hasMany(EmergencyPhase2::class, 'id');
     }
 
     public function phases3()
     {
-        return $this->hasMany(EmergencyPhase3::class, 'folio');
+        return $this->hasMany(EmergencyPhase3::class, 'folio', 'id');
     }
+
 
     public function phases4()
     {

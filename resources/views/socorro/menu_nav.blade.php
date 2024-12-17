@@ -10,7 +10,7 @@
         display: flex;
         justify-content: center;
         width: auto;
-        height: 100%;
+        height: auto;
     }
 
         /* Css Menu de opciones Aside*/
@@ -18,7 +18,6 @@
         width: 16%;
         background-color: var(--background-color);
         padding: 20px;
-        height: 100vh;
         box-sizing: border-box;
         border-right: 2px solid #6c757d;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -133,12 +132,6 @@
         <span class="icon" id="icon">⬅️</span>
     </div>
     <ul id="menu" class="collapsed">
-        <li>
-            <a class="btn"  href="" onclick="showSection(event, 'inicio')">
-                <span class="icon">🏡</span>
-                <span class="text" style="font-weight: bold;">Inicio</span>
-            </a>
-        </li>
         <li>
             <a class="btn" href="{{route('socorros.ambulances.services.index')}}" >
                 <span class="icon">💊</span>

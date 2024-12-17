@@ -201,9 +201,12 @@ Route::middleware('auth')->group(function () {
             Route::post('/socorros/ambulance_services/store', [EmergenciasController::class, 'storeAmbulanceServices'])->name('ambulance_services.store');
             Route::post('/socorros/ambulance_services/end/{id}', [EmergenciasController::class, 'endService'])->name('ambulance_services.end');
 
-            Route::get('/Socorros/emergency', [EmergenciasController::class, 'registerEmergency'])->name('socorros.emergency.register');
+
+            Route::get('/Socorros/emergency/registrar', [EmergenciasController::class, 'registerEmergency'])->name('socorros.emergency.register');
+            Route::get('/Socorros/emergency/editar/{id}', [EmergenciasController::class, 'editarEmergency'])->name('socorros.emergency.editar');
             Route::post('/emergency', [EmergenciasController::class, 'emergencyStore'])->name('emergencia.store');
             Route::put('/emergency/update/{id}', [EmergenciasController::class, 'emergencyUpdate'])->name('emergencia.update');
+            Route::get('/Socorros/emergency/generate-pdf/{id}', [EmergenciasController::class, 'generatePDF'])->name('emergencia.generatePDF');
         });
 
 

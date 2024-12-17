@@ -1260,6 +1260,19 @@
                         oninput="searchPatient()">
                     <div id="searchResults" class="search-results"></div>
                 </div>
+                <div class="search-containerMedicamentos">
+                    <label for="searchMedicamento">Buscar Medicamento</label>
+                    <input type="text" id="searchMedicamento" placeholder="Buscar medicamento por nombre..."
+                        oninput="searchMedicamentos()">
+                    <div id="searchResultsMedicamento" class="search-resultsMedicamentos"></div>
+                </div>
+                <div class="search-containerMaterial">
+                    <label for="searchMaterial">Buscar Material</label>
+                    <input type="text" id="searchMaterial" placeholder="Buscar material medico por nombre..."
+                        oninput="searchMaterial()">
+                    <div id="searchResultsMaterial" class="search-resultsMaterial"></div>
+                </div>
+
                 <form action="{{ route('doctor.receta.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div style="display: flex; justify-content: space-between;">
@@ -1268,12 +1281,63 @@
                                 <input type="text" id="selectedPatient" name="selectedPatient" readonly>
                                 <input type="hidden" id="selectedPatientId" name="selectedPatientId">
                             </div>
-                            <div style="margin-bottom: 1rem;">
-                                <label for="tratamiento"
-                                    style="display: block; margin-bottom: 0.5rem;">Tratamiento</label>
-                                <textarea id="tratamiento" name="tratamiento" rows="4" required placeholder="Escribe el tratamiento aquí..."
-                                    style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; resize: vertical;"></textarea>
+                            <br>
+
+                            <div class="form-group" id="contSeleccionadoMedicamento" style="display: none;">
+                                <label for="selectedMedicamento">Medicamento: </label>
+                                <input type="text" id="selectedMedicamento" name="selectedMedicamento" readonly>
+                                <input type="hidden" id="selectedMedicamentoId" name="selectedMedicamentoId">
+
+                                <div>
+                                    <label for="durante">Durante: </label>
+                                    <div style="display: flex; justify-content: center;">
+                                        <input type="number" id="durante" name="durante">
+                                        <span style="justify-content: center; text-align: center; margin-left: 10px; align-items: center; align-content: center;"> Dias</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="cada">Cada: </label>
+                                    <div style="display: flex; justify-content: center;">
+                                        <input type="number" id="cada" name="cada">
+                                        <span style="justify-content: center; text-align: center; margin-left: 10px; align-items: center; align-content: center;"> Horas</span>
+                                    </div>
+                                </div>
+
+                                <a  class="btn btn-primary" id="agregarMedicamento" onclick="addMedicamento()">Agregar</a>
                             </div>
+
+                            <div class="form-group" id="contsSeleccionadoMaterial" style="display: none;">
+                                <label for="selectedMaterial">Material: </label>
+                                <input type="text" id="selectedMaterial" name="selectedMaterial" readonly>
+                                <input type="hidden" id="selectedMaterialId" name="selectedMaterialId">
+
+                                <div>
+                                    <label for="cantidad">Cantidad: </label>
+                                    <div style="display: flex; justify-content: center;">
+                                        <input type="number" id="cantidad">
+                                        <span style="justify-content: center; text-align: center; margin-left: 10px; align-items: center; align-content: center;"> Dias</span>
+                                    </div>
+                                </div>
+
+                                <a  class="btn btn-primary" id="agregarMaterial" onclick="addMaterial()">Agregar</a>
+                            </div>
+
+                                                    <!-- Contenedor para mostrar la lista de medicamentos agregados -->
+                            <div id="listaMedicamentos" style="display: none;">
+                                <h5>Tratamientos Agregados:</h5>
+                                <ul id="medicamentosList"></ul>
+                            </div>
+
+                            <textarea style="display: none;" id="tratamientoText" name="tratamiento"  readonly></textarea>
+
+
+                            <div id="listaMaterial" style="display: none;">
+                                <h5>Material Agregados:</h5>
+                                <ul id="MaterialList"></ul>
+                            </div>
+
+                            <textarea style="display: none;" id="MaterialText" name="material"  readonly></textarea>
 
                             <div style="margin-bottom: 1rem;">
                                 <label for="diagnostico"
@@ -1460,6 +1524,11 @@
 
     <script>
         const pacientes = @json($pacientes);
+        const medicamentos = @json($medicamentos);
+        const materiales = @json($inventarioMedico);
+        // Arreglo para almacenar los medicamentos seleccionados
+        let tratamientos = [];
+        let inventarioMedico = [];
         document.getElementById("menu").style.display = 'block';
         document.getElementById("menu2").style.display = 'none';
         document.getElementById("recipesTable").style.display = 'none';
@@ -1494,11 +1563,218 @@
 
         function selectPatient(patientId, patientName) {
             document.getElementById('selectedPatient').value = patientName;
+            document.getElementById('selectedPatient').style.display = 'none';
             document.getElementById('selectedPatientId').value = patientId;
             document.getElementById('searchResults').innerHTML = '';
             document.getElementById('searchPatient').value = patientName;
             document.getElementById('contSeleccionado').style.display = 'block';
         }
+
+        // MEDICAMENTOS
+
+        function searchMedicamentos() {
+            const searchQuery = document.getElementById('searchMedicamento').value.toLowerCase();
+            const searchResults = document.getElementById('searchResultsMedicamento');
+            searchResults.innerHTML = '';
+
+            if (searchQuery === '') return;
+
+            const filteredMedicaementos = medicamentos.filter(medicamento =>
+                medicamento.nombre.toLowerCase().includes(searchQuery) ||
+                medicamento.dosis.toLowerCase().includes(searchQuery) ||
+                medicamento.medida.toLowerCase().includes(searchQuery)
+            );
+
+            filteredMedicaementos.forEach(medicamento => {
+                const div = document.createElement('div');
+                div.textContent = `${medicamento.nombre} ${medicamento.dosis} ${medicamento.medida || ''}`
+                    .trim();
+                div.setAttribute('data-id', medicamento.id);
+                div.onclick = () => selectMedicamento(medicamento.id, div.textContent);
+                searchResults.appendChild(div);
+            });
+
+            if (filteredMedicaementos.length === 0) {
+                searchResults.innerHTML = '<div>No se encontraron Medicamentos</div>';
+            }
+        }
+
+        function selectMedicamento(patientId, patientName) {
+            document.getElementById('selectedMedicamento').value = patientName;
+            document.getElementById('selectedMedicamentoId').value = patientId;
+            document.getElementById('searchResultsMedicamento').innerHTML = '';
+            document.getElementById('searchMedicamento').value = '';
+            document.getElementById('contSeleccionadoMedicamento').style.display = 'block';
+        }
+
+        function addMedicamento(){
+            // Obtener valores de los campos
+            const medicamentoId = document.getElementById('selectedMedicamentoId').value;
+            const medicamentoNombre = document.getElementById('selectedMedicamento').value;
+            const durante = document.getElementById('durante').value;
+            const cada = document.getElementById('cada').value;
+
+            // Validar que los campos no estén vacíos
+            if (!medicamentoId || !medicamentoNombre || !durante || !cada) {
+                alert('Por favor completa todos los campos antes de agregar el tratamiento.');
+                return;
+            }
+
+            // Crear un objeto para el medicamento
+            const tratamiento = {
+                id: medicamentoId,
+                nombre: medicamentoNombre,
+                durante: durante,
+                cada: cada
+            };
+
+            // Agregar el objeto al arreglo
+            tratamientos.push(tratamiento);
+
+            // Actualizar la lista en el HTML
+            actualizarListaMedicamentos();
+
+            // Limpiar los campos después de agregar
+            document.getElementById('durante').value = '';
+            document.getElementById('cada').value = '';
+            document.getElementById('selectedMedicamento').value = '';
+            document.getElementById('selectedMedicamentoId').value = '';
+            document.getElementById('contSeleccionadoMedicamento').style.display = 'none';
+
+        };
+
+        function actualizarListaMedicamentos() {
+            const medicamentosList = document.getElementById('medicamentosList');
+            const medicamentosListDiv = document.getElementById('listaMedicamentos');
+            const inputTratamiento = document.getElementById('tratamientoText');
+            medicamentosList.innerHTML = ''; // Limpiar la lista
+            medicamentosListDiv.style.display = 'none';
+            inputTratamiento.value = '';
+
+
+            tratamientos.forEach((tratamiento, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${tratamiento.nombre} - Durante: ${tratamiento.durante} días, Cada: ${tratamiento.cada} horas`;
+
+                // Botón para eliminar un tratamiento
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.classList.add('btn', 'btn-danger', 'btn-sm');
+                btnEliminar.style.marginLeft = '10px';
+                btnEliminar.onclick = () => eliminarTratamiento(index);
+
+                li.appendChild(btnEliminar);
+                medicamentosListDiv.style.display = 'block';
+                medicamentosList.appendChild(li);
+                inputTratamiento.value += `${tratamiento.nombre} - Durante: ${tratamiento.durante} días, Cada: ${tratamiento.cada} horas\n`;
+            });
+        }
+
+        function eliminarTratamiento(index) {
+            tratamientos.splice(index, 1); // Eliminar del arreglo
+            actualizarListaMedicamentos(); // Actualizar la lista en el HTML
+        }
+
+        // MATERIAL MEDICO
+
+        function searchMaterial() {
+            const searchQuery = document.getElementById('searchMaterial').value.toLowerCase();
+            const searchResults = document.getElementById('searchResultsMaterial');
+            searchResults.innerHTML = '';
+
+            if (searchQuery === '') return;
+
+            const filteredMaterial = materiales.filter(material =>
+                material.nombre.toLowerCase().includes(searchQuery)
+            );
+
+            filteredMaterial.forEach(material => {
+                const div = document.createElement('div');
+                div.textContent = `${material.nombre}`
+                    .trim();
+                div.setAttribute('data-id', material.id);
+                div.onclick = () => selectMaterial(material.id, div.textContent);
+                searchResults.appendChild(div);
+            });
+
+            if (filteredMaterial.length === 0) {
+                searchResults.innerHTML = '<div>No se encontro material medico</div>';
+            }
+        }
+
+        function selectMaterial(patientId, patientName) {
+            document.getElementById('selectedMaterial').value = patientName;
+            document.getElementById('selectedMaterialId').value = patientId;
+            document.getElementById('searchResultsMaterial').innerHTML = '';
+            document.getElementById('searchMaterial').value = '';
+            document.getElementById('contsSeleccionadoMaterial').style.display = 'block';
+        }
+
+        function addMaterial(){
+            // Obtener valores de los campos
+            const MaterialId = document.getElementById('selectedMaterialId').value;
+            const MaterialNombre = document.getElementById('selectedMaterial').value;
+            const MaterialCantidad = document.getElementById('cantidad').value;
+
+            // Validar que los campos no estén vacíos
+            if (!MaterialId || !MaterialNombre || !MaterialCantidad) {
+                alert('Por favor completa todos los campos antes de agregar el material.');
+                return;
+            }
+
+            // Crear un objeto para el medicamento
+            const material = {
+                id: MaterialId,
+                nombre: MaterialNombre,
+                cantidad: MaterialCantidad
+            };
+
+            // Agregar el objeto al arreglo
+            inventarioMedico.push(material);
+
+            // Actualizar la lista en el HTML
+            actualizarListaMaterial();
+
+            // Limpiar los campos después de agregar
+            document.getElementById('cantidad').value = '';
+            document.getElementById('selectedMaterial').value = '';
+            document.getElementById('selectedMaterialId').value = '';
+            document.getElementById('contsSeleccionadoMaterial').style.display = 'none';
+
+        };
+
+        function actualizarListaMaterial() {
+            const medicamentosList = document.getElementById('MaterialList');
+            const medicamentosListDiv = document.getElementById('listaMaterial');
+            const inputTratamiento = document.getElementById('MaterialText');
+            medicamentosList.innerHTML = ''; // Limpiar la lista
+            medicamentosListDiv.style.display = 'none';
+            inputTratamiento.value = '';
+
+
+            inventarioMedico.forEach((material, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${material.nombre} - Cantidad: ${material.cantidad}`;
+
+                // Botón para eliminar un tratamiento
+                const btnEliminar = document.createElement('button');
+                btnEliminar.textContent = 'Eliminar';
+                btnEliminar.classList.add('btn', 'btn-danger', 'btn-sm');
+                btnEliminar.style.marginLeft = '10px';
+                btnEliminar.onclick = () => eliminarMaterial(index);
+
+                li.appendChild(btnEliminar);
+                medicamentosListDiv.style.display = 'block';
+                medicamentosList.appendChild(li);
+                inputTratamiento.value += `${material.nombre} - Cantidad: ${material.cantidad}\n`;
+            });
+        }
+
+        function eliminarMaterial(index) {
+            materiales.splice(index, 1); // Eliminar del arreglo
+            actualizarListaMaterial(); // Actualizar la lista en el HTML
+        }
+
 
         function toggleMenu() {
             const menu = document.querySelector("#menu");

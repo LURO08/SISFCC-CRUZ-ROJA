@@ -195,9 +195,9 @@
             <!-- Tabla de registros de atención -->
             <div class="table-responsive" style="height: 80vh; overflow: auto;">
                 <table class="table-auto w-full text-center border-collapse">
-                    <thead class="bg-pink-200">
-                        <tr>
-                            <th>#</th>
+                    <thead class="bg-blue-500" style="color: #fff; ">
+                        <tr >
+                            <th style="padding: 15px;">#</th>
                             <th>Ambulancia</th>
                             <th>Chofer</th>
                             <th>Paramedico</th>
@@ -207,33 +207,28 @@
                     </thead>
                     <tbody>
                         @foreach ($phases as $phase)
-                            <tr>
-                                <td>{{ $phase->folio }}</td>
-                                <td>{{ $phase->ambulance->placa ?? 'N/A' }}</td>
+                            <tr >
+                                <td style="padding: 15px;">{{ $phase->folio }}</td>
+                                <td style="padding: 15px;">{{ $phase->ambulance->placa ?? 'N/A' }}</td>
                                 <td>{{ $phase->chofer->Nombre ?? 'N/A' }}
-                                    {{ $phase->chofer->apellido_paterno ?? 'N/A' }}</td>
-                                <td>{{ $phase->paramedico->nombre ?? 'N/A' }}</td>
-                                <td>{{ $phase->created_at->format('Y-m-d H:i:s') }}</td>
+                                    {{ $phase->chofer->apellido_paterno ?? '' }}</td>
+                                <td style="padding: 15px;">{{ $phase->paramedico->Nombre ?? 'N/A' }}
+                                    {{ $phase->paramedico->apellido_paterno ?? '' }}</td>
+                                </td>
+                                <td style="padding: 15px;">{{ $phase->created_at->format('Y-m-d H:i:s') }}</td>
                                 <td style="width: 10%;">
-                                    <div class="btn-group-vertical" style="display: flex; flex-direction: column;">
-                                        <!-- Botón "Ver Detalles" con color rosa y efectos -->
-                                        <button style="margin:5px 0;"
-                                            class=" btn  btn-sm rounded-pill shadow-sm hover:bg-pink-600 bg-pink-600 text-white hover:shadow-lg transition-all duration-300"
-                                            data-bs-toggle="modal" data-bs-target="#registerHospitalAttentionModal">
-                                            Ver Detalles
-                                        </button>
+                                    <div class="btn-group-vertical" style="display: flex; flex-direction: row;">
 
                                         <!-- Botón "Editar" con color azul y efectos -->
-                                        <a href="#EditarHospitalAttentionModal" style="margin:5px 0;"
+                                        <a href="{{route('socorros.emergency.editar', $phase->folio)}}" style="margin:5px 0; margin-right: 10px;"
                                             class="btn  btn-sm rounded-pill shadow-sm hover:bg-blue-700 bg-blue-700 text-white hover:shadow-lg transition-all duration-300">
                                             Editar
                                         </a>
 
+                                        <a href="{{route('emergencia.generatePDF',$phase->folio)}}" style="margin:5px 0;"
+                                        class="btn  btn-sm rounded-pill shadow-sm hover:bg-blue-700 bg-blue-700 text-white hover:shadow-lg transition-all duration-300">
+                                        Descargar</a>
                                         <!-- Botón "Descargar" con color verde y efectos -->
-                                        <button style="margin:5px 0;"
-                                            class="btn  btn-sm rounded-pill shadow-sm hover:bg-green-600 bg-green-600 text-white hover:shadow-lg transition-all duration-300">
-                                            Descargar
-                                        </button>
                                     </div>
                                 </td>
                             </tr>

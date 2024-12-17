@@ -165,20 +165,17 @@
                 </div>
 
                 <div class="overflow-y-auto"
-                    style="max-height: 60vh; border: 1px solid #e5e7eb; width:100%; margin: 0 auto;">
-                    <table class="table-auto w-full text-center border-collapse">
+                    style="max-height: 60vh; border: 1px solid #e5e7eb; width:100%; ">
+                    <table class="table-auto  text-center border-collapse" style="margin: 0 auto; width: 100%;">
                         <thead class="bg-blue-500 " style="color:#fff;">
                             <tr>
                                 <th class="px-4 py-2">Folio</th>
                                 <th class="px-4 py-2">Nombre</th>
                                 <th class="px-4 py-2">Apellido Paterno</th>
                                 <th class="px-4 py-2">Apellido Materno</th>
-                                <th class="px-4 py-2">Edad</th>
-                                <th class="px-4 py-2">Sexo</th>
                                 <th class="px-4 py-2">Cargo</th>
                                 <th class="px-4 py-2">Departamento</th>
                                 <th class="px-4 py-2">Usuario</th>
-                                <th class="px-4 py-2">Correo</th>
 
                                 <th class="px-4 py-2">Acciones</th>
                             </tr>
@@ -190,14 +187,14 @@
                                     <td class="border px-4 py-2">{{ $personal->Nombre }}</td>
                                     <td class="border px-4 py-2">{{ $personal->apellido_paterno }}</td>
                                     <td class="border px-4 py-2">{{ $personal->apellido_materno }}</td>
-                                    <td class="border px-4 py-2">{{ $personal->Edad }}</td>
-                                    <td class="border px-4 py-2">{{ $personal->Sexo }}</td>
                                     <td class="border px-4 py-2">{{ $personal->Cargo }}</td>
                                     <td class="border px-4 py-2">{{ $personal->Departamento }}</td>
-                                    <td class="border px-4 py-2">{{ $personal->usuario->name }}</td>
-                                    <td class="border px-4 py-2">{{ $personal->usuario->email }}</td>
+                                    <td class="border px-4 py-2">
+                                        {{ optional($personal->usuario)->name ?? 'N/A' }}
+                                    </td>
 
-                                    <td class="border px-4 py-2 flex justify-center gap-2">
+
+                                    <td class="border px-4 py-2 flex justify-center gap-2" >
                                         <div class="flex flex-col">
                                             <a href="#personalInfoModal-{{ $personal->id }}"
                                                 class="inline-block px-4 py-2 bg-blue-700 text-white font-semibold rounded-md hover:bg-blue-600 mb-2">Ver</a>
@@ -505,15 +502,18 @@
                                                     <div style="text-align: left; width: 100%;">
                                                         <p style="margin: 5px 0; color: #555;">
                                                             <strong>Usuario: </strong>
-                                                            {{ $personal->usuario->name }}
+                                                            {{ optional($personal->usuario)->name ?? 'Sin nombre' }}
+
                                                         </p>
                                                         <p style="margin: 5px 0; color: #555;"><strong>Correo:
                                                             </strong>
-                                                            {{ $personal->usuario->email }}</p>
-                                                        <p style="margin: 5px 0; color: #555;"><strong>Creado:
-                                                            </strong>
-                                                            {{ $personal->usuario->getFecha() }} a las
-                                                            {{ $personal->usuario->getHora() }}</p>
+                                                            {{ $personal->usuario->email ?? 'Sin Usuario' }}</p>
+                                                            <p style="margin: 5px 0; color: #555;">
+                                                                <strong>Creado:</strong>
+                                                                {{ optional($personal->usuario)->getFecha() ?? 'Fecha no disponible' }}
+                                                                a las {{ optional($personal->usuario)->getHora() ?? 'Hora no disponible' }}
+                                                            </p>
+
 
                                                     </div>
                                                 </div>

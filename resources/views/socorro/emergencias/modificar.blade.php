@@ -523,64 +523,96 @@
             @include('socorro.menu_nav')
 
             <div>
-                <a href="{{route('socorros.index')}}" class="btn btn-primary bg-pink-600 mb-3" style="width: 50%; margin: 0 auto;">Regresar</a>
 
-                <form action="{{ route('emergencia.store') }}" method="POST"
-                    class="p-4 bg-gray-100 rounded-lg shadow-md " style="width: 100%; max-width: 90%; min-width: 80%;">
+                <form action="{{ route('emergencia.update', $phases->id) }}" method="POST"
+                    class="p-4 bg-gray-100 rounded-lg shadow-md "
+                    style="width: 100%; max-width: 90%; min-width: 80%; margin: 0 auto;  margin-top: 0px;">
                     @csrf
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <div id="buttons-container" class="flex gap-1 mr-10" style=" margin: 0 auto; height: 20%;">
-                            <!-- Primera fila -->
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase1">
-                                🚑 Ambulancia
-                            </button>
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase2">
-                                🛑 Control y Accidente
-                            </button>
+                    @method('PUT')
 
-                            <!-- Segunda fila -->
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase4">
-                                📍 Ubicación y Motivo
-                            </button>
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;" id="btnphase6"
-                                style="display: none;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase6">
-                                👶 Parto
-                            </button>
-                            <!-- Tercera fila -->
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase7">
-                                ✅ Evaluación Inicial
-                            </button>
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase8">
-                                🩹 Evaluación Secundaria
-                            </button>
-                            <button type="button" style="height: 80px; width: 100%; padding: 5px;"
-                                class="btn-nav px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                data-target="phase9">
-                                💊 Tratamiento
-                            </button>
+                     <div class="flex flex-wrap justify-center gap-4">
+                        <div id="buttons-container" class="flex gap-2" style=" margin: 0 auto; height: 20%; max-width: 100%;">
+
+                            <div style="min-width: 10%; max-width: 20%; display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
+                                <a href="{{ route('socorros.index') }}"
+                                    class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold  rounded-lg flex flex-col items-center justify-center gap-2 shadow-lg transition-transform transform hover:scale-90"
+                                    style="width: 100%; height:90%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-white transform -rotate-180" viewBox="4 3 10 10">
+                                        <path fill-rule="evenodd" d="M8 3.293a.5.5 0 0 1 .854-.353l4.5 4.5a.5.5 0 0 1 0 .707l-4.5 4.5a.5.5 0 1 1-.707-.707L11.293 8 8.146 4.854A.5.5 0 0 1 8 3.293z"/>
+                                        <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5z"/>
+                                    </svg>
+                                    <span>Regresar</span>
+                                </a>
+                            </div>
+
+                            <div>
+                                <!-- Primera fila -->
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase1">
+                                    DATOS SERVICIO
+                                </button>
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase2">
+                                    CONTROL / PACIENTE
+                                </button>
+
+
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase4">
+                                    CAUSAS TRAUMÁTICA / CLINICA
+                                </button>
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase6">
+                                    PARTO
+                                </button>
+
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase7">
+                                    EVALUACIÓN INICIAL
+                                </button>
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase8">
+                                    EVALUACIÓN SECUNDARIA
+                                </button>
+                            </div>
+
+                            <div>
+                                <button type="button" class="btn-nav bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6
+                                rounded-lg flex items-center justify-center gap-3 shadow-lg transition-transform transform hover:scale-90"
+                                style="width: 100%; height: 50%; margin: 0 auto; margin-bottom: 5px;"
+                                    data-target="phase9">
+                                    TRATAMIENTO
+                                </button>
+                            </div>
                         </div>
 
                         <div style=" margin-top: 30px; margin: 0 auto;">
-                            <!-- Fase 1: Información de Ambulancia -->
+                            <!-- Fase 1: Información de Ambulancia (Edición) -->
                             <div class="phase bg-white p-6 rounded-lg shadow-md" id="phase1">
                                 <div class="max-h-[55vh] overflow-y-auto">
                                     <!-- Encabezado -->
-                                    <h2 class="text-2xl font-extrabold text-center text-blue-600 mb-4">Fase 1: Datos del
+                                    <h2 class="text-2xl font-extrabold text-center text-blue-600 mb-4">Editar Datos del
                                         Servicio</h2>
-                                    <h6 class="text-lg font-bold text-gray-700 mb-6 text-center">Cronometría y Detalles
-                                        del Servicio</h6>
+                                    <h6 class="text-lg font-bold text-gray-700 mb-6 text-center">Actualiza los detalles
+                                        del servicio</h6>
 
                                     <!-- Cronometría -->
                                     <div class="mb-6">
@@ -591,42 +623,49 @@
                                                     class="form-label text-sm font-medium text-gray-600">Hora de
                                                     Llamada</label>
                                                 <input type="time" name="hora_llamada" id="hora_llamada"
-                                                    class="form-control border-gray-300 rounded-lg">
+                                                    class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->hora_llamada ?? '' }}">
                                             </div>
+
                                             <div class="form-group">
                                                 <label for="hora_despacho"
                                                     class="form-label text-sm font-medium text-gray-600">Hora de
                                                     Despacho</label>
                                                 <input type="time" name="hora_despacho" id="hora_despacho"
-                                                    class="form-control border-gray-300 rounded-lg">
+                                                    class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->hora_despacho ?? '' }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="hora_arribo"
                                                     class="form-label text-sm font-medium text-gray-600">Hora de
                                                     Arribo</label>
                                                 <input type="time" name="hora_arribo" id="hora_arribo"
-                                                    class="form-control border-gray-300 rounded-lg">
+                                                    class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->hora_arribo ?? '' }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="hora_traslado"
                                                     class="form-label text-sm font-medium text-gray-600">Hora de
                                                     Traslado</label>
                                                 <input type="time" name="hora_traslado" id="hora_traslado"
-                                                    class="form-control border-gray-300 rounded-lg">
+                                                    class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->hora_traslado ?? '' }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="hora_hospital"
                                                     class="form-label text-sm font-medium text-gray-600">Hora en
                                                     Hospital</label>
                                                 <input type="time" name="hora_hospital" id="hora_hospital"
-                                                    class="form-control border-gray-300 rounded-lg">
+                                                    class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->hora_hospital ?? '' }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="hora_disponible"
                                                     class="form-label text-sm font-medium text-gray-600">Hora
                                                     Disponible</label>
                                                 <input type="time" name="hora_disponible" id="hora_disponible"
-                                                    class="form-control border-gray-300 rounded-lg">
+                                                    class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->hora_disponible ?? '' }}">
                                             </div>
                                         </div>
                                     </div>
@@ -640,12 +679,22 @@
                                                 Atención</label>
                                             <select name="motivo_atencion" id="motivo_atencion"
                                                 class="form-select border-gray-300 rounded-lg">
-                                                <option value="" disabled selected>Seleccionar</option>
-                                                <option value="1">Enfermedad</option>
-                                                <option value="2">Traumatismo</option>
-                                                <option value="3">Ginecoobstétrico</option>
-                                                <option value="4">Traslado</option>
-                                                <option value="5">Servicio Especial</option>
+                                                <option value="" disabled>Seleccionar</option>
+                                                <option value="1"
+                                                    {{ ($phases->motivo_atencion ?? '') == '1' ? 'selected' : '' }}>
+                                                    Enfermedad</option>
+                                                <option value="2"
+                                                    {{ ($phases->motivo_atencion ?? '') == '2' ? 'selected' : '' }}>
+                                                    Traumatismo</option>
+                                                <option value="3"
+                                                    {{ ($phases->motivo_atencion ?? '') == '3' ? 'selected' : '' }}>
+                                                    Ginecoobstétrico</option>
+                                                <option value="4"
+                                                    {{ ($phases->motivo_atencion ?? '') == '4' ? 'selected' : '' }}>
+                                                    Traslado</option>
+                                                <option value="5"
+                                                    {{ ($phases->motivo_atencion ?? '') == '5' ? 'selected' : '' }}>
+                                                    Servicio Especial</option>
                                             </select>
                                         </div>
 
@@ -658,6 +707,7 @@
                                                 <input type="text" name="direccion_accidente"
                                                     id="direccion_accidente"
                                                     class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->direccion_accidente ?? '' }}"
                                                     placeholder="Dirección">
                                             </div>
                                             <div class="form-group">
@@ -667,6 +717,7 @@
                                                 <input type="text" name="entre_calles_accidente"
                                                     id="entre_calles_accidente"
                                                     class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->entre_calles_accidente ?? '' }}"
                                                     placeholder="Calles cercanas">
                                             </div>
                                             <div class="form-group">
@@ -674,6 +725,7 @@
                                                     class="form-label text-sm font-medium text-gray-600">Colonia</label>
                                                 <input type="text" name="colonia_accidente" id="colonia_accidente"
                                                     class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->colonia_accidente ?? '' }}"
                                                     placeholder="Colonia">
                                             </div>
                                             <div class="form-group">
@@ -682,6 +734,7 @@
                                                 <input type="text" name="municipio_accidente"
                                                     id="municipio_accidente"
                                                     class="form-control border-gray-300 rounded-lg"
+                                                    value="{{ $phases->municipio_accidente ?? '' }}"
                                                     placeholder="Municipio">
                                             </div>
                                         </div>
@@ -694,23 +747,36 @@
                                             Ocurrencia</label>
                                         <select name="lugar_ocurrencia" id="lugar_ocurrencia"
                                             class="form-select border-gray-300 rounded-lg">
-                                            <option value="viapublica">Vía Pública</option>
-                                            <option value="casa">Casa</option>
-                                            <option value="trabajo">Trabajo</option>
-                                            <option value="escuela">Escuela</option>
-                                            <option value="transportepublico">Transporte Público</option>
-                                            <option value="otro">Otro</option>
+                                            <option value="viapublica"
+                                                {{ ($phases->lugar_ocurrencia ?? '') == 'viapublica' ? 'selected' : '' }}>
+                                                Vía Pública</option>
+                                            <option value="casa"
+                                                {{ ($phases->lugar_ocurrencia ?? '') == 'casa' ? 'selected' : '' }}>
+                                                Casa</option>
+                                            <option value="trabajo"
+                                                {{ ($phases->lugar_ocurrencia ?? '') == 'trabajo' ? 'selected' : '' }}>
+                                                Trabajo</option>
+                                            <option value="escuela"
+                                                {{ ($phases->lugar_ocurrencia ?? '') == 'escuela' ? 'selected' : '' }}>
+                                                Escuela</option>
+                                            <option value="transportepublico"
+                                                {{ ($phases->lugar_ocurrencia ?? '') == 'transportepublico' ? 'selected' : '' }}>
+                                                Transporte Público</option>
+                                            <option value="otro"
+                                                {{ ($phases->lugar_ocurrencia ?? '') == 'otro' ? 'selected' : '' }}>
+                                                Otro</option>
                                         </select>
                                     </div>
 
-                                    <!-- Campo adicional oculto -->
-                                    <div class="form-group hidden mb-6" id="otro_lugar_div">
+                                    <!-- Campo adicional para "otro" -->
+                                    <div class="form-group {{ ($phases->lugar_ocurrencia ?? '') == 'otro' ? '' : 'hidden' }} mb-6"
+                                        id="otro_lugar_div">
                                         <label for="otro_lugar"
                                             class="form-label text-sm font-medium text-gray-600">Especificar otro
                                             lugar</label>
                                         <input type="text" name="otro_lugar" id="otro_lugar"
                                             class="form-control border-gray-300 rounded-lg"
-                                            placeholder="Especificar lugar">
+                                            value="{{ $phases->otro_lugar ?? '' }}" placeholder="Especificar lugar">
                                     </div>
                                 </div>
 
@@ -721,16 +787,14 @@
                                         id="nextPhase1">Siguiente</button>
                                     <button type="submit"
                                         class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-md hover:bg-green-600 transition">
-                                        <i class="bi bi-check-circle"></i> Registrar Atención
+                                        <i class="bi bi-save"></i> Guardar Cambios
                                     </button>
                                 </div>
                             </div>
 
-
                             <!-- Fase 2: Control y Fase 3: Accidente -->
                             <div class="phase" id="phase2" style="display:none;">
-                                <div style="  height: 60vh; max-height: 60vh; overflow-y: auto; display: flex;">
-
+                                <div style="height: 60vh; max-height: 60vh; overflow-y: auto; display: flex;">
                                     <div>
                                         <h6 class="font-bold">Fase 2: Control</h6>
                                         <div class="form-group">
@@ -738,14 +802,15 @@
                                                 Ambulancia</label>
                                             <select name="ambulance_id" id="ambulance_id" class="form-select">
                                                 <option value="" disabled selected>Seleccionar</option>
-                                                @foreach ($ambulanceServices as $service)
+                                                @foreach ($ambulanceServices as $phases)
                                                     @php
-                                                        $status = strtolower(trim($service->status)); // Normalizamos el valor del estado.
+                                                        $status = strtolower(trim($phases->status)); // Normalizamos el valor del estado.
                                                     @endphp
-                                                    @if ($status === 'en servicio' && $service->ambulancia)
-                                                        <option value="{{ $service->ambulancia->id }}">
-                                                            {{ $service->ambulancia->marca }}
-                                                            ({{ $service->ambulancia->placa }})
+                                                    @if ($status === 'en servicio' && $phases->ambulancia)
+                                                        <option value="{{ $phases->ambulancia->id }}"
+                                                            {{ ($phases->phase2->ambulance_id ?? '') == $phases->ambulancia->id ? 'selected' : '' }}>
+                                                            {{ $phases->ambulancia->marca }}
+                                                            ({{ $phases->ambulancia->placa }})
                                                         </option>
                                                     @endif
                                                 @endforeach
@@ -762,9 +827,9 @@
                                                             $cargo = strtolower(trim($person->Cargo)); // Normalizamos el valor del cargo
                                                         @endphp
                                                         @if ($cargo === 'chofer')
-                                                            <option value="{{ $person->id }}">
-                                                                {{ $person->Nombre }}
-                                                                {{ $person->apellido_paterno }}
+                                                            <option value="{{ $person->id }}"
+                                                                {{ ($phases->phase2->chofer_id ?? '') == $person->id ? 'selected' : '' }}>
+                                                                {{ $person->Nombre }} {{ $person->apellido_paterno }}
                                                                 {{ $person->apellido_materno }}
                                                             </option>
                                                         @endif
@@ -786,7 +851,8 @@
                                                         $cargo = strtolower(trim($person->Cargo)); // Normalizamos el valor del cargo
                                                     @endphp
                                                     @if ($cargo === 'paramédico')
-                                                        <option value="{{ $person->id }}">
+                                                        <option value="{{ $person->id }}"
+                                                            {{ ($phases->phase2->paramedico_id ?? '') == $person->id ? 'selected' : '' }}>
                                                             {{ $person->Nombre }} {{ $person->apellido_paterno }}
                                                             {{ $person->apellido_materno }}
                                                         </option>
@@ -796,18 +862,18 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="ambulance_id" class="form-label">Selecciona un
-                                                Helicoptero(Opcional)</label>
+                                            <label for="helicoptero_id" class="form-label">Selecciona un Helicóptero
+                                                (Opcional)</label>
                                             <select name="helicoptero_id" id="helicoptero_id" class="form-select">
                                                 <option value="" disabled selected>Seleccionar</option>
                                                 @foreach ($helicopteros as $helicoptero)
                                                     @php
-                                                        $tipo = strtolower(trim($helicoptero->tipo)); // Normalizamos el valor del estado.
+                                                        $tipo = strtolower(trim($helicoptero->tipo)); // Normalizamos el valor del tipo
                                                     @endphp
                                                     @if ($tipo === 'helicoptero')
-                                                        <option value="{{ $helicoptero->id }}">
-                                                            {{ $helicoptero->marca }}
-                                                            ({{ $helicoptero->placa }})
+                                                        <option value="{{ $helicoptero->id }}"
+                                                            {{ ($phases->phase2->helicoptero_id ?? '') == $helicoptero->id ? 'selected' : '' }}>
+                                                            {{ $helicoptero->marca }} ({{ $helicoptero->placa }})
                                                         </option>
                                                     @endif
                                                 @endforeach
@@ -818,102 +884,114 @@
                                         <div class="form-group mb-3">
                                             <label for="nombre" class="form-label">Nombre</label>
                                             <input type="text" name="nombre" id="nombre" class="form-control"
-                                                placeholder="Nombre del paciente">
+                                                placeholder="Nombre del paciente"
+                                                value="{{ $phases3->nombre ?? '' }}">
                                         </div>
                                         <div class="form-group mb-3">
-                                            <label for="apellidopaterno" class="form-label">Apellido
-                                                Paterno</label>
-                                            <input type="text" name="apellidopaterno" id="apellidopaterno"
-                                                class="form-control" placeholder="Apellido paterno">
+                                            <label for="apellidopaterno" class="form-label">Apellido Paterno</label>
+                                            <input type="text" name="apellido_paterno" id="apellidopaterno"
+                                                class="form-control" placeholder="Apellido paterno"
+                                                value="{{ $phases3->apellido_paterno ?? '' }}">
                                         </div>
                                     </div>
 
                                     <div style="display: flex;">
                                         <div style="padding: 10px;">
-
                                             <div class="form-group mb-3">
                                                 <label for="apellidomaterno" class="form-label">Apellido
                                                     Materno</label>
-                                                <input type="text" name="apellidomaterno" id="apellidomaterno"
-                                                    class="form-control" placeholder="Apellido materno">
+                                                <input type="text" name="apellido_materno" id="apellidomaterno"
+                                                    class="form-control" placeholder="Apellido materno"
+                                                    value="{{ $phases3->apellido_materno ?? '' }}">
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="edad" class="form-label">Edad</label>
                                                 <input type="number" name="edad" id="edad"
-                                                    class="form-control" placeholder="Edad del paciente">
+                                                    class="form-control" placeholder="Edad del paciente"
+                                                    value="{{ $phases3->edad ?? '' }}">
                                             </div>
-                                            <div class="form-group mb-3" id="meses-container" style="display: none;">
+                                            <div class="form-group mb-3" id="meses-container"
+                                                style="display: {{ $phases3->edad && $phases3->edad < 1 ? 'block' : 'none' }};">
                                                 <label for="meses" class="form-label">Meses</label>
                                                 <input type="number" name="meses" id="meses"
                                                     class="form-control" placeholder="Meses del paciente"
-                                                    min="1" max="11">
+                                                    value="{{ $phases3->meses ?? '' }}" min="1"
+                                                    max="11">
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="sexo" class="form-label">Sexo</label>
                                                 <select name="sexo" id="sexo" class="form-select">
-                                                    <option value="masculino">Masculino</option>
-                                                    <option value="femenino">Femenino</option>
-                                                    <option value="otro">Otro</option>
+                                                    <option value="masculino"
+                                                        {{ ($phases3->sexo ?? '') == 'masculino' ? 'selected' : '' }}>
+                                                        Masculino</option>
+                                                    <option value="femenino"
+                                                        {{ ($phases3->sexo ?? '') == 'femenino' ? 'selected' : '' }}>
+                                                        Femenino</option>
+                                                    <option value="otro"
+                                                        {{ ($phases3->sexo ?? '') == 'otro' ? 'selected' : '' }}>
+                                                        Otro</option>
                                                 </select>
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="tipo_sangre" class="form-label">Tipo de Sangre</label>
                                                 <input type="text" name="tipo_sangre" id="tipo_sangre"
-                                                    class="form-control" placeholder="Tipo de sangre">
+                                                    class="form-control" placeholder="Tipo de sangre"
+                                                    value="{{ $phases3->tipo_sangre ?? '' }}">
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="domicilio" class="form-label">Domicilio</label>
                                                 <input type="text" name="domicilio" id="domicilio"
-                                                    class="form-control" placeholder="Domicilio del paciente">
+                                                    class="form-control" placeholder="Domicilio del paciente"
+                                                    value="{{ $phases3->domicilio ?? '' }}">
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="colonia" class="form-label">Colonia / Comunidad</label>
                                                 <input type="text" name="colonia" id="colonia"
-                                                    class="form-control" placeholder="Colonia del paciente">
+                                                    class="form-control" placeholder="Colonia del paciente"
+                                                    value="{{ $phases3->colonia ?? '' }}">
                                             </div>
                                         </div>
 
                                         <div style="padding: 10px;">
-
                                             <div class="form-group mb-3">
-                                                <label for="alcaldia" class="form-label">Alcaldia / Municipio</label>
+                                                <label for="alcaldia" class="form-label">Alcaldía / Municipio</label>
                                                 <input type="text" name="alcaldia" id="alcaldia"
-                                                    class="form-control" placeholder="Alcaldia del paciente">
+                                                    class="form-control" placeholder="Alcaldía del paciente"
+                                                    value="{{ $phases3->alcaldia ?? '' }}">
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="telefono" class="form-label">Teléfono</label>
                                                 <input type="text" name="telefono" id="telefono"
-                                                    class="form-control" placeholder="Teléfono de contacto">
+                                                    class="form-control" placeholder="Teléfono de contacto"
+                                                    value="{{ $phases3->telefono ?? '' }}">
                                             </div>
+
+
                                             <div class="form-group mb-3">
                                                 <label for="ocupacion" class="form-label">Ocupación</label>
                                                 <input type="text" name="ocupacion" id="ocupacion"
-                                                    class="form-control" placeholder="Ocupación del paciente">
+                                                    class="form-control" placeholder="Ocupación del paciente"
+                                                    value="{{ $phases3->ocupacion ?? '' }}">
                                             </div>
                                             <div class="form-group mb-3">
                                                 <label for="derechohabiente"
                                                     class="form-label">Derechohabiente</label>
                                                 <input type="text" name="derechohabiente" id="derechohabiente"
                                                     class="form-control"
-                                                    placeholder="Institución de derechohabiencia">
+                                                    placeholder="Institución de derechohabiencia"
+                                                    value="{{ $phases3->derechohabiente ?? '' }}">
                                             </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="companiaseguro" class="form-label">Compañia seguro gastos
                                                     medicos</label>
-                                                <input type="text" name="companiaseguro" id="companiaseguro"
+                                                <input type="text" name="compania_seguro" id="companiaseguro"
                                                     class="form-control"
-                                                    placeholder="Compañia de seguro de gastos medicos del paciente">
+                                                    placeholder="Compañia de seguro de gastos medicos del paciente"
+                                                    value="{{ $phases3->compania_seguro ?? '' }}">
                                             </div>
                                         </div>
-
-
-
                                     </div>
-
-
-
-
                                 </div>
 
                                 <div class="flex justify-center space-x-4 mt-4">
@@ -923,6 +1001,11 @@
                                     <button type="button"
                                         class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
                                         id="prevPhase2">Atrás</button>
+
+                                        <button type="submit"
+                                        class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-md hover:bg-green-600 transition">
+                                        <i class="bi bi-save"></i> Guardar Cambios
+                                    </button>
                                 </div>
                             </div>
 
@@ -940,29 +1023,30 @@
                                                 <select name="agente_causal" id="agente_causal" class="form-select">
                                                     <option value="" disabled selected>Selecciona una opción
                                                     </option>
-                                                    <option value="arma">1. Arma</option>
-                                                    <option value="juguete">2. Juguete</option>
-                                                    <option value="automotor">3. Automotor</option>
-                                                    <option value="bicicleta_scooter">4. Bicicleta / Scooter</option>
-                                                    <option value="producto_biologico_quimico">5. Producto Biológico /
+                                                    <option value="1">1. Arma</option>
+                                                    <option value="2">2. Juguete</option>
+                                                    <option value="3">3. Automotor</option>
+                                                    <option value="4">4. Bicicleta / Scooter</option>
+                                                    <option value="5">5. Producto Biológico /
                                                         Químico
                                                     </option>
-                                                    <option value="maquinaria">6. Maquinaria</option>
-                                                    <option value="herramienta">7. Herramienta</option>
-                                                    <option value="fuego">8. Fuego</option>
-                                                    <option value="sustancia_objeto_caliente">9. Sustancia / Objeto
+                                                    <option value="6">6. Maquinaria</option>
+                                                    <option value="7">7. Herramienta</option>
+                                                    <option value="8">8. Fuego</option>
+                                                    <option value="9">9. Sustancia / Objeto
                                                         Caliente
                                                     </option>
-                                                    <option value="sustancia_toxica">10. Sustancia Tóxica</option>
-                                                    <option value="electricidad">11. Electricidad</option>
-                                                    <option value="explosion">12. Explosión</option>
-                                                    <option value="ser_humano">13. Ser Humano</option>
-                                                    <option value="animal">14. Animal</option>
-                                                    <option value="otro">15. Otro</option>
+                                                    <option value="10">10. Sustancia Tóxica</option>
+                                                    <option value="11">11. Electricidad</option>
+                                                    <option value="12">12. Explosión</option>
+                                                    <option value="13">13. Ser Humano</option>
+                                                    <option value="14">14. Animal</option>
+                                                    <option value="15">15. Otro</option>
                                                 </select>
                                             </div>
 
-                                            <div class="form-group mt-3" id="especificar_otro" style="display: none;">
+                                            <div class="form-group mt-3" id="especificar_otro"
+                                                style="display: none;">
                                                 <label for="especificar" class="form-label">Especifique</label>
                                                 <input type="text" name="especificar" id="especificar"
                                                     class="form-control" placeholder="Especifique el agente causal">
@@ -978,9 +1062,10 @@
                                             <div class="form-group">
                                                 <label for="tipo_accidente" class="form-label">Tipo de
                                                     Accidente</label>
-                                                <select id="tipo_accidente" name="tipo_accidente" class="form-control"
-                                                    onchange="mostrarDetallesAccidente()">
-                                                    <option value="" disabled selected>Seleccione el tipo de accidente</option>
+                                                <select id="tipo_accidente" name="tipo_accidente"
+                                                    class="form-control" onchange="mostrarDetallesAccidente()">
+                                                    <option value="" disabled selected>Seleccione el tipo de
+                                                        accidente</option>
                                                     <option value="automovilistico">Automovilístico</option>
                                                     <option value="atropellado">Atropellado</option>
                                                 </select>
@@ -991,7 +1076,7 @@
                                                     <label for="atropelladopor" class="form-label">Atropellado
                                                         por</label>
                                                     <select id="atropelladopor" name="atropelladopor"
-                                                        class="form-control" onchange="mostrarDetallesAccidente()">
+                                                        class="form-control">
                                                         <option value="">Seleccione el tipo de accidente</option>
                                                         <option value="motocicleta">Motocicleta</option>
                                                         <option value="automotor">AutoMotor</option>
@@ -1003,20 +1088,10 @@
 
                                             <div id="accidente_automovilistico_2" style="display: none;">
                                                 <br>
-                                                <h2 class="font-bold" style="text-align: center; border-bottom: 1px solid; width: 80%; margin: 0 auto;" >Detalles accidente Automovilistico</h2>
+                                                <h2 class="font-bold"
+                                                    style="text-align: center; border-bottom: 1px solid; width: 80%; margin: 0 auto;">
+                                                    Detalles accidente Automovilistico</h2>
                                                 <br>
-                                                <div class="form-group" id="select_automovilistico">
-                                                    <label for="colision" class="form-label">Accidente
-                                                        Automovilístico</label>
-                                                    <select id="colision" name="colision" class="form-control">
-                                                        <option value="colision">Colisión</option>
-                                                        <option value="moto">Motocicleta</option>
-                                                        <option value="automotor">Automotor</option>
-                                                        <option value="bicicleta">Bicicleta</option>
-                                                        <option value="maquinaria">Maquinaria</option>
-                                                    </select>
-                                                </div>
-
                                                 <div class="form-group" id="select_automovilistico">
                                                     <label for="colision" class="form-label">Accidente
                                                         Automovilístico</label>
@@ -1040,7 +1115,8 @@
 
                                                 <div class="form-group">
                                                     <label for="contraobjeto" class="form-label">Contra Objeto</label>
-                                                    <select name="contraobjeto" id="contraobjeto" class="form-select">
+                                                    <select name="contraobjeto" id="contraobjeto"
+                                                        class="form-select">
                                                         <option value="" disabled selected>Selecciona una opción
                                                         </option>
                                                         <option value="fijo">Fijo</option>
@@ -1101,14 +1177,8 @@
                                                         <option value="no">No</option>
                                                     </select>
                                                 </div>
-
-
-
                                             </div>
                                         </div>
-
-
-
                                     </div>
 
                                     <div style="padding: 10px;">
@@ -1183,49 +1253,25 @@
                                                 class="form-control" placeholder="Subsecuente">
                                         </div>
                                     </div>
-
                                 </div>
-                                <div class="flex flex-col justify-center items-center space-y-4 mt-4">
-                                    <!-- Botones de navegación (Siguiente y Atrás) -->
-                                    <div class="flex justify-center space-x-4">
-                                        <button type="button"
-                                            class="btn-footer px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600 transition"
-                                            id="nextPhase4">Siguiente
-                                        </button>
-                                        <button type="button"
-                                            class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600 transition"
-                                            id="prevPhase4">Atrás
-                                        </button>
-                                    </div>
-
-                                    <!-- Botón Registrar Atención -->
-                                    <div class="flex justify-center">
-                                        <button type="submit"
-                                            class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-md hover:bg-green-600 transition">
-                                            <i class="bi bi-check-circle"></i> Registrar Atención
-                                        </button>
-                                    </div>
-                                </div>
-
                             </div>
+                            <!-- Fase 5: Causa Clinica -->
+                            <div class="phase" id="phase5" style="display:none;">
+                                <div id="Fase5">
+                                    <div style="max-height: 60vh; overflow-y: auto;">
 
-                                <!-- Fase 5: Causa Clinica -->
-                                <div class="phase" id="phase5" style="display:none;">
-                                    <div id="Fase5">
-                                        <div style="max-height: 60vh; overflow-y: auto;">
+                                    </div>
 
-                                        </div>
-
-                                        <div class="flex justify-center space-x-4 mt-4">
-                                            <button type="button"
-                                                class="btn-footer px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
-                                                id="nextPhase5">Siguiente</button>
-                                            <button type="button"
-                                                class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
-                                                id="prevPhase5">Atrás</button>
-                                        </div>
+                                    <div class="flex justify-center space-x-4 mt-4">
+                                        <button type="button"
+                                            class="btn-footer px-4 py-2 bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-600"
+                                            id="nextPhase5">Siguiente</button>
+                                        <button type="button"
+                                            class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-md hover:bg-gray-600"
+                                            id="prevPhase5">Atrás</button>
                                     </div>
                                 </div>
+                            </div>
                             <!-- Fase 6: Parto -->
                             <div class="phase" id="phase6" style="display: none;">
                                 <div style="max-height: 60vh; overflow-y: auto;">
@@ -1667,7 +1713,8 @@
                                                                 11</td>
                                                             <td class="border border-gray-500 px-2 py-1 text-center">
                                                                 <input type="checkbox" id="laceraciones"
-                                                                    name="exploracion_fisica[]" value="laceraciones">
+                                                                    name="exploracion_fisica[]"
+                                                                    value="laceraciones">
                                                             </td>
                                                             <td class="border border-gray-500 px-2 py-1">
                                                                 Laceraciones</td>
@@ -2568,7 +2615,7 @@
 
                 document.getElementById('lugar_ocurrencia').addEventListener('change', function() {
                     const otroLugarDiv = document.getElementById('otro_lugar_div');
-                    if (this.value === 'other') {
+                    if (this.value === 'otro') {
                         otroLugarDiv.style.display = 'block';
                     } else {
                         otroLugarDiv.style.display = 'none';
@@ -2601,7 +2648,7 @@
 
                 document.getElementById('agente_causal').addEventListener('change', function() {
                     const especificarOtro = document.getElementById('especificar_otro');
-                    if (this.value === 'otro') {
+                    if (this.value === '15') {
                         especificarOtro.style.display = 'block';
                     } else {
                         especificarOtro.style.display = 'none';
@@ -2613,16 +2660,27 @@
 
                     // Ocultar todos los divs de accidentes
                     var todosAccidentes = document.querySelectorAll('[id^="accidente_"]');
-                    todosAccidentes.forEach(function (detalle) {
+                    todosAccidentes.forEach(function(detalle) {
+                        // Limpiar los campos dentro del div oculto
+                        detalle.querySelectorAll('input, textarea, select').forEach(function(campo) {
+                            if (campo.type === "checkbox" || campo.type === "radio") {
+                                campo.checked = false;
+                            } else {
+                                campo.value = "";
+                            }
+                        });
+
+                        // Ocultar el div
                         detalle.style.display = "none";
                     });
 
                     // Mostrar los divs correspondientes al tipo seleccionado
                     var detallesSeleccionados = document.querySelectorAll('[id^="accidente_' + tipoAccidente + '"]');
-                    detallesSeleccionados.forEach(function (detalle) {
+                    detallesSeleccionados.forEach(function(detalle) {
                         detalle.style.display = "block";
                     });
                 }
+
 
 
                 function marcarZona(zona) {

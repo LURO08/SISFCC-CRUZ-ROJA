@@ -9,6 +9,8 @@ use App\Models\ExpedienteMedico;
 use App\Models\Doctores;
 use App\Models\Transaccion;
 Use App\Models\Personal;
+Use App\Models\Medicamentos;
+Use App\Models\InventarioMedico;
 use DateTime;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -20,13 +22,16 @@ class DoctorController extends Controller
         $recetas = RecetaMedica::all();
         $pacientes = Pacientes::all();
         $ExpedienteMedico = ExpedienteMedico::all();
+        $medicamentos = Medicamentos::all();
+        $inventarioMedico = InventarioMedico::all();
 
-        return view('doctor.index', compact('pacientes', 'recetas','ExpedienteMedico'));
+        return view('doctor.index', compact('inventarioMedico','medicamentos', 'pacientes', 'recetas','ExpedienteMedico'));
     }
 
     // Almacena una nueva receta médica en la base de datos
     public function store(Request $request)
     {
+
         $request->validate([
             'selectedPatientId' => 'required|integer', // Validar que el paciente seleccionado exista
             'selectedPatient' => 'required|string|max:255', // Cambié a string para que coincida con la descripción
@@ -42,7 +47,9 @@ class DoctorController extends Controller
             'tratamiento' => 'required|string',
             'enviar_farmacia' => 'nullable|boolean', // Este campo es opcional
             'enviar_caja' => 'required|boolean', // Este es obligatorio aunque no visible en el formulario
+            'material' => 'string',
         ]);
+
 
         $userid = auth()->user()->id;
         $personal = Personal::where('user_id', $userid)->first();
@@ -66,6 +73,8 @@ class DoctorController extends Controller
                 'saturacion_oxigeno' => $request->input('saturacion_oxigeno'),
                 'diagnostico' => $request->input('diagnostico'),
                 'tratamiento' => $request->input('tratamiento'),
+                'material' => $request->input('material'),
+
             ]);
 
             ExpedienteMedico::create([
