@@ -569,9 +569,7 @@
             <h2>Registro de Atención Hospitalaria</h2>
 
             <!-- Botón para generar reporte -->
-            <button type="button" class="btn btn-primary mb-3" id="generateReportBtn">
-                <i class="bi bi-file-earmark-pdf"></i> Generar Reporte de Atenciones
-            </button>
+
 
             <a href="#registerHospitalAttentionModal" class="btn btn-primary bg-pink-600 mb-3">Registrar Atención</a>
 

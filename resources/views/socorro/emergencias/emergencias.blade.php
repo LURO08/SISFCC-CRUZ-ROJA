@@ -184,9 +184,9 @@
             <h2>Registro de Atención Hospitalaria</h2>
 
             <div style="display: flex; height: 9%; ">
-                <button type="button" class="btn btn-primary mb-3" id="generateReportBtn">
+                {{-- <button type="button" class="btn btn-primary mb-3" id="generateReportBtn">
                     <i class="bi bi-file-earmark-pdf"></i> Generar Reporte de Atenciones
-                </button>
+                </button> --}}
 
                 <a href="{{route('socorros.emergency.register')}}" class="btn btn-primary bg-pink-600 mb-3"
                 style="width: 50%; margin-left: 10px; ">Registrar Atención</a>
