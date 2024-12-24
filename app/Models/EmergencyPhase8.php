@@ -31,6 +31,7 @@ class EmergencyPhase8 extends Model
         'ultima_comida',
         'eventos_previos',
         'condicion',
+        'estabilidad',
         'prioridad'
     ];  // Columnas que se pueden asignar masivamente
 

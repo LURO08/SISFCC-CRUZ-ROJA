@@ -1015,7 +1015,7 @@
                                                         Accidente</label>
                                                     <select id="tipo_accidente" name="tipo_accidente"
                                                         class="form-control" onchange="mostrarDetallesAccidente()">
-                                                        <option value="" disabled selected>Seleccione el tipo de
+                                                        <option value="" selected>Seleccione el tipo de
                                                             accidente</option>
                                                         <option value="automovilistico">Automovilístico</option>
                                                         <option value="atropellado">Atropellado</option>
@@ -1293,7 +1293,7 @@
                                     <div>
                                         <div class="form-group mt-3">
                                             <label for="lugar_post-parto" class="form-label">Lugar</label>
-                                            <input type="text" name="lugar_post-parto" id="lugar_post-parto"
+                                            <input type="text" name="lugar_post_parto" id="lugar_post_parto"
                                                 class="form-control" placeholder="Ingrese el lugar">
                                         </div>
 
@@ -2419,6 +2419,7 @@
                 });
 
                 function mostrarDetallesAccidente() {
+                    // Obtener el valor seleccionado del tipo de accidente
                     var tipoAccidente = document.getElementById("tipo_accidente").value;
 
                     // Ocultar todos los divs de accidentes
@@ -2427,12 +2428,15 @@
                         detalle.style.display = "none";
                     });
 
-                    // Mostrar los divs correspondientes al tipo seleccionado
-                    var detallesSeleccionados = document.querySelectorAll('[id^="accidente_' + tipoAccidente + '"]');
-                    detallesSeleccionados.forEach(function(detalle) {
-                        detalle.style.display = "block";
-                    });
+                    // Si se selecciona un tipo de accidente válido, mostrar los detalles correspondientes
+                    if (tipoAccidente) {
+                        var detallesSeleccionados = document.querySelectorAll('[id^="accidente_' + tipoAccidente + '"]');
+                        detallesSeleccionados.forEach(function(detalle) {
+                            detalle.style.display = "block";
+                        });
+                    }
                 }
+
 
 
                 function marcarZona(zona) {

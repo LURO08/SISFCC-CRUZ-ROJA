@@ -435,6 +435,7 @@ return new class extends Migration
             $table->string('ultima_comida')->nullable();
             $table->text('eventos_previos')->nullable();
             $table->string('condicion')->nullable();
+            $table->string('estabilidad')->nullable();
             $table->string('prioridad')->nullable();
             $table->timestamps();
             $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
@@ -455,7 +456,7 @@ return new class extends Migration
         Schema::create('Emergency_Phase9', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('folio');
-            $table->json('via_aerea')->nullable(); // Guardar los valores seleccionados de Vía Aérea
+            $table->string('via_aerea')->nullable(); // Guardar los valores seleccionados de Vía Aérea
             $table->string('control_cervical')->nullable(); // Guardar el valor seleccionado de Control Cervical
             // Asistencia Ventilatoria
             $table->json('asistencia_ventilatoria')->nullable();

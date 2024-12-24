@@ -1064,8 +1064,9 @@
                                                     Accidente</label>
                                                 <select id="tipo_accidente" name="tipo_accidente"
                                                     class="form-control" onchange="mostrarDetallesAccidente()">
-                                                    <option value="" disabled selected>Seleccione el tipo de
+                                                    <option value="" selected>Seleccione el tipo de
                                                         accidente</option>
+                                                    <option value=""></option>
                                                     <option value="automovilistico">Automovilístico</option>
                                                     <option value="atropellado">Atropellado</option>
                                                 </select>

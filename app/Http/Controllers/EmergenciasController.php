@@ -109,6 +109,10 @@ class EmergenciasController extends Controller
         $phase7 = EmergencyPhase7::where('folio', $id)->first();
         $phase8 = EmergencyPhase8::where('folio', $id)->first();
         $phase8_zona = EmergencyPhase8_Zonas::where('folio', $id)->first();
+        $exploracionFisica = json_decode($phase8->exploracion_fisica,true);
+        $zonaslesion = json_decode($phase8_zona->zona,true);
+        $Coordenadaslesion = json_decode($phase8_zona->coordinate,true);
+
         $phase9 = EmergencyPhase9::where('folio', $id)->first();
 
         $personal = Personal::all();
@@ -121,6 +125,7 @@ class EmergenciasController extends Controller
             'phase6',
             'phase7',
             'phase8',
+            'exploracionFisica',
             'phase8_zona',
             'phase9',
             'ambulanceServices',
@@ -397,6 +402,7 @@ class EmergenciasController extends Controller
             'ultima_comida' => $request['ultima_comida'],
             'eventos_previos' => $request['eventos_previos'],
             'condicion' => $request['condicion'],
+            'estabilidad' => $request['estabilidad'],
             'prioridad' => $request['prioridad'],
         ]);
 
@@ -602,7 +608,7 @@ class EmergenciasController extends Controller
         //     'circulacion_piel' => 'nullable|string',
         //     'circulacion_caracteristicas' => 'nullable|string',
         // ]);
-        // //Fase 8
+        // Fase 8
         // $validatedPhase8 = $request->validate([ //Exploración Fisica
         //     'exploracion_fisica' => 'nullable|array',  // Validar que el array no esté vacío
         //     'exploracion_fisica.*' => 'string',  // Cada valor dentro del array debe ser un string
@@ -653,6 +659,24 @@ class EmergenciasController extends Controller
 
         // ]);
 
+        $exploraciones = [
+            ['descripcion' => 'Deformidades', 'abreviatura' => 'D'],
+            ['descripcion' => 'Contusiones', 'abreviatura' => 'CD'],
+            ['descripcion' => 'Penetraciones', 'abreviatura' => 'P'],
+            ['descripcion' => 'Movimiento Paradójico', 'abreviatura' => 'MP'],
+            ['descripcion' => 'Crepitación', 'abreviatura' => 'C'],
+            ['descripcion' => 'Heridas', 'abreviatura' => 'H'],
+            ['descripcion' => 'Fracturas', 'abreviatura' => 'F'],
+            ['descripcion' => 'Enfisema Subcutáneo', 'abreviatura' => 'ES'],
+            ['descripcion' => 'Quemaduras', 'abreviatura' => 'Q'],
+            ['descripcion' => 'Laceraciones', 'abreviatura' => 'L'],
+            ['descripcion' => 'Edema', 'abreviatura' => 'E'],
+            ['descripcion' => 'Alteración de Sensibilidad', 'abreviatura' => 'AS'],
+            ['descripcion' => 'Alteración de Movilidad', 'abreviatura' => 'AM'],
+            ['descripcion' => 'Dolor', 'abreviatura' => 'DO'],
+            ['descripcion' => 'Amputación', 'abreviatura' => 'AP'],
+        ];
+
         try{
          // Actualizar datos de la Fase 1
         $phase1 = EmergencyPhase1::findOrFail($id);
@@ -677,6 +701,10 @@ class EmergenciasController extends Controller
         $phase7->update($request->all());
         // Actualizar datos de la Fase 8
         $phase8 = EmergencyPhase8::where('folio', $id)->first();
+
+        $validatedData = $request->validate([
+            'exploracion_fisica' => 'nullable|array'
+        ]);
 
         $phase8->update([
             'exploracion_fisica' => isset($validatedData['exploracion_fisica'])
@@ -704,6 +732,7 @@ class EmergenciasController extends Controller
             'ultima_comida' => $request['ultima_comida'],
             'eventos_previos' => $request['eventos_previos'],
             'condicion' => $request['condicion'],
+            'estabilidad' => $request['estabilidad'],
             'prioridad' => $request['prioridad'],
         ]);
 
