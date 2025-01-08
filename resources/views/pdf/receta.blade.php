@@ -11,7 +11,6 @@
             line-height: 1.4;
             margin: 0;
             padding: 0;
-            background-color: #f2f2f2; /* Fondo suave para un mejor contraste */
             display: flex; /* Usar flexbox en el body */
             justify-content: center; /* Centrar horizontalmente */
             align-items: flex-start; /* Alinear al inicio en vertical */
@@ -43,7 +42,6 @@
 
         .contentPaciente {
             align-items: center;
-            height: 20%;
             justify-content: center;
             position: relative; /* Necesario para el pseudo-elemento */
         }
@@ -86,8 +84,8 @@
         .folio-container {
             width: 25%; /* Ancho del contenedor */
             text-align: center; /* Centrar texto */
-            background-color: #f2f2f2; /* Fondo suave para el folio */
             float: right; /* Asegura que flote a la derecha */
+            justify-content: center;
             display: flex; /* Usar flexbox para centrar */
             flex-direction: column; /* Apilar elementos en columna */
             align-items: center; /* Centrar horizontalmente */
@@ -160,9 +158,9 @@
         }
 
         .footer {
-            text-align: left;
+            text-align: center;
             font-size: 12px;
-            padding: 2px;
+            padding: 0 2px;
             border: 5px double #000; /* Borde doble de 3px */
         }
 
@@ -177,7 +175,7 @@
         }
 
         .doctor-info {
-            margin-top: 20px; /* Espacio superior para la sección del doctor */
+            margin-top: 5px; /* Espacio superior para la sección del doctor */
             text-align: center; /* Centrar texto */
         }
 
@@ -214,81 +212,128 @@
             </div>
         </div>
         <div class="contentPaciente" >
-            <div style="width: 60%; float: left; ">
-                <span style="font-weight: bold; float: left;">NOMBRE:</span>
-                <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 15%; float: left; width: 90%;">
-                    {{ $paciente->nombre }} {{ $paciente->apellidopaterno }} {{ $paciente->apellidomaterno }}
-                </p>
-                <div style="width: 100%; margin: 7%;">
-                    <div style="margin-bottom: 15px;">
-                        <span class="field-label">Diagnóstico:</span>
-                        <p style="word-wrap: break-word;">
-                            {{ $receta->diagnostico }}
-                        </p>
+            <table style="width: 100%; border-collapse: collapse; ">
+                <tr>
+                    <!-- Información del paciente y diagnóstico -->
+                    <td style="width: 90%;  vertical-align: top;  border-collapse: collapse; ">
+                        <table style="width: 90%;">
+                            <tr >
+                                <td style="width: 20%;"><span style="font-weight: bold;">NOMBRE:</span></td>
+                                <td style="width: 80%;"><p style="margin: 0; padding: 5px 0; border-bottom: 1px solid #000; font-size: 13px;">
+                                    {{ $paciente->nombre }} {{ $paciente->apellidopaterno }} {{ $paciente->apellidomaterno }}
+                                </p></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span style="font-weight: bold; display: block;">Diagnóstico:</span>
+                                    <p style="margin: 5px 0; word-wrap: break-word; line-height: 1.5;">
+                                        {{ $receta->diagnostico }}
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span style="font-weight: bold; display: block;">Tratamiento:</span>
+                                    <ul style="margin: 0; padding: 0; list-style-type: none;">
+                                        @foreach($medicamentosArray as $medicamento)
+                                            <li style="margin-bottom: 5px; padding: 2px;">
+                                                <span style="font-weight: bold;">* </span>{{ $medicamento }}
+                                            </li>
+                                        @endforeach
+                                    </ul>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <!-- Signos vitales -->
+                    <td style="width: 25%; ">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td><span style="font-weight: bold;">T/A:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->presion_arterial }}
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">Temp:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->temperatura }} °C
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">Talla:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->talla }} cm
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">Peso:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->peso }} kg
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">FC:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->frecuencia_cardiaca }} bpm
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">FR:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->frecuencia_respiratoria }} rpm
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">SPO2:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->saturacion_oxigeno }}%
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="font-weight: bold;">Alergias:</span></td>
+                                <td>
+                                    <p style="margin: 0; border-bottom: 1px solid #000; padding: 2px;">
+                                        {{ $receta->alergia ?? 'Ninguna' }}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr style="margin-top: 0;">
+                    <td colspan="2" style="width: 100%;">
+                        <div class="doctor-info" >
+                            <h3 style="margin-bottom: 5px;">Dr. {{ $doctor->personal->Nombre }} {{ $doctor->personal->apellido_paterno }} {{ $doctor->personal->apellido_materno }}</h3>
+                            <h4 style="margin-bottom: 5px;">Cédula: {{ $doctor->cedulaProfesional }}</h4>
+                            <img src="{{ public_path($doctor->rutafirma) }}" alt="Firma del Dr. {{ $doctor->personal->nombre }} {{ $doctor->personal->apellidoPaterno }}" width="150">
+                        </div>
+                    </td>
+                </tr>
+                <tr style="margin-top: 0;">
+                    <div class="footer" style="width: 30%;">
+                        <p style="margin: 0;">FAVOR DE PRESENTAR SU RECETA EN LA PRÓXIMA CONSULTA</p>
+                        <p style="margin: 0;">SURTASE EN FARMACIA <span style="font-weight: 700; font-size: 15px;">"CRUZ ROJA"</span></p>
                     </div>
-                    <div style="margin-bottom: 15px;">
-                        <span class="field-label">Tratamiento:</span>
-                        <p style="word-wrap: break-word;">
-                            {{ $receta->tratamiento  }}
-
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div style="width: 40%;  float: right; justify-content: center; margin-left: 20px; margin-right: -16%;">
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">T/A:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->presion_arterial }}</p>
-                </div>
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">Temp:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->temperatura }} °C</p>
-                </div>
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">Talla:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->talla }} cm</p>
-                </div>
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">Peso:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%;float: left; width: 30%;">{{ $receta->peso }} kg</p>
-                </div>
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">FC:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->frecuencia_cardiaca }} bpm</p>
-                </div>
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">FR:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->frecuencia_respiratoria }} rpm</p>
-                </div>
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="font-weight: bold; width: 20%;">SPO2:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->saturacion_oxigeno }}%</p>
-                </div>
-                <div style="display: flex; align-items: center;">
-                    <span style="font-weight: bold; width: 20%;">Alergias:</span>
-                    <p style="margin: 0; border-bottom: 1px solid #000; margin-left: 20%; float: left; width: 30%;">{{ $receta->alergia ?? 'Ninguna' }}</p>
-                </div>
-            </div>
+                </tr>
+            </table>
         </div>
-        <br><br><br><br>
-
-        <div class="final">
-            <div class="doctor-info" >
-                <h3 style="margin-bottom: 5px;">Dr. {{ $doctor->personal->ombre }} {{ $doctor->personal->apellidoPaterno }} {{ $doctor->personal->apellidoMaterno }}</h3>
-                <h4 style="margin-bottom: 20px;">Cédula: {{ $doctor->cedulaProfesional }}</h4>
-                <img src="{{ public_path($doctor->rutafirma) }}" alt="Firma del Dr. {{ $doctor->personal->nombre }} {{ $doctor->personal->apellidoPaterno }}" width="150">
-            </div>
-            <div class="footer" style="width: 20%;">
-                <p style="margin: 0;">FAVOR DE PRESENTAR SU RECETA EN LA PRÓXIMA CONSULTA</p>
-                <p style="margin: 0;">SURTASE EN FARMACIA <span style="font-weight: 700; font-size: 15px;">"CRUZ ROJA"</span></p>
-            </div>
-        </div>
-
-
-
-
-
     </div>
 </body>
 </html>

@@ -18,36 +18,19 @@ class EmergencyPhase9 extends Model
         'asistencia_ventilatoria',
         'FREC',
         'volumen',
+        'heperventilacion',
+        'descompresión_pleural_con_agua',
         'oxigenoterapia',
         'litros',
-        'procedimientos_adicionales',
-
+        'hemitorax',
         'control_hemorragias',
         'vias_venosas',
-
         'sitio_aplicacion',
         'tipo_soluciones',
         'soluciones',
-
         'medicamentos_terapia',
         'rcp_procedimientos',
 
 
-    ];
-
-    // Especificar que 'via_aerea' debe ser tratado como un array
-    protected $casts = [
-        'via_aerea' => 'array', // Convierte el campo JSON a un array automáticamente
-        'asistencia_ventilatoria' => 'array',
-        'oxigenoterapia' => 'array',
-        'procedimientos_adicionales' => 'array','asistencia_ventilatoria' => 'array',
-        'oxigenoterapia' => 'array',
-        'procedimientos_adicionales' => 'array',
-        'control_hemorragias' => 'array',
-        'vias_venosas' => 'array',
-        'tipo_soluciones' => 'array',
-        'soluciones' => 'array',
-        'medicamentos_terapia' => 'array',
-        'rcp_procedimientos' => 'array',
     ];
 }

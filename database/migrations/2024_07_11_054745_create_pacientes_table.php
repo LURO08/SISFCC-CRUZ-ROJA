@@ -58,8 +58,9 @@ return new class extends Migration
             $table->integer('frecuencia_cardiaca')->nullable();
             $table->integer('frecuencia_respiratoria')->nullable();
             $table->float('saturacion_oxigeno')->nullable();
-            $table->text('diagnostico');
-            $table->text('tratamiento');
+            $table->text('diagnostico')->nullable();
+            $table->text('tratamiento')->nullable();
+            $table->text('material')->nullable();
             $table->boolean('surtida')->default(false);  // Agregar la columna booleana con un valor por defecto
             $table->boolean('cobrada')->default(false);  // Agregar la columna booleana con un valor por defecto
             $table->timestamps();
@@ -132,7 +133,7 @@ return new class extends Migration
         Schema::create('servicios', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('icono');
+            $table->string('icono')->nullable();
             $table->decimal('costo', 8, 2)->nullable();
             $table->text('descripcion');
             $table->timestamps();
@@ -183,7 +184,7 @@ return new class extends Migration
             $table->integer('año');
             $table->string('cantidad');
             $table->string('estado');
-            $table->string('rutaimg');
+            $table->string('rutaimg')->nullable();
             $table->timestamps();
         });
 
@@ -193,7 +194,7 @@ return new class extends Migration
             $table->string('tipo');  // Ejemplo: muebles, papelería, equipo de computo, etc.
             $table->integer('cantidad');
             $table->string('estado');  // Ejemplo: nuevo, usado, en reparación, etc.
-            $table->string('rutaimg');
+            $table->string('rutaimg')->nullable();
             $table->timestamps();
         });
 
@@ -203,8 +204,9 @@ return new class extends Migration
             $table->text('descripcion')->nullable(); // Descripción detallada del material
             $table->string('tipo');
             $table->integer('cantidad');
+            $table->integer('precio');
             $table->date('fecha_caducidad');
-            $table->string('rutaimg');
+            $table->string('rutaimg')->nullable();
             $table->timestamps();
         });
 
@@ -217,7 +219,7 @@ return new class extends Migration
             $table->string('numero_serie')->unique();  // Número de serie único
             $table->integer('cantidad')->default(1);
             $table->string('estado');  // Ejemplo: en uso, en reparación, disponible, etc.
-            $table->string('rutaimg');
+            $table->string('rutaimg')->nullable();
             $table->timestamps();
         });
 
@@ -228,7 +230,7 @@ return new class extends Migration
             $table->string('tipo');// Modelo, puede ser opcional
             $table->string('presentacion');
             $table->integer('cantidad'); // Cantidad
-            $table->string('rutaimg');
+            $table->string('rutaimg')->nullable();
             $table->timestamps(); // created_at y updated_at
         });
 
@@ -394,22 +396,20 @@ return new class extends Migration
         Schema::create('emergency_phase7', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('folio');
-            $table->unsignedBigInteger('paciente_id')->nullable();
             $table->string('nivel_conciencia')->nullable();
             $table->string('viaaerea')->nullable();
             $table->string('reflejo_deglutacion')->nullable();
             $table->string('ventilacion_observacion')->nullable();
             $table->string('ventilacion_auscultacion')->nullable();
-            $table->string('ventilacion_hemitorax')->nullable();
-            $table->string('ventilacion_sitio')->nullable();
+            $table->json('ventilacion_hemitorax')->nullable();
+            $table->json('ventilacion_sitio')->nullable();
             $table->string('circulacion_pulsos')->nullable();
-            $table->string('circulacion_calidad')->nullable();
+            $table->json('circulacion_calidad')->nullable();
             $table->string('circulacion_piel')->nullable();
             $table->string('circulacion_caracteristicas')->nullable();
             $table->timestamps();
 
             // Llave foránea
-            $table->foreign('paciente_id')->references('id')->on('emergency_phase3')->onDelete('cascade');
             $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
         });
         //Fase 8
@@ -428,7 +428,7 @@ return new class extends Migration
             $table->decimal('glasgow', 5, 2)->nullable();
             $table->decimal('trauma_score', 5, 2)->nullable();
             $table->decimal('ekg', 5, 2)->nullable();
-            $table->boolean('atendido')->nullable();
+            $table->string('atendido')->nullable();
             $table->string('alergias')->nullable();
             $table->string('medicamentos')->nullable();
             $table->string('antecedentes')->nullable();
@@ -447,6 +447,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_phase')->nullable();
             $table->string('zona')->nullable();
             $table->string('coordinate')->nullable();// Coordenadas
+            $table->mediumBlob('capturas')->nullable();
             $table->timestamps();
 
             $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
@@ -459,17 +460,19 @@ return new class extends Migration
             $table->string('via_aerea')->nullable(); // Guardar los valores seleccionados de Vía Aérea
             $table->string('control_cervical')->nullable(); // Guardar el valor seleccionado de Control Cervical
             // Asistencia Ventilatoria
-            $table->json('asistencia_ventilatoria')->nullable();
+            $table->string('asistencia_ventilatoria')->nullable();
             $table->string('FREC')->nullable();
             $table->string('volumen')->nullable();
+            $table->string('heperventilacion')->nullable();
+            $table->string('descompresión_pleural_con_agua')->nullable();
             // Oxigenoterapia
             $table->json('oxigenoterapia')->nullable();
             $table->string('litros')->nullable();
             // Procedimientos adicionales
-            $table->json('procedimientos_adicionales')->nullable();
+            $table->json('hemitorax')->nullable();
 
             // Control de Hemorragias
-            $table->json('control_hemorragias')->nullable();
+            $table->string('control_hemorragias')->nullable();
 
             // Vías Venosas
             $table->json('vias_venosas')->nullable();
@@ -480,7 +483,6 @@ return new class extends Migration
              // Tipos de Soluciones
             $table->json('tipo_soluciones')->nullable();
             $table->json('soluciones')->nullable(); // Para detalles adicionales como especificaciones, cantidad, etc.
-
             // Registro de Medicamentos y Terapia Eléctrica
             $table->json('medicamentos_terapia')->nullable();
 

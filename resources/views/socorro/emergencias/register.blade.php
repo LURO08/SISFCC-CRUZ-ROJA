@@ -12,8 +12,10 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite( 'resources/js/htmlcanva2d.js')
     <!-- Styles -->
     @livewireStyles
 </head>
@@ -878,6 +880,7 @@
                                                  <div class="form-group mb-3">
                                                      <label for="sexo" class="form-label">Sexo</label>
                                                      <select name="sexo" id="sexo" class="form-select">
+                                                        <option value=""selected disabled>Seleccione una opción</option>
                                                          <option value="masculino">Masculino</option>
                                                          <option value="femenino">Femenino</option>
                                                          <option value="otro">Otro</option>
@@ -1426,23 +1429,31 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="ventilacion_hemitorax" class="form-label">Hemitorax</label>
-                                            <select id="ventilacion_hemitorax" name="ventilacion_hemitorax"
-                                                class="form-control">
-                                                <option value="">Seleccione el Hemitorax</option>
-                                                <option value="derecho">Derecho</option>
-                                                <option value="izquierdo">Izquierdo</option>
-                                            </select>
+                                            <label class="form-label">Hemitorax</label>
+                                            <div class="flex space-x-4">
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_hemitorax[]" value="derecho">
+                                                    <span>Derecho</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_hemitorax[]" value="izquierdo">
+                                                    <span>Izquierdo</span>
+                                                </label>
+                                            </div>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="ventilacion_sitio" class="form-label">Sitio</label>
-                                            <select id="ventilacion_sitio" name="ventilacion_sitio"
-                                                class="form-control">
-                                                <option value="">Seleccione el Sitio</option>
-                                                <option value="apical">Apical</option>
-                                                <option value="base">Base</option>
-                                            </select>
+                                            <label class="form-label">Sitio</label>
+                                            <div class="flex space-x-4">
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_sitio[]" value="apical">
+                                                    <span>Apical</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_sitio[]" value="base">
+                                                    <span>Base</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1463,16 +1474,35 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="circulacion_calidad" class="form-label">Calidad</label>
-                                            <select id="circulacion_calidad" name="circulacion_calidad"
-                                                class="form-control">
-                                                <option value="">Seleccione la Calidad</option>
-                                                <option value="normal">Normal</option>
-                                                <option value="rapido">Rápido</option>
-                                                <option value="lento">Lento</option>
-                                                <option value="ritmico">Rítmico</option>
-                                                <option value="arritmico">Arrítmico</option>
-                                            </select>
+                                            <label class="form-label">Calidad</label>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <!-- Grupo 1: Normal, Rápido, Lento -->
+                                                <div>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[velocidad]" value="normal">
+                                                        <span>Normal</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[velocidad]" value="rapido">
+                                                        <span>Rápido</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[velocidad]" value="lento">
+                                                        <span>Lento</span>
+                                                    </label>
+                                                </div>
+                                                <!-- Grupo 2: Rítmico, Arrítmico -->
+                                                <div>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[ritmica]" value="ritmico">
+                                                        <span>Rítmico</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[ritmica]" value="arritmico">
+                                                        <span>Arrítmico</span>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="form-group">
@@ -1811,13 +1841,14 @@
                                            <p>Haz clic en la imagen del cuerpo humano para marcar las zonas de
                                                lesión:</p>
 
-                                           <div style="display: none;">
+                                           <div style="display: block;">
                                                <input type="text" id="coordinate" name="coordinate">
                                                <input type="text" id="zonaslabel" name="zonaslabel">
+                                               <input type="text" id="captura_imagen" name="captura_imagen">
                                            </div>
 
                                            <!-- Canvas para la imagen del cuerpo humano -->
-                                           <div class="flex justify-center">
+                                           <div class="flex justify-center" id="zonalesion">
                                                <canvas id="bodyCanvas" width="400" height="405"
                                                    class="border"></canvas>
                                            </div>
@@ -2082,7 +2113,7 @@
 
 
                                             <!-- Asistencia Ventilatoria -->
-                                            <div class="mb-4">
+                                            <div class="mb-4" style="border: 1px solid; padding: 10px;">
                                                 <h5 class="font-semibold">Asistencia Ventilatoria:</h5>
                                                 <select name="asistencia_ventilatoria" id="asistencia_ventilatoria" class="w-full p-2 border rounded cursor-pointer">
                                                   <option value="">Seleccione una opción</option>
@@ -2095,83 +2126,148 @@
                                                     <div style="display: flex;">
                                                         <div class="mt-2" style="margin-right: 10px;">
                                                             <label for="FREC" class="font-semibold">FREC: </label>
-                                                            <input type="text" id="FREC" name="FREC"
+                                                            <input type="number" id="FREC" name="FREC"
                                                             class="form-control w-full border border-gray-400 rounded-md">
                                                           </div>
                                                           <div class="mt-2">
                                                             <label for="volumen" class="font-semibold">VOL: </label>
-                                                            <input type="text" id="volumen" name="volumen" class="form-control w-full border border-gray-400 rounded-md">
+                                                            <input type="number" id="volumen" name="volumen" class="form-control w-full border border-gray-400 rounded-md">
                                                           </div>
                                                     </div>
-
                                                 </div>
-                                              </div>
 
+                                                <div class="flex justify-center items-center mt-2 space-x-6">
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="heperventilacion" value="si">
+                                                        <span>Hiperventilación</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="descompresión_pleural_con_agua" value="si">
+                                                        <span>Descompresión Pleural Con Agua</span>
+                                                    </label>
+                                                </div>
 
+                                            </div>
 
                                             <!-- Oxigenoterapia -->
-                                            <div class="mb-4">
+                                            <div class="mb-4" style="border: 1px solid; padding: 10px;">
                                                 <h5 class="font-semibold">Oxigenoterapia:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                            value="puntas_nasales">
-                                                        Puntas Nasales
+                                                <div class="grid grid-cols-2 gap-4 mt-2">
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="puntas_nasales">
+                                                        <span>Puntas Nasales</span>
                                                     </label>
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                            value="mascarilla_simple">
-                                                        Mascarilla Simple
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="mascarilla_simple">
+                                                        <span>Mascarilla Simple</span>
                                                     </label>
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                            value="mascarilla_reservorio">
-                                                        Mascarilla con Reservorio
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="mascarilla_reservorio">
+                                                        <span>Mascarilla con Reservorio</span>
                                                     </label>
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                            value="mascarilla_venturi">
-                                                        Mascarilla Venturi
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="mascarilla_venturi">
+                                                        <span>Mascarilla Venturi</span>
                                                     </label>
                                                 </div>
-                                                <div class="mt-2">
+                                                <div class="mt-4">
                                                     <label for="litros" class="font-semibold">LTS x Min:</label>
-                                                    <input type="text" id="litros" name="litros"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                    <input type="number" id="litros" name="litros"
+                                                        class="form-control w-full border border-gray-400 rounded-md mt-1">
                                                 </div>
-                                            </div>
 
-                                            <!-- Procedimientos adicionales -->
+                                                <!-- Hemotorax -->
+                                                <div class="mb-4" style="margin-top: 10px;">
+                                                    <div class="flex items-center space-x-4">
+                                                        <label class="flex items-center space-x-2">
+                                                            <input type="checkbox" name="hemitorax[]" value="hemitorax_derecho">
+                                                            <span>Hemitórax Derecho</span>
+                                                        </label>
+                                                        <label class="flex items-center space-x-2">
+                                                            <input type="checkbox" name="hemitorax[]" value="hemitorax_izquierdo">
+                                                            <span>Hemitórax Izquierdo</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div style="padding: 0 10px; width: 50%;">
+                                            <!-- Vías Venosas -->
                                             <div class="mb-4">
-                                                <h5 class="font-semibold">Procedimientos Adicionales:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                            value="hiperventilacion">
-                                                        Hiperventilación
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                            value="descompresion_pleural">
-                                                        Descompresión Pleural con Aguja
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                            value="hemitorax_derecho">
-                                                        Hemitórax Derecho
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                            value="hemitorax_izquierdo">
-                                                        Hemitórax Izquierdo
-                                                    </label>
+                                                <h5 class="font-semibold">Vías Venosas:</h5>
+                                                <div class="flex items-center space-x-4 mt-2">
+                                                    <div class="flex items-center space-x-2">
+                                                        <label for="linea_iv" class="font-semibold">Línea IV (#):</label>
+                                                        <input type="number" id="linea_iv" name="vias_venosas[linea_iv]"
+                                                            class="form-control border border-gray-400 rounded-md w-24">
+                                                    </div>
+                                                    <div class="flex items-center space-x-2">
+                                                        <label for="cateter" class="font-semibold">Catéter (#):</label>
+                                                        <input type="number" id="cateter" name="vias_venosas[cateter]"
+                                                            class="form-control border border-gray-400 rounded-md w-24">
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                             <!-- Control de Hemorragias -->
-                                             <div class="mb-4">
+                                           <!-- Sitio de Aplicación -->
+                                            <div class="mb-4">
+                                                <h5 class="font-semibold">Sitio de Aplicación:</h5>
+                                                <select name="sitio_aplicacion" class="form-control w-full border border-gray-400 rounded-md">
+                                                    <option value="mano">Mano</option>
+                                                    <option value="pliegue_antecubital">Pliegue Antecubital</option>
+                                                    <option value="intraosea">Intraósea</option>
+                                                    <option value="otra">Otra</option>
+                                                </select>
+                                            </div>
+
+                                           <!-- Tipos de Soluciones -->
+                                            <div class="mb-4">
+                                                <h5 class="font-semibold">Tipos de Soluciones:</h5>
+                                                <div class="grid grid-cols-2 gap-4 mt-2">
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="tipo_soluciones[]" value="hartmann">
+                                                        <span>Hartmann</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="tipo_soluciones[]" value="nacl_09">
+                                                        <span>NaCl 0.9%</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="tipo_soluciones[]" value="mixta">
+                                                        <span>Mixta</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="tipo_soluciones[]" value="glucosa_5">
+                                                        <span>Glucosa 5%</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="tipo_soluciones[]" value="otra">
+                                                        <span>Otra</span>
+                                                    </label>
+                                                </div>
+
+
+                                                <h5 class="font-semibold">Especifique:</h5>
+                                                <div class="flex flex-col md:flex-row md:space-x-4 mt-1">
+                                                    <div>
+                                                        <label for="cantidad" class="font-semibold">Cantidad:</label>
+                                                        <input type="text" id="cantidad" name="soluciones[cantidad]"
+                                                            class="form-control border border-gray-400 rounded-md mt-1 w-full md:w-40">
+                                                    </div>
+                                                    <div>
+                                                        <label for="infusiones" class="font-semibold">Infusiones:</label>
+                                                        <input type="text" id="infusiones" name="soluciones[infusiones]"
+                                                            class="form-control border border-gray-400 rounded-md mt-1 w-full md:w-40">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Control de Hemorragias -->
+                                            <div class="mb-4">
                                                 <h5 class="font-semibold">Control de Hemorragias:</h5>
-                                                <select name="control_hemorragias[]" id="control_hemorragias">
+                                                <select name="control_hemorragias" id="control_hemorragias">
                                                     <option value="presion_directa"> Presión Directa</option>
                                                     <option value="torniquete">Torniquete</option>
                                                     <option value="empaquetamiento">Empaquetamiento</option>
@@ -2180,93 +2276,6 @@
 
                                             </div>
 
-
-
-                                        </div>
-
-                                        <div style="padding: 0 10px; width: 50%;">
-
-
-
-                                            <!-- Vías Venosas -->
-                                            <div class="mb-4">
-                                                <h5 class="font-semibold">Vías Venosas:</h5>
-                                                <div class="mt-2">
-                                                    <label for="linea_iv" class="font-semibold">Línea IV
-                                                        (#):</label>
-                                                    <input type="text" id="linea_iv" name="vias_venosas[linea_iv]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
-                                                </div>
-                                                <div class="mt-2">
-                                                    <label for="cateter" class="font-semibold">Catéter (#):</label>
-                                                    <input type="text" id="cateter" name="vias_venosas[cateter]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
-                                                </div>
-                                            </div>
-
-
-                                            <!-- Sitio de Aplicación -->
-                                            <div class="mb-4">
-                                                <h5 class="font-semibold">Sitio de Aplicación:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion" value="mano">
-                                                        Mano
-                                                    </label>
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion"
-                                                            value="pliegue_antecubital">
-                                                        Pliegue Antecubital
-                                                    </label>
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion" value="intraosea">
-                                                        Intraósea
-                                                    </label>
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion" value="otra">
-                                                        Otra
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <!-- Tipos de Soluciones -->
-                                            <div class="mb-4">
-                                                <h5 class="font-semibold">Tipos de Soluciones:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="hartmann">
-                                                        Hartmann
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="nacl_09">
-                                                        NaCl 0.9%
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="mixta">
-                                                        Mixta
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="glucosa_5">
-                                                        Glucosa 5%
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="otra">
-                                                        Otra
-                                                    </label>
-                                                </div>
-                                                <label for="soluciones_especifique"
-                                                class="font-semibold">Especifique:</label>
-
-                                                <div class="mt-2">
-                                                    <label for="cantidad" class="font-semibold">Cantidad:</label>
-                                                    <input type="text" id="cantidad" name="soluciones[cantidad]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
-                                                </div>
-                                                <div class="mt-2">
-                                                    <label for="infusiones" class="font-semibold">Infusiones:</label>
-                                                    <input type="text" id="infusiones" name="soluciones[infusiones]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
-                                                </div>
-                                            </div>
                                         </div>
 
                                     </div>
@@ -2274,41 +2283,37 @@
 
                                     <!-- Tabla para Manejo Farmacológico y Terapia Eléctrica -->
                                     <div class="mb-4">
-                                        <h5 class="font-semibold">Registro de Medicamentos y Terapia
-                                            Eléctrica:</h5>
+                                        <h5 class="font-semibold">Registro de Medicamentos y Terapia Eléctrica:</h5>
                                         <table class="table-auto w-full border-collapse border border-gray-400">
                                             <thead>
                                                 <tr class="bg-gray-200">
                                                     <th class="border border-gray-400 px-4 py-2">Hora</th>
-                                                    <th class="border border-gray-400 px-4 py-2">Medicamento
-                                                    </th>
+                                                    <th class="border border-gray-400 px-4 py-2">Medicamento</th>
                                                     <th class="border border-gray-400 px-4 py-2">Dosis</th>
-                                                    <th class="border border-gray-400 px-4 py-2">Vía de
-                                                        Administración</th>
-                                                    <th class="border border-gray-400 px-4 py-2">Terapia
-                                                        Eléctrica</th>
+                                                    <th class="border border-gray-400 px-4 py-2">Vía de Administración</th>
+                                                    <th class="border border-gray-400 px-4 py-2">Terapia Eléctrica</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="pharmaTableBody">
                                                 <tr>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="time" name="hora[]"
+                                                        <input type="time" name="medicamentos_terapia[0][hora]"
                                                             class="form-control w-full border border-gray-400 rounded-md">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="medicamento[]"
+                                                        <input type="text" name="medicamentos_terapia[0][medicamento]"
                                                             class="form-control w-full border border-gray-400 rounded-md">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="dosis[]"
+                                                        <input type="text" name="medicamentos_terapia[0][dosis]"
                                                             class="form-control w-full border border-gray-400 rounded-md">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="via_administracion[]"
+                                                        <input type="text" name="medicamentos_terapia[0][via_administracion]"
                                                             class="form-control w-full border border-gray-400 rounded-md">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="terapia_electrica[]"
+                                                        <input type="text" name="medicamentos_terapia[0][terapia_electrica]"
                                                             class="form-control w-full border border-gray-400 rounded-md">
                                                     </td>
                                                 </tr>
@@ -2321,33 +2326,46 @@
                                         </div>
                                     </div>
 
+
                                     <!-- Sección de RCP y Procedimientos -->
                                     <div class="mb-4">
                                         <h5 class="font-semibold">RCP y Procedimientos:</h5>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="rcp_basica"> RCP
-                                                    Básica</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="rcp_basica">
+                                                    RCP Básica
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="rcp_avanzada"> RCP
-                                                    Avanzada</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="rcp_avanzada">
+                                                    RCP Avanzada
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="inmovilizacion">
-                                                    Inmovilización de Extremidades</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="inmovilizacion">
+                                                    Inmovilización de Extremidades
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="empaquetamiento">
-                                                    Empaquetamiento</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="empaquetamiento">
+                                                    Empaquetamiento
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="curacion">
-                                                    Curación</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="curacion">
+                                                    Curación
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="vendaje">
-                                                    Vendaje</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="vendaje">
+                                                    Vendaje
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -2367,6 +2385,32 @@
             </div>
 
             <script>
+
+function capturarZonaLesion() {
+                    // Obtener los elementos necesarios
+                    const divParaCapturar = document.getElementById("zonalesion");
+
+                   // Sobrescribe el método de creación de canvas
+                    HTMLCanvasElement.prototype.getContext = (function(original) {
+                        return function(type, options) {
+                            if (type === '2d') {
+                                options = options || {};
+                                options.willReadFrequently = true; // Establece la opción
+                            }
+                            return original.call(this, type, options);
+                        };
+                    })(HTMLCanvasElement.prototype.getContext);
+
+                    // Llama a html2canvas como de costumbre
+                    html2canvas(document.getElementById("zonalesion")).then(function(canvas) {
+                        const imgData = canvas.toDataURL("image/png");
+                        document.getElementById("captura_imagen").value = imgData;
+                    });
+
+                }
+
+
+
                 document.getElementById('lugar_ocurrencia').addEventListener('change', function() {
                     const otroLugarDiv = document.getElementById('otro_lugar');
                     if (this.value === 'otro') {
@@ -2438,7 +2482,6 @@
                 }
 
 
-
                 function marcarZona(zona) {
                     const lista = document.getElementById('listaZonas');
                     const item = document.createElement('li');
@@ -2492,45 +2535,49 @@
                 });
 
                 // Función para añadir una nueva fila a la tabla
+                let rowCount = 1; // Variable para contar las filas agregadas
+
                 function addPharmaRow() {
-                    const tableBody = document.getElementById('pharmaTableBody');
-                    const newRow = `
-                                    <tr>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="time" name="hora[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="medicamento[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="dosis[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="via_administracion[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="terapia_electrica[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                    </tr>
-                                `;
-                    tableBody.insertAdjacentHTML('beforeend', newRow);
+                    const tableBody = document.getElementById("pharmaTableBody");
+
+                    // Crear una nueva fila
+                    const newRow = document.createElement("tr");
+
+                    // Crear celdas de la nueva fila
+                    newRow.innerHTML = `
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="time" name="medicamentos_terapia[${rowCount}][hora]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="text" name="medicamentos_terapia[${rowCount}][medicamento]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="text" name="medicamentos_terapia[${rowCount}][dosis]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="text" name="medicamentos_terapia[${rowCount}][via_administracion]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="text" name="medicamentos_terapia[${rowCount}][terapia_electrica]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                    `;
+
+                    // Agregar la nueva fila a la tabla
+                    tableBody.appendChild(newRow);
+
+                    // Incrementar el contador de filas
+                    rowCount++;
                 }
+                // Fin Función para añadir una nueva fila a la tabla
 
-                const canvas = document.getElementById('bodyCanvas');
-                const ctx = canvas.getContext('2d');
-                const listaZonas = document.getElementById('listaZonas');
-                const coordinate = document.getElementById('coordinate');
-                const zonaslabel = document.getElementById('zonaslabel');
 
-                // Imagen del cuerpo humano
-                const bodyImage = new Image();
-                bodyImage.src =
-                    "{{ asset('images/cuerpo1.png') }}"; // Asegúrate de que la imagen esté en el mismo directorio o ajusta la ruta.
-                const bodyImage2 = new Image();
-                bodyImage2.src = "{{ asset('images/cuerpo2.png') }}";
-                // Puntos permitidos con coordenadas predefinidas
-
-                const allowedPoints = [{
+               //Inicio de Funcion Zonas de Lesión
+               const allowedPoints = [{
                         x: 100,
                         y: 20,
                         label: "Cabeza"
@@ -2649,120 +2696,104 @@
                     },
                 ];
 
+                const canvas = document.getElementById('bodyCanvas');
+                const ctx = canvas.getContext('2d');
+                const listaZonas = document.getElementById('listaZonas');
+                const coordinate = document.getElementById('coordinate');
+                const zonaslabel = document.getElementById('zonaslabel');
+
+                // Imagen del cuerpo humano
+                const bodyImages = [
+                    { src: "{{ asset('images/cuerpo1.png') }}", points: allowedPoints },
+                    { src: "{{ asset('images/cuerpo2.png') }}", points: allowedPoints2 }
+                ];
+
                 const marks = []; // Almacena las marcas realizadas
 
-                // Dibujar la imagen del cuerpo humano en el canvas
-                bodyImage.onload = function() {
-                    ctx.drawImage(bodyImage, 0, 0, 200, canvas.height);
-                    allowedPoints.forEach(point => {
-                        drawCircle(point.x, point.y);
+                // Cargar y dibujar imágenes del cuerpo humano con sus puntos
+                function loadBodyImages() {
+                    bodyImages.forEach((imageData, index) => {
+                        const img = new Image();
+                        img.src = imageData.src;
+                        img.onload = () => {
+                            ctx.drawImage(img, index * canvas.width / 2, 0, canvas.width / 2, canvas.height);
+                            imageData.points.forEach(point => drawCircle(point.x, point.y));
+                        };
                     });
-                };
+                }
 
-                bodyImage2.onload = function() {
-                    ctx.drawImage(bodyImage2, 200, 0, 200, canvas.height);
-                    allowedPoints2.forEach(point => {
-                        drawCircle(point.x, point.y);
-                    });
-                };
-
-                // Dibujar una marca en un punto permitido
-                function drawMark(x, y) {
+                // Dibujar un círculo
+                function drawCircle(x, y, color = 'black', lineWidth = 2) {
                     ctx.beginPath();
-                    ctx.arc(x, y, 7, 0, Math.PI * 2); // Círculo con radio 5
-                    ctx.fillStyle = 'red';
-                    ctx.fill();
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = 2;
+                    ctx.arc(x, y, 8, 0, Math.PI * 2);
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
                     ctx.stroke();
                 }
 
-                function dropMark(x, y) {
-                    ctx.beginPath();
-                    ctx.arc(x, y, 8, 0, Math.PI * 2); // Círculo con radio 5
-                    ctx.fillStyle = 'white';
-                    ctx.fill();
-                    ctx.strokeStyle = 'black';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
+                // Dibujar o eliminar marcas
+                function toggleMark(point) {
+                    const existingMarkIndex = marks.findIndex(mark => mark.x === point.x && mark.y === point.y);
+                    if (existingMarkIndex !== -1) {
+                        marks.splice(existingMarkIndex, 1); // Eliminar marca
+                        drawCircle(point.x, point.y); // Restaurar el punto original
 
-                function drawCircle(x, y) {
-                    ctx.beginPath();
-                    ctx.arc(x, y, 8, 0, Math.PI * 2); // Círculo con radio 5
-                    ctx.strokeStyle = 'black';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
+                    } else {
+                        marks.push(point); // Agregar marca
+                        drawCircle(point.x, point.y, 'red', 3); // Dibujar marca roja
+
+
+
+                    }
+                    actualizarMarcas();
+
                 }
 
                 // Actualizar la lista de puntos marcados
-
                 function actualizarMarcas() {
-                    const coordenadas = [];
-                    const zonas = [];
                     listaZonas.innerHTML = '';
                     coordinate.value = '';
-                    zonaslabel.value = ''
+                    zonaslabel.value = '';
+                    const coordenadas = marks.map(mark => `(${mark.x}, ${mark.y})`);
+                    const zonas = marks.map(mark => mark.label);
+
                     marks.forEach((mark, index) => {
                         const item = document.createElement('li');
-                        coordenadas.push(`(${mark.x}, ${mark.y})`);
-                        zonas.push(`${mark.label}`);
                         item.textContent = `Zona ${index + 1}: ${mark.label}`;
                         listaZonas.appendChild(item);
                     });
+
                     coordinate.value = coordenadas.join(' | ');
                     zonaslabel.value = zonas.join(' | ');
                 }
 
                 // Manejar clics en el canvas
-                canvas.addEventListener('click', function(event) {
+                canvas.addEventListener('click', function (event) {
                     const rect = canvas.getBoundingClientRect();
-                    const x = event.clientX - rect.left; // Coordenada X relativa
-                    const y = event.clientY - rect.top; // Coordenada Y relativa
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
 
-                    // Buscar si el clic está cerca de algún punto permitido
-                    const clickedPoint = allowedPoints.find(
-                        point => Math.sqrt((point.x - x) ** 2 + (point.y - y) ** 2) <= 10
-                    );
-
-                    const clickedPoint2 = allowedPoints2.find(
+                    // Buscar puntos permitidos cercanos
+                    const allPoints = [...allowedPoints, ...allowedPoints2];
+                    const clickedPoint = allPoints.find(
                         point => Math.sqrt((point.x - x) ** 2 + (point.y - y) ** 2) <= 10
                     );
 
                     if (clickedPoint) {
-                        // Verificar si ya está marcado
-                        const existingMarkIndex = marks.findIndex(mark => mark.x === clickedPoint.x && mark.y ===
-                            clickedPoint.y);
-
-                        if (existingMarkIndex !== -1) {
-                            // Si ya está marcado, quitar la marca
-                            dropMark(clickedPoint.x, clickedPoint.y);
-                            marks.splice(clickedPoint, 1);
-                        } else {
-                            // Si no está marcado, agregar la marca
-                            marks.push(clickedPoint);
-                            drawMark(clickedPoint.x, clickedPoint.y);
+                        toggleMark(clickedPoint); // Marcar o desmarcar el punto
+                        try {
+                            capturarZonaLesion();
+                        } catch (error) {
+                            console.error("Error al capturar la zona de lesión:", error);
                         }
-                        actualizarMarcas(); // Actualizar la lista de zonas
-                    }
-
-                    if (clickedPoint2) {
-                        // Verificar si ya está marcado
-                        const existingMarkIndex = marks.findIndex(mark => mark.x === clickedPoint2.x && mark.y ===
-                            clickedPoint2.y);
-
-                        if (existingMarkIndex !== -1) {
-                            // Si ya está marcado, quitar la marca
-                            dropMark(clickedPoint2.x, clickedPoint2.y);
-                            marks.splice(clickedPoint2, 1);
-                        } else {
-                            // Si no está marcado, agregar la marca
-                            marks.push(clickedPoint2);
-                            drawMark(clickedPoint2.x, clickedPoint2.y);
-                        }
-                        actualizarMarcas(); // Actualizar la lista de zonas
                     }
                 });
+
+                // Inicializar canvas
+                loadBodyImages();
+
+
+
             </script>
 
             <style>

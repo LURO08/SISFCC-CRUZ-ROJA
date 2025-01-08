@@ -225,7 +225,7 @@
                                             Editar
                                         </a>
 
-                                        <a href="{{route('emergencia.generatePDF',$phase->folio)}}" style="margin:5px 0;"
+                                        <a href="{{route('emergencia.generatePDF',$phase->folio)}}" target="_blank" style="margin:5px 0;"
                                         class="btn  btn-sm rounded-pill shadow-sm hover:bg-blue-700 bg-blue-700 text-white hover:shadow-lg transition-all duration-300">
                                         Descargar</a>
                                         <!-- Botón "Descargar" con color verde y efectos -->

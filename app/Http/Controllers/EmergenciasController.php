@@ -18,6 +18,7 @@ use App\Models\EmergencyPhase8;
 use App\Models\EmergencyPhase8_Zonas;
 use App\Models\EmergencyPhase9;
 use PDF;
+use Dompdf\Options;
 
 class EmergenciasController extends Controller
 {
@@ -107,14 +108,25 @@ class EmergenciasController extends Controller
         $phase5 = EmergencyPhase5::where('folio', $id)->first();
         $phase6 = EmergencyPhase6::where('folio', $id)->first();
         $phase7 = EmergencyPhase7::where('folio', $id)->first();
+        $ventilacion_hemitorax = json_decode($phase7->ventilacion_hemitorax,true);
+        $ventilacion_sitio = json_decode($phase7->ventilacion_sitio,true);
+        $circulacion_calidad = json_decode($phase7->circulacion_calidad,true);
+
         $phase8 = EmergencyPhase8::where('folio', $id)->first();
         $phase8_zona = EmergencyPhase8_Zonas::where('folio', $id)->first();
         $exploracionFisica = json_decode($phase8->exploracion_fisica,true);
         $zonaslesion = json_decode($phase8_zona->zona,true);
         $Coordenadaslesion = json_decode($phase8_zona->coordinate,true);
 
-        $phase9 = EmergencyPhase9::where('folio', $id)->first();
 
+        $phase9 = EmergencyPhase9::where('folio', $id)->first();
+        $hemitorax = json_decode($phase9->hemitorax,true);
+        $oxigenoterapia = json_decode($phase9->oxigenoterapia,true);
+        $vias_venosas = json_decode($phase9->vias_venosas,true);
+        $tipo_soluciones = json_decode($phase9->tipo_soluciones,true);
+        $soluciones = json_decode($phase9->soluciones,true);
+        $rcp_procedimientos = json_decode($phase9->rcp_procedimientos,true);
+        $medicamentos_terapia = json_decode($phase9->medicamentos_terapia,true);
         $personal = Personal::all();
         return view('socorro.emergencias.editar', compact(
             'phase1',
@@ -124,10 +136,22 @@ class EmergenciasController extends Controller
             'phase5',
             'phase6',
             'phase7',
+            'ventilacion_hemitorax',
+            'ventilacion_sitio',
+            'circulacion_calidad',
+
             'phase8',
             'exploracionFisica',
             'phase8_zona',
+
             'phase9',
+            'hemitorax',
+            'oxigenoterapia',
+            'vias_venosas',
+            'tipo_soluciones',
+            'soluciones',
+            'rcp_procedimientos',
+            'medicamentos_terapia',
             'ambulanceServices',
             'ambulances',
             'personal',
@@ -367,7 +391,23 @@ class EmergenciasController extends Controller
 
         EmergencyPhase6::create($request->all());
 
-        EmergencyPhase7::create($request->all());
+        EmergencyPhase7::create(
+        [
+            'folio' => $phase1->id,
+            'nivel_conciencia' => $request['nivel_conciencia'],
+            'viaaerea' => $request['viaaerea'],
+            'reflejo_deglutacion' => $request['reflejo_deglutacion'],
+            'ventilacion_observacion' => $request['ventilacion_observacion'],
+            'ventilacion_auscultacion' => $request['ventilacion_auscultacion'],
+
+            'ventilacion_hemitorax' => json_encode($request['ventilacion_hemitorax']),
+            'ventilacion_sitio' => json_encode($request['ventilacion_sitio']),
+            'circulacion_pulsos' => $request['circulacion_pulsos'],
+            'circulacion_calidad' => json_encode($request['circulacion_calidad']),
+            'circulacion_piel' => $request['circulacion_piel'],
+            'circulacion_caracteristicas' => $request['circulacion_caracteristicas'],
+
+        ]);
 
         $validatedData = $request->validate([
             'exploracion_fisica' => 'nullable|array'
@@ -406,11 +446,19 @@ class EmergenciasController extends Controller
             'prioridad' => $request['prioridad'],
         ]);
 
+        $imageData = $request->input('captura_imagen');
+        $captura = null;
+        // Validar si la imagen es una cadena Base64 válida
+        if (strpos($imageData, 'data:image/png;base64,') !== false) {
+            $captura = $imageData;
+        }
+
         EmergencyPhase8_Zonas::create([
             'folio' => $phase1->id,
             'id_phase' => $phase8->id,
             'zona' => $request['zonaslabel'],
             'coordinate' => $request['coordinate'],
+            'capturas' => $captura,
         ]);
 
         // foreach ($request as $item) {
@@ -466,21 +514,23 @@ class EmergenciasController extends Controller
 
         EmergencyPhase9::create([
             'folio' => $phase1->id,
-            'via_aerea' => json_encode($request['via_aerea'] ?? []), // Convertir el array en JSON
+            'via_aerea' => $request['via_aerea'] ?? null,
             'control_cervical' => $request['control_cervical'] ?? null,
-            'asistencia_ventilatoria' => $request['asistencia_ventilatoria'] ?? [],
-            'frecuencia' => $request['frecuencia'] ?? null,
+            'asistencia_ventilatoria' => $request['asistencia_ventilatoria'] ?? null,
+            'FREC' => $request['FREC'] ?? null,
             'volumen' => $request['volumen'] ?? null,
-            'oxigenoterapia' => $request['oxigenoterapia'] ?? [],
+            'heperventilacion' => $request['heperventilacion'] ?? null,
+            'descompresión_pleural_con_agua' => $request['descompresión_pleural_con_agua'] ?? null,
+            'oxigenoterapia' => json_encode($request['oxigenoterapia'] ?? []),
             'litros' => $request['litros'] ?? null,
-            'procedimientos_adicionales' => $request['procedimientos_adicionales'] ?? [],
-            'control_hemorragias' => $request['control_hemorragias'] ?? [],
-            'vias_venosas' => $request['vias_venosas'] ?? [],
+            'hemitorax' => json_encode($request['hemitorax'] ?? []),
+            'control_hemorragias' => $request['control_hemorragias'] ?? null,
+            'vias_venosas' => json_encode($request['vias_venosas'] ?? []),
             'sitio_aplicacion' => $request['sitio_aplicacion'] ?? null,
-            'tipo_soluciones' => $request['tipo_soluciones'] ?? [],
-            'soluciones' => $request['soluciones'] ?? [],
-            'medicamentos_terapia' => $request['medicamentos_terapia'] ?? [],
-            'rcp_procedimientos' => $request['rcp_procedimientos'] ?? [],
+            'tipo_soluciones' => json_encode($request['tipo_soluciones'] ?? []),
+            'soluciones' => json_encode($request['soluciones'] ?? []),
+            'medicamentos_terapia' => json_encode($request['medicamentos_terapia'] ?? []),
+            'rcp_procedimientos' => json_encode($request['rcp_procedimientos'] ?? []),
 
         ]);
 
@@ -492,6 +542,7 @@ class EmergenciasController extends Controller
 
     public function emergencyUpdate(Request $request, $id)
     {
+
 
 
         // //Fase 1
@@ -698,7 +749,22 @@ class EmergenciasController extends Controller
         $phase6->update($request->all());
         // Actualizar datos de la Fase 7
         $phase7 = EmergencyPhase7::where('folio', $id)->first();
-        $phase7->update($request->all());
+        $phase7->update(
+            [
+                'nivel_conciencia' => $request['nivel_conciencia'] ?? null,
+                'viaaerea' => $request['viaaerea'] ?? null,
+                'reflejo_deglutacion' => $request['reflejo_deglutacion'] ?? null,
+                'ventilacion_observacion' => $request['ventilacion_observacion'] ?? null,
+                'ventilacion_auscultacion' => $request['ventilacion_auscultacion'] ?? null,
+
+                'ventilacion_hemitorax' => $request['ventilacion_hemitorax'] ?? [],
+                'ventilacion_sitio' => $request['ventilacion_sitio'] ?? [],
+                'circulacion_pulsos' => $request['circulacion_pulsos'],
+                'circulacion_calidad' => $request['circulacion_calidad'] ?? [],
+                'circulacion_piel' => $request['circulacion_piel'],
+                'circulacion_caracteristicas' => $request['circulacion_caracteristicas'],
+            ]
+        );
         // Actualizar datos de la Fase 8
         $phase8 = EmergencyPhase8::where('folio', $id)->first();
 
@@ -738,23 +804,43 @@ class EmergenciasController extends Controller
 
         $phase8_zona = EmergencyPhase8_Zonas::where('folio', $id)->first();
 
+        $imageData = $request->input('captura_imagen');
+        $captura = null;
+        // Validar si la imagen es una cadena Base64 válida
+        if (strpos($imageData, 'data:image/png;base64,') !== false) {
+            $captura = $imageData;
+        }
+        // Actualizar los datos en la base de datos
         $phase8_zona->update([
             'id_phase' => $phase8->id,
             'zona' => $request['zonaslabel'],
             'coordinate' => $request['coordinate'],
+            'capturas' => $captura,
         ]);
 
         $phase9 = EmergencyPhase9::where('folio', $id)->first();
+        $frec = null;
+        $volumen = null;
+        if ($request['asistencia_ventilatoria'] !== 'ventilador_automatico') {
+            $frec = null;
+            $volumen = null;
+        } else {
+            $frec = $request['FREC'] ?? null;
+            $volumen = $request['volumen'] ?? null;
+        }
+
         $phase9->update([
-            'via_aerea' => json_encode($request['via_aerea'] ?? []), // Convertir el array en JSON
+            'via_aerea' => $request['via_aerea'] ?? null,
             'control_cervical' => $request['control_cervical'] ?? null,
-            'asistencia_ventilatoria' => $request['asistencia_ventilatoria'] ?? [],
-            'frecuencia' => $request['frecuencia'] ?? null,
-            'volumen' => $request['volumen'] ?? null,
+            'asistencia_ventilatoria' => $request['asistencia_ventilatoria'] ?? null,
+            'FREC' => $frec,
+            'volumen' => $volumen,
+            'heperventilacion' => $request['heperventilacion'] ?? null,
+            'descompresión_pleural_con_agua' => $request['descompresión_pleural_con_agua'] ?? null,
             'oxigenoterapia' => $request['oxigenoterapia'] ?? [],
             'litros' => $request['litros'] ?? null,
-            'procedimientos_adicionales' => $request['procedimientos_adicionales'] ?? [],
-            'control_hemorragias' => $request['control_hemorragias'] ?? [],
+            'hemitorax' => $request['hemitorax'] ?? null,
+            'control_hemorragias' => $request['control_hemorragias'] ?? null,
             'vias_venosas' => $request['vias_venosas'] ?? [],
             'sitio_aplicacion' => $request['sitio_aplicacion'] ?? null,
             'tipo_soluciones' => $request['tipo_soluciones'] ?? [],
@@ -763,42 +849,52 @@ class EmergenciasController extends Controller
             'rcp_procedimientos' => $request['rcp_procedimientos'] ?? [],
         ]);
 
-    } catch (\Exception $e) {
-        return redirect()->route('socorros.index')->with('error', 'Error al actualizar la emergencia: ' . $e->getMessage());
-    }
-
-
-    return redirect()->route('socorros.index')->with('success', 'Emergencia actualizo correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('socorros.index')->with('error', 'Error al actualizar la emergencia: ' . $e->getMessage());
+        }
+        return redirect()->route('socorros.index')->with('success', 'Emergencia actualizo correctamente.');
     }
 
     public function generatePDF($id)
-    {
-        \Carbon\Carbon::setLocale('es');
+{
+    \Carbon\Carbon::setLocale('es');
 
-        // Obtener dinámicamente todas las fases relacionadas
-        $phases = [];
-        for ($i = 1; $i <= 9; $i++) {
-            $modelClass = "App\\Models\\EmergencyPhase{$i}";
-            $phases["phase{$i}"] = $i == 1
-                ? $modelClass::findOrFail($id)
-                : $modelClass::where('folio', $id)->first();
-        }
-
-        // Generar el PDF con los datos y enviarlo a la vista
-
-        // Configurar para reducir márgenes y bordes en la página
-        $pdf = Pdf::loadView('pdf.emergency', $phases)
-            ->setPaper('A4', 'portrait')
-            ->setOption('margin-top', '0mm')       // Eliminar margen superior
-            ->setOption('margin-right', '0mm')     // Eliminar margen derecho
-            ->setOption('margin-bottom', '0mm')    // Eliminar margen inferior
-            ->setOption('margin-left', '0mm')      // Eliminar margen izquierdo
-            ->setOption('disable-smart-shrinking', true) // Desactiva el ajuste automático
-            ->setOption('viewport-size', '1024x768');    // Mejora renderizado del tamaño de vista
-
-        // Stream del PDF
-        return $pdf->stream('emergency_report.pdf');
+    // Obtener dinámicamente todas las fases relacionadas
+    $phases = [];
+    for ($i = 1; $i <= 9; $i++) {
+        $modelClass = "App\\Models\\EmergencyPhase{$i}";
+        $phases["phase{$i}"] = $i == 1
+            ? $modelClass::findOrFail($id)
+            : $modelClass::where('folio', $id)->first();
     }
+
+    $phases["phase8_zona"] = EmergencyPhase8_Zonas::where('folio', $id)->first();
+    $imageData = $phases["phase8_zona"]->capturas ?? null;
+
+    if ($imageData && strpos($imageData, 'data:image/png;base64,') !== false) {
+        // Eliminar el prefijo 'data:image/png;base64,' antes de decodificar
+        $base64String = str_replace('data:image/png;base64,', '', $imageData);
+    }
+
+    // Guardar el string Base64 de la imagen en el array de fases
+    $phases["phase8_zona_capturas"] = $base64String ?? null;
+
+    // Generar el PDF con los datos y enviarlo a la vista
+    $pdf = Pdf::loadView('pdf.emergency', $phases)
+        ->setPaper('A4', 'portrait')
+        ->setOption('margin-top', '0mm')       // Eliminar margen superior
+        ->setOption('margin-right', '0mm')     // Eliminar margen derecho
+        ->setOption('margin-bottom', '0mm')    // Eliminar margen inferior
+        ->setOption('margin-left', '0mm')      // Eliminar margen izquierdo
+        ->setOption('disable-smart-shrinking', true) // Desactiva el ajuste automático
+        ->setOption('viewport-size', '1024x768')
+        ->setOption('isHtml5ParserEnabled', true)
+        ->setOption('isPhpEnabled', true);    // Mejora renderizado del tamaño de vista
+
+    // Stream del PDF
+    return $pdf->stream('emergency_report.pdf');
+}
+
 
 
 

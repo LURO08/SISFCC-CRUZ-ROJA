@@ -386,7 +386,7 @@
                                             <div class="form-group">
                                                 <label for="icono">Ícono</label><br>
                                                 <input type="text" name="icono" class="form-control"
-                                                    value="{{ $servicio->icono }}" required>
+                                                    value="{{ $servicio->icono }}" >
                                             </div>
 
                                             <div class="form-group">
@@ -445,7 +445,7 @@
                                 <div class="form-group">
                                     <label for="icono">Ícono</label><br>
                                     <input type="text" name="icono" class="form-control" id="icono"
-                                        placeholder="Ingrese del ícono" required>
+                                        placeholder="Ingrese del ícono" >
                                 </div>
 
                                 <div class="form-group">

@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     PacientesController,
     ProveedorController,
     AlmacenController,
+    DocumentoController,
     EmergenciasController
 };
 
@@ -69,6 +70,10 @@ Route::middleware('auth')->group(function () {
             Route::put('/admin/cobros/{cobro}', [AdminController::class, 'updateCobros'])->name('admin.cobro.update');
             Route::delete('/admin/cobros/{cobro}', [AdminController::class, 'destroyCobros'])->name('admin.cobro.destroy');
 
+            Route::get('/admin/documentos', [DocumentoController::class, 'index'])->name('admin.documentos');
+            Route::post('/admin/documento', [DocumentoController::class, 'store'])->name('admin.documentos.store');
+            Route::delete('/admin/documentos/{documento}', [DocumentoController::class, 'destroy'])->name('admin.documento.destroy');
+            Route::put('/admin/documentos/{user}', [DocumentoController::class, 'updatePersonal'])->name('admin.documentos.update');
         });
 
         // Doctor
@@ -85,8 +90,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/doctor/receta/store', [DoctorController::class, 'store'])->name('doctor.receta.store');
             Route::put('/doctor/receta/update/{id}', [DoctorController::class, 'update'])->name('doctor.receta.update')->middleware('auth');
             Route::get('/receta/{id}/descargar', [DoctorController::class, 'descargarReceta'])->name('receta.descargar');
-
             Route::get('/doctor/recetaview/{receta}', [DoctorController::class, 'recetaview'])->name('doctor.receta.view');
+
+            Route::get('/doctor/receta/index', [DoctorController::class, 'indexReceta'])->name('doctor.receta.index');
+            Route::get('/doctor/recetas/view', [DoctorController::class, 'ViewRecetas'])->name('doctor.recetas.view');
+            Route::get('/doctor/receta/editar/{id}', [DoctorController::class, 'editarReceta'])->name('doctor.receta.editar');
 
         });
 
@@ -99,7 +107,7 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/cajero/facturas', [CajeroController::class, 'storeSolicitudFactura'])->name('cajero.solicitar.factura.store')->middleware('auth');
 
-            Route::get('/ticket/{id}/descargar', [CajeroController::class, 'DescargarPdf'])->name('ticket.descargar');
+            Route::get('/ticket/{id}/descargar', [CajeroController::class, 'generarReciboPDF'])->name('ticket.descargar');
             Route::get('/factura/{id}/descargar', [CajeroController::class, 'DescargarFactura'])->name('factura.descargar');
             Route::get('/cobros/reporte', [CajeroController::class, 'generarReporteDiario'])->name('reporte.diario');
             Route::post('/cobros/reporte/descargar', [CajeroController::class, 'descargarReporte'])->name('cobros.reporte.descargar');
@@ -134,7 +142,7 @@ Route::middleware('auth')->group(function () {
         });
 
           // Rutas específicas para el rol almacen
-          Route::middleware('role:almacenista')->group(function () {
+          Route::middleware('role:admin,almacenista')->group(function () {
             Route::get('/almacen', [AlmacenController::class, 'index'])->name('almacenista.index');
 
             // Rutas para el inventario vehicular
@@ -195,7 +203,7 @@ Route::middleware('auth')->group(function () {
         });
 
           // Rutas específicas para el rol emergencias
-        Route::middleware('role:socorros')->group(function () {
+        Route::middleware('role:admin,socorros')->group(function () {
             Route::get('/Socorros', [EmergenciasController::class, 'index'])->name('socorros.index');
             Route::get('/Socorros/ambulance_services', [EmergenciasController::class, 'indexAmbulancesServices'])->name('socorros.ambulances.services.index');
             Route::post('/socorros/ambulance_services/store', [EmergenciasController::class, 'storeAmbulanceServices'])->name('ambulance_services.store');

@@ -158,10 +158,29 @@
             </a>
         </li>
 
+
         <li>
             <a class="btn" id="btnreportes" href="{{route('admin.reportes.index')}}">
                 <span class="icon">💵</span>
                 <span class="text" style="font-weight: bold;">Reportes</span>
+            </a>
+        </li>
+        <li>
+            <a class="btn" href="{{route('almacenista.index')}}">
+                <span class="icon">📦</span>
+                <span class="text" style="font-weight: bold;">Almacen</span>
+            </a>
+        </li>
+        <li>
+            <a class="btn" href="{{route('socorros.index')}}">
+                <span class="icon">📣</span>
+                <span class="text" style="font-weight: bold;">Socorros</span>
+            </a>
+        </li>
+        <li>
+            <a class="btn" href="{{route('admin.documentos')}}">
+                <span class="icon">📣</span>
+                <span class="text" style="font-weight: bold;">Documentos</span>
             </a>
         </li>
     </ul>

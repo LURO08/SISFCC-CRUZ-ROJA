@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Medicamentos;
 
 class MedicamentoSurtido extends Model
 {
@@ -27,6 +28,7 @@ class MedicamentoSurtido extends Model
     {
         return $this->belongsTo(Medicamentos::class, 'medicamento_id');
     }
+
 
     public function receta()
     {

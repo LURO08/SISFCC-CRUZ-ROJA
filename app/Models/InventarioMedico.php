@@ -14,6 +14,7 @@ class InventarioMedico extends Model
         'descripcion',
         'tipo',
         'cantidad',
+        'precio',
         'fecha_caducidad',
         'rutaimg',
     ];

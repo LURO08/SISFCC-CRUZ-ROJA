@@ -11,6 +11,7 @@ use App\Models\SolicitudFactura;
 use App\Models\Cobros;
 use App\Models\Pacientes;
 use App\Models\MedicamentoSurtido;
+use App\Models\InventarioMedico;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
@@ -22,13 +23,46 @@ class CajeroController extends Controller
         $recetas = RecetaMedica::whereHas('transaccions', function($query) {
             $query->where('destino', 'caja');
         })->get();
+
+        $recetas->each(function($receta) {
+            if (!empty($receta->tratamiento)) {
+                $tratamiento = explode("\n", $receta->tratamiento); // Divide la cadena por saltos de línea
+                $tratamiento = array_map('trim', $tratamiento); // Elimina espacios extra
+                $tratamiento = array_map(function($medicamento) {
+                    return str_replace(['-', ','], '', $medicamento); // Elimina guiones y comas
+                }, $tratamiento);
+                $receta->tratamiento = $tratamiento; // Asigna el tratamiento procesado
+            }
+
+            if (!empty($receta->material)) {
+                $material = explode("\n", $receta->material); // Divide la cadena por saltos de línea
+                $material = array_map('trim', $material); // Elimina espacios extra
+
+                // Procesa cada línea para separar nombre y cantidad
+                $material = array_map(function($linea) {
+                    // Busca el nombre y la cantidad en la línea
+                    preg_match('/^(.*?)(?:[-,]?\s*Cantidad:\s*(\d+))?$/i', $linea, $matches);
+
+                    return [
+                        'nombre' => trim($matches[1] ?? ''), // Nombre del material
+                        'cantidad' => isset($matches[2]) ? (int)$matches[2] : null // Cantidad, si existe
+
+                    ];
+                }, $material);
+
+                $receta->material = $material; // Asigna el material procesado
+            }
+
+        });
+
         $cobros = Cobros::all();
+        $cobrosPaginados = Cobros::paginate(1);
         $facturas = SolicitudFactura::all();
         $productos = Medicamentos::all();
         $pacientes = Pacientes::all();
         $servicios = Servicio::all();
         $recetasSurtidas = MedicamentoSurtido::orderBy('receta_id')->get();
-
+        $inventarioMedico = InventarioMedico::all();
         $fechasDisponibles = Cobros::selectRaw('DATE(created_at) as fecha')
         ->distinct()
         ->orderBy('fecha', 'desc')
@@ -38,12 +72,13 @@ class CajeroController extends Controller
 
          // Datos fijos para las facturas
 
-        return view('cajero.index',compact('fechasDisponibles','recetas','productos','servicios','facturas','pacientes','cobros','recetasSurtidas'));
+        return view('cajero.index',compact('inventarioMedico','fechasDisponibles','recetas','productos','servicios','facturas','pacientes','cobros','recetasSurtidas'));
     }
 
     public function storeCobro(Request $request)
     {
         date_default_timezone_set('America/Mexico_City');
+
         $request->validate([
             'paciente_id' => 'required|exists:pacientes,id',
             'receta_id' => 'required|exists:receta_medicas,id',
@@ -53,8 +88,19 @@ class CajeroController extends Controller
             'fecha' => 'required|date',
         ]);
 
+        // Verificar si ya existe un cobro para la misma receta
+        $cobroExistente = Cobros::where('paciente_id', $request->paciente_id)
+            ->where('receta_id', $request->receta_id)
+            ->first();
+
+        if ($cobroExistente) {
+            // Generar y devolver el PDF si el cobro ya está registrado
+            return $this->generarReciboPDF($cobroExistente->id, $request->paciente_id);
+        }
+
         $factura = $request->has('facturacion');
 
+        // Crear nuevo cobro
         $cobro = new Cobros();
         $cobro->paciente_id = $request->paciente_id;
         $cobro->receta_id = $request->receta_id;
@@ -64,7 +110,6 @@ class CajeroController extends Controller
         $cobro->fecha = $request->fecha;
         $cobro->facturación = $factura;
         $cobro->save();
-
 
         // Actualizar receta como cobrada
         $receta = RecetaMedica::find($request->receta_id);
@@ -86,60 +131,68 @@ class CajeroController extends Controller
             ]));
         }
 
-        // Generar PDF de cobro (Ticket) con formato reducido
-        $medicamentos = MedicamentoSurtido::where('receta_id', $request->receta_id)->get();
-        $paciente = Pacientes::findOrFail($request->paciente_id);
-        $totalServicio = $request->costo2;
-        $MedicamentosTotal = $request->MedicamentosTotal;
+        // Generar y devolver el PDF del cobro
+        return $this->generarReciboPDF($cobro->id, $request->paciente_id);
+    }
+
+    public function generarReciboPDF($idCobro)
+    {
+        $cobro = Cobros::findOrFail($idCobro);
+        $medicamentos = MedicamentoSurtido::where('receta_id', $cobro->receta_id)->get();
+        $inventarioMedico = InventarioMedico::all();
+        $paciente = Pacientes::findOrFail($cobro->paciente_id );
+        $receta = RecetaMedica::findOrFail($cobro->receta_id);
+        $totalServicio = $cobro->Servicio->costo;
 
         $path = public_path('tickets/recibo-cobro-' . $cobro->id . '.pdf');
 
-        $cobro = Cobros::findOrFail($cobro->id);
-        $cobro->rutaticket = $path;
-        $cobro->save();
+        // Procesar el material de la receta
+        if (!empty($receta->material)) {
+            $material = explode("\n", $receta->material);
+            $material = array_map('trim', $material);
 
-        // Verificar y crear el directorio si no existe
+            $material = array_map(function($linea) {
+                preg_match('/^(.*?)(?:[-,]?\s*Cantidad:\s*(\d+))?$/i', $linea, $matches);
+                return [
+                    'nombre' => trim($matches[1] ?? ''),
+                    'cantidad' => isset($matches[2]) ? (int)$matches[2] : null
+                ];
+            }, $material);
+
+            $receta->material = $material;
+        }
+
         if (!File::exists(public_path('tickets'))) {
             File::makeDirectory(public_path('tickets'), 0755, true);
         }
 
-        $alto_fila = 40; // px (por ejemplo, la altura de cada fila de la tabla)
-        $alto_encabezado = 100; // px (encabezado + pie de página)
-        $alto_parrafo = 50; // px (por párrafo adicional)
-
-        $alto_margen_superior = 50; // px (margen superior)
-        $alto_margen_inferior = 40; // px (margen inferior)
-
-        // Calcula la cantidad de filas (suponiendo que cada medicamento es una fila)
-        $cantidad_filas = count($medicamentos); // Total de medicamentos
-
-        // Calcular la altura total estimada (en px)
+        $alto_fila = 40;
+        $alto_encabezado = 84;
+        $alto_parrafo = 50;
+        $alto_margen_superior = 50;
+        $alto_margen_inferior = 40;
+        $cantidad_filas = count($medicamentos);
         $altura_total = $alto_encabezado + ($cantidad_filas * $alto_fila) + $alto_parrafo + $alto_margen_superior + $alto_margen_inferior;
+        $altura_minima = 30;
+        $altura_total = $altura_total + $altura_minima;
+        $altura_total_mm = $altura_total;
 
-        // Convertir a milímetros (1px ≈ 0.264583 mm)
-        $altura_total_mm = $altura_total; // Convertir px a mm
+        $pdf = Pdf::loadView('pdf.recibo-cobro', compact('receta', 'medicamentos', 'cobro', 'paciente', 'inventarioMedico','totalServicio'))
+            ->setPaper([0, 0, 227, $altura_total_mm], 'portrait');
 
-        // Validar que la altura mínima sea suficiente para el contenido
-        $altura_minima = 530; // px (altura mínima en px)
-        if ($altura_total < $altura_minima) {
-            $altura_total = $altura_minima;
-        }
-        // Generar el PDF con los datos y el diseño de la vista
-        $pdf = Pdf::loadView('pdf.recibo-cobro', compact('receta', 'medicamentos', 'cobro', 'paciente', 'totalServicio', 'MedicamentosTotal'))
-            ->setPaper([0, 0, 227, $altura_total_mm], 'portrait'); // Configuración de tamaño para el ticket
-
-        // Guardar el PDF en la ruta especificada
         $pdf->save($path);
 
-        // Retornar el PDF para verlo en el navegador
+        // Actualizar la ruta del ticket en el cobro
+        $cobro->rutaticket = $path;
+        $cobro->save();
+
         return response()->file($path, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="recibo-cobro-' . $cobro->id . '.pdf"'
         ]);
-
-
-        return redirect()->route('cajero.index')->with('success', 'Cobro realizado exitosamente');
     }
+
+
 
 
     public function updateCobro(Request $request, $id)
@@ -210,57 +263,90 @@ class CajeroController extends Controller
 
     public function DescargarPdf($cobroId)
     {
-     // Define la ruta donde se guardará el PDF
-     $filename = "recibo-cobro-$cobroId.pdf";
-     $filePath = public_path("tickets/{$filename}");
+        // Define la ruta donde se guardará el PDF
+        $filename = "recibo-cobro-$cobroId.pdf";
+        $filePath = public_path("tickets/{$filename}");
 
-     // Verifica si el archivo ya existe en el almacenamiento
-     if (file_exists($filePath)) {
-         // Retorna el archivo existente para descarga
-         return response()->download($filePath, $filename, [
-             'Content-Type' => 'application/pdf',
-             'Content-Disposition' => 'inline; filename="' . $filename . '"'
-         ]);
+        // Verifica si el archivo ya existe en el almacenamiento
+        if (file_exists($filePath)) {
+            // Retorna el archivo existente para descarga
+            return response()->download($filePath, $filename, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"'
+            ]);
+        }
+
+        // Obtener los datos necesarios utilizando el $cobroId
+        $cobro = Cobros::findOrFail($cobroId);
+        $receta = $cobro->receta; // Asume que la relación receta está definida en el modelo Cobros
+        $paciente = $cobro->paciente; // Asume que la relación paciente está definida en el modelo Cobros
+        $medicamentos = MedicamentoSurtido::where('receta_id', $receta->id)->get();
+
+        // Lógica adicional para procesar materiales si no está procesada
+        if (!empty($receta->material)) {
+            $material = explode("\n", $receta->material); // Divide la cadena por saltos de línea
+            $material = array_map('trim', $material); // Elimina espacios extra
+
+            // Procesa cada línea para separar nombre y cantidad
+            $material = array_map(function ($linea) {
+                // Busca el nombre y la cantidad en la línea
+                preg_match('/^(.*?)(?:[-,]?\s*Cantidad:\s*(\d+))?$/i', $linea, $matches);
+
+                return [
+                    'nombre' => trim($matches[1] ?? ''), // Nombre del material
+                    'cantidad' => isset($matches[2]) ? (int)$matches[2] : null // Cantidad, si existe
+                ];
+            }, $material);
+
+            // Asigna el material procesado a la receta
+            $receta->material = $material;
+        }
+
+        // Calcula los totales
+        $totalServicio = $cobro->monto; // Si el monto del servicio está en el cobro
+        $MedicamentosTotal = $medicamentos->sum('costo'); // Ajusta según tu modelo
+        $inventarioMedico = InventarioMedico::all(); // Inventario relacionado
+
+        // Alturas de las secciones en px
+        $alto_encabezado = 50; // px
+        $alto_fila = 20; // px
+        $alto_parrafo = 30; // px
+        $alto_margen_superior = 20; // px
+        $alto_margen_inferior = 20; // px
+
+        // Calcular la cantidad de filas y altura total
+        $cantidad_filas = max(1, count($medicamentos)); // Asegura al menos una fila
+        $altura_total = $alto_encabezado + ($cantidad_filas * $alto_fila) + $alto_parrafo + $alto_margen_superior + $alto_margen_inferior;
+        $altura_minima = 300; // px
+        $altura_total = max($altura_total, $altura_minima);
+        $altura_total_mm = $altura_total * 0.264583; // Convertir px a mm
+
+        // Generar el PDF con los datos y el diseño de la vista
+        $pdf = Pdf::loadView('pdf.recibo-cobro', compact(
+            'receta',
+            'medicamentos',
+            'cobro',
+            'paciente',
+            'totalServicio',
+            'MedicamentosTotal',
+            'inventarioMedico'
+        ))->setPaper([0, 0, 227, $altura_total_mm], 'portrait');
+
+        // Crear el directorio si no existe
+        if (!File::exists(public_path('tickets'))) {
+            File::makeDirectory(public_path('tickets'), 0755, true);
+        }
+
+        // Guarda el PDF en la ubicación especificada
+        $pdf->save($filePath);
+
+        // Retorna el archivo recién generado para descarga
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
     }
 
-
-    // // Obtener los datos necesarios utilizando el $cobroId
-    // $cobro = Cobros::findOrFail($cobroId);
-    // $medicamentos = $cobro->medicamentos;
-    // $paciente = $cobro->paciente;
-
-    // // Suponiendo que tienes métodos para calcular el total de medicamentos y el costo del servicio
-
-    // $totalServicio = $receta->servicio->costo ?? 0; // Ajusta el acceso a 'costo' según tu relación
-    // $totalCobro = $cobro->monto;
-
-    // // Alturas de las secciones en px
-    // $alto_encabezado = 50;
-    // $alto_fila = 20;
-    // $alto_parrafo = 30;
-    // $alto_margen_superior = 20;
-    // $alto_margen_inferior = 20;
-
-    // // Calcular la cantidad de filas y altura total
-    // $cantidad_filas = 2;
-    // $altura_total = $alto_encabezado + ($cantidad_filas * $alto_fila) + $alto_parrafo + $alto_margen_superior + $alto_margen_inferior;
-    // $altura_minima = 300;
-    // $altura_total = max($altura_total, $altura_minima);
-    // $altura_total_mm = $altura_total * 0.264583;
-
-    // // Generar el PDF con los datos y el diseño de la vista
-    // $pdf = Pdf::loadView('pdf.recibo-cobro', compact('receta', 'medicamentos', 'paciente', 'totalServicio', 'totalMedicamentos', 'totalCobro'))
-    //     ->setPaper([0, 0, 227, $altura_total_mm], 'portrait');
-
-    // // Guarda el PDF en la ubicación especificada
-    // Storage::put("public/pdf/{$filename}", $pdf->output());
-
-    // // Descarga el PDF recién generado
-    // return response()->download($filePath, $filename, [
-    //     'Content-Type' => 'application/pdf',
-    //     'Content-Disposition' => 'inline; filename="' . $filename . '"'
-    // ]);
-}
 
 public function DescargarFactura($id)
 {

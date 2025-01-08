@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MedicamentoSurtido;
 
 class RecetaMedica extends Model
 {
@@ -50,8 +51,13 @@ class RecetaMedica extends Model
         return $this->hasMany(Transaccion::class);
     }
 
+    public function medicamentosSurtidos()
+    {
+        return $this->hasMany(MedicamentoSurtido::class, 'receta_id');
+    }
+
     public function folio()
     {
-        return str_pad($this->attributes['id'], 3, '0', STR_PAD_LEFT);
+        return str_pad($this->attributes['id'], 4, '0', STR_PAD_LEFT);
     }
 }

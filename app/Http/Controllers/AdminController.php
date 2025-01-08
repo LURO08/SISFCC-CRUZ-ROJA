@@ -66,14 +66,14 @@ class AdminController extends Controller
     }
 
     public function consultorioIndex(){
-        $todosLosPacientes = Pacientes::all()->map(function($pacientes) {
+        $pacientesall = Pacientes::all()->map(function($pacientes) {
             $pacientes->folio = $pacientes->getID();
             return $pacientes;
         });
         $pacientes = Pacientes::paginate(4);
         $facturas = SolicitudFactura::all();
 
-        return view('admin.consultorio.index', compact('pacientes','facturas','todosLosPacientes'));
+        return view('admin.consultorio.index', compact('pacientes','facturas','pacientesall'));
     }
 
     public function generarReporte(Request $request)
@@ -238,10 +238,11 @@ class AdminController extends Controller
 
     public function usuarios()
     {
-        $users = User::all();
+        $users = User::paginate(4);
         $doctores = Doctores::all();
+        $userssall = User::with('roles')->get();
 
-        return view('admin.usuarios.index', compact('users','doctores'));
+        return view('admin.usuarios.index', compact('users','doctores','userssall'));
 
     }
 
@@ -251,55 +252,37 @@ class AdminController extends Controller
         return view('auth.register', compact('roles'));
     }
 
+    // Agregar Usuario
     public function store(Request $request)
     {
+        // Validación de los datos del formulario excepto la validación única del correo
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'in:admin,doctor,cajero,farmacia'],
-            'nombre' => ['nullable', 'string', 'max:255'],
-            'apellidoPaterno' => ['nullable', 'string', 'max:255'],
-            'apellidoMaterno' => ['nullable', 'string', 'max:255'],
-            'cedulaProfesional' => ['nullable', 'string', 'max:255'],
-            'rutafirma' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', 'string', 'in:admin,doctor,cajero,farmacia,socorros,almacenista'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $role = Role::where('name', $request->role)->first();
-        $user->assignRole($role);
-
-        // dd($request);
-        // Si el rol es doctor, crear el registro del doctor
-        if ($request->role == 'doctor') {
-
-            // Procesamiento de la imagen
-            if ($request->hasFile('rutafirma')) {
-                $nombreImagen = time() . '_' . $request->file('rutafirma')->getClientOriginalName();
-                $rutaImagen = 'images/doctores/firmas/' . $nombreImagen;
-                $request->file('rutafirma')->move(public_path('images/doctores/firmas/'), $nombreImagen);
-            } else {
-                $rutaImagen = 'images/doctores/firmas/default.png'; // Imagen por defecto si no se proporciona una
-            }
-
-            Doctores::create([
-                'userid' => $user->id,
-                'nombre' => $request->nombre,
-                'apellidoPaterno' => $request->apellidoPaterno,
-                'apellidoMaterno' => $request->apellidoMaterno,
-                'cedulaProfesional' => $request->cedulaProfesional,
-                'rutafirma' => $rutaImagen,
-            ]);
+        // Verificar si el correo ya existe
+        if (User::where('email', $request->email)->exists()) {
+            return redirect()->back()->with('error', 'El correo electrónico ya está registrado. Por favor, elige otro.');
         }
 
-        return redirect()->route('admin.users')->with('success', 'User created successfully.');
+            // Crear el usuario
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            // Asignar el rol al usuario
+            $role = Role::where('name', $request->role)->first();
+            $user->assignRole($role);
+
+            return redirect()->back()->with('success', 'Usuario creado exitosamente.');
     }
 
+    // Editar Usuario
     public function edit(User $id)
     {
         $user = User::find($id);
@@ -307,24 +290,30 @@ class AdminController extends Controller
         return view('admin.users.edit', compact('user'));
     }
 
+    // Actualizar Usuarios
     public function update(Request $request, User $user)
     {
         // Validar los datos de entrada
         $validatedData = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', 'string', 'in:admin,doctor,cajero,farmacia'],
+            'email' => ['required', 'email', 'max:255'],
+           'role' => ['required', 'string', 'in:admin,doctor,cajero,farmacia,socorros,almacenista'],
             'password' => ['nullable', 'string', 'min:8'], // Contraseña es opcional y debe tener al menos 8 caracteres si se proporciona
         ]);
+
+        if (User::where('email', $request->email)
+        ->where('id', '!=', $user->id)
+        ->exists()) {
+        return redirect()->back()->with('error', 'El correo electrónico ya está registrado por otro usuario. Por favor, elige otro.');
+        }
 
         // Actualizar la información del usuario
         $user->name = $validatedData['name'];
         $user->email = $validatedData['email'];
 
         // Solo actualizar la contraseña si se proporciona
-        if (!empty($validatedData['password'])) {
-            $user->password = Hash::make($validatedData['password']);
-        }
+        // Verifica si el correo pertenece a otro usuario
+
 
         $user->save();
 
@@ -334,20 +323,9 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('success', 'User updated successfully.');
     }
 
-
+    // Eliminar Usuarios
     public function delete(User $user)
     {
-        $doctor = Doctores::where('userid', $user->id)->first();
-        if ($doctor) {
-            if (method_exists($doctor, 'tokens')) {
-                $doctor->tokens()->delete();
-            }
-            if ($doctor->rutafirma && file_exists(public_path($doctor->rutafirma))) {
-                unlink(public_path($doctor->rutafirma));
-            }
-            $doctor->delete();
-
-        }
         $user->tokens()->delete();
         $user->delete();
 

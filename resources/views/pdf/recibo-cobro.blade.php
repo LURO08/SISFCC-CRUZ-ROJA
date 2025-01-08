@@ -92,12 +92,19 @@
 </head>
 
 <body>
-    <div class="header">
-        <h2>Cruz Roja Mexicana</h2>
-        <h3 style="padding: 0; margin: 0;">Delegación Chilpancingo</h3>
+    <div class="header" style="margin-top: -25px;">
+        <table style="width: 110%; border-collapse: collapse; vertical-align: middle; margin-left: -10px;">
+            <tr>
+                <td style="width: 10%; text-align: left;">
+                    <img src="{{ public_path('img/logosvg.png') }}" alt="Logo Cruz Roja" style="width: 60px; height: 50px;">
+                </td>
+                <td style="width: 100%; text-align: center;">
+                    <h2 style="margin: 0; font-size: 1.3em;">Cruz Roja Mexicana</h2>
+                    <h3 style="margin: 0; font-size: 1.1em;">Delegación Chilpancingo</h3>
+                </td>
+            </tr>
+        </table>
     </div>
-
-    <br>
 
     <div class="content-item">
         <table class="table">
@@ -132,38 +139,81 @@
             </td>
         </tr>
     </table>
-
     <!-- Separador antes de medicamentos -->
     <div class="separator" ></div>
 
-    <!-- Mostrar solo si hay medicamentos -->
-    @if (count($medicamentos) > 0)
-        <table class="table" style="margin-bottom: 5px; padding-bottom: 0px;">
-            <tr>
-                <th style="text-align: left;">Medicamento</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-            </tr>
-            @php $totalMedicamentos = 0; @endphp
-            @foreach ($medicamentos as $medicamento)
-                @if ($medicamento->receta_id == $cobro->receta_id)
-                    @php
-                        $subtotal = $medicamento->cantidad * $medicamento->medicamento->precio;
-                        $totalMedicamentos += $subtotal;
-                    @endphp
-                    <tr>
-                        <td style="text-align: left;">{{ $medicamento->medicamento->nombre }}</td>
-                        <td>{{ $medicamento->cantidad }}</td>
-                        <td>${{ number_format($subtotal, 2) }}</td>
-                    </tr>
-                @endif
+    <table class="table" style="margin-bottom: 5px; padding-bottom: 0px;">
+        <tr>
+            <th style="text-align: left;">Nombre</th>
+            <th>Cantidad</th>
+            <th>Und</th>
+            <th>Total</th>
+        </tr>
+        <!-- Mostrar solo si hay medicamentos -->
+        @if (count($medicamentos) > 0)
+
+                @php $totalMedicamentos = 0; @endphp
+                @foreach ($medicamentos as $medicamento)
+                    @if ($medicamento->receta_id == $cobro->receta_id)
+                        @php
+                            $subtotal = $medicamento->cantidad * $medicamento->medicamento->precio;
+                            $totalMedicamentos += $subtotal;
+                        @endphp
+                        <tr>
+                            <td style="text-align: left;">{{ $medicamento->medicamento->nombre }}</td>
+                            <td>{{ $medicamento->cantidad }}</td>
+                            <td>${{ $medicamento->medicamento->precio }}</td>
+                            <td>${{ number_format($subtotal, 2) }}</td>
+                        </tr>
+                    @endif
+                @endforeach
+
+        @endif
+
+        @php $totalMaterial = 0; @endphp
+
+    @foreach ($receta->material as $material )
+        @if (!empty($material))
+            @foreach ($inventarioMedico as $materialMedico)
+
+                    @if ($material['nombre'] === $materialMedico->nombre)
+                        @php
+                            $subtotalMaterial =
+                            $material['cantidad'] *
+                            $materialMedico->precio;
+                            $totalMaterial += $subtotalMaterial;
+                        @endphp
+
+                        <tr>
+                            <td style="text-align: left;">
+                                {{$material['nombre']}}
+                            </td>
+                            <td style="text-align: center;">
+                                {{number_format($material['cantidad'])}}
+                            </td>
+                            <td style="text-align: center;">
+                                $ {{number_format($materialMedico->precio)}}
+                            </td style="text-align: center;">
+                            <td>  ${{ number_format($material['cantidad'] * $materialMedico->precio)}}</td>
+                        </tr>
+                    @endif
+
             @endforeach
-                <tr style="margin-bottom: 0px; padding-bottom: 0px;">
-                    <td colspan="2" style="text-align: left;"> SubTotal:</td>
-                    <td>${{ number_format($totalMedicamentos, 2) }}</td>
+        @else
+                <tr>
+                    <th style="text-align: center;">
+                        Ningún Material Utilizado
+                    </th>
                 </tr>
-        </table>
-    @endif
+        @endif
+    @endforeach
+        <tr>
+            <td colspan="3" style="text-align: left;">SubTotal:</td>
+            <td>${{$totalMaterial+$totalMedicamentos}}</td>
+        </tr>
+    </table>
+    </div>
+
     <div class="separator" style="  margin: 0px 0;"></div>
 
     <!-- Total a Cobrar -->
@@ -171,7 +221,7 @@
         <table class="table" style="padding-top: 0; margin-top: 5px;">
             <tr>
                 <td style="text-align: left; font-weight: bold;">Total:</td>
-                <td style="text-align: right;">${{ number_format($cobro->monto, 2) }}</td>
+                <td style="text-align: right; font-weight: 800; font-size: 13px;">${{ number_format($cobro->monto, 2) }}</td>
             </tr>
         </table>
 </body>

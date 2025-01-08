@@ -107,3 +107,8 @@
     .modal-content .btn {
     align-self: flex-end;
     }
+
+    .modal input, .modal select{
+        border-radius: 10px;
+        border: 1px solid #8b8b8b;
+    }

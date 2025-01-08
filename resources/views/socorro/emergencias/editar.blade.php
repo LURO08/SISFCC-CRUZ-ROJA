@@ -11,6 +11,8 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -483,6 +485,23 @@
         text-align: center;
 
     }
+    #bodyCanvas {
+                    display: block;
+                    margin: auto;
+                }
+
+                .border {
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+
+                ul {
+                    padding-left: 0;
+                }
+
+                li {
+                    margin-bottom: 4px;
+                }
 </style>
 
 
@@ -506,18 +525,17 @@
             @include('socorro.menu_nav')
 
             <div>
-
-
-
                 <form action="{{ route('emergencia.update', $phase1->id) }}" method="POST"
-                    class=" bg-gray-100 rounded-lg shadow-md "
+                    class=" bg-gray-100 rounded-lg shadow-md " id="formulario"
                     style="width: 100%; max-width: 90%; min-width: 80%; margin: 0 auto; margin-bottom:10px; margin-top: 10px; padding: 10px;">
                     @csrf
                     @method('PUT')
                     <h1 class="text-4xl font-extrabold text-center text-blue-600 mt-6 mb-4 leading-tight tracking-wide">
                         EDITAR SOCORRO
                     </h1>
+                        {{-- Botonera --}}
                         <div class="flex flex-wrap justify-center gap-4">
+
                             <div id="buttons-container" class="flex gap-2" style=" margin: 0 auto; height: 20%; max-width: 100%;">
 
                                 <div style="min-width: 10%; max-width: 20%; display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
@@ -904,6 +922,7 @@
                                                     <div class="form-group mb-3">
                                                         <label for="sexo" class="form-label">Sexo</label>
                                                         <select name="sexo" id="sexo" class="form-select">
+                                                            <option value=""selected disable>Seleccione una opción</option>
                                                             <option value="masculino"
                                                             {{ ($phase3->sexo ?? '') === 'masculino' ? 'selected' : '' }}>Masculino</option>
                                                             <option value="femenino"
@@ -1548,36 +1567,45 @@
                                                 <option value="ruidos_ausentes"
                                                 {{($phase7->ventilacion_auscultacion ?? '') === 'ruidos_ausentes' ? 'selected'  : ''}}>Ruidos Respiratorios Ausentes
                                                 </option>
-                                                <option value="estertores"
-                                                {{($phase7->ventilacion_auscultacion ?? '') === 'estertores' ? 'selected'  : ''}}>Estertores</option>
-                                                <option value="sibilancias"
-                                                {{($phase7->ventilacion_auscultacion ?? '') === 'sibilancias' ? 'selected'  : ''}}>Sibilancias</option>
+                                                <option value="estertores_sibilancias"
+                                                {{($phase7->ventilacion_auscultacion ?? '') === 'estertores_sibilancias' ? 'selected'  : ''}}>Estertores Sibilancias</option>
+
                                             </select>
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="ventilacion_hemitorax" class="form-label">Hemitorax</label>
-                                            <select id="ventilacion_hemitorax" name="ventilacion_hemitorax"
-                                                class="form-control">
-                                                <option value="">Seleccione el Hemitorax</option>
-                                                <option value="derecho"
-                                                {{($phase7->ventilacion_hemitorax ?? '') === 'derecho' ? 'selected'  : ''}}>Derecho</option>
-                                                <option value="izquierdo"
-                                                {{($phase7->ventilacion_hemitorax ?? '') === 'izquierdo' ? 'selected'  : ''}}>Izquierdo</option>
-                                            </select>
+                                            <label class="form-label">Hemitorax</label>
+                                            <div class="flex space-x-4">
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_hemitorax[]" value="derecho"
+                                                        {{ in_array('derecho', $ventilacion_hemitorax ?? []) ? 'checked' : '' }}>
+                                                    <span>Derecho</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_hemitorax[]" value="izquierdo"
+                                                        {{ in_array('izquierdo', $ventilacion_hemitorax ?? []) ? 'checked' : '' }}>
+                                                    <span>Izquierdo</span>
+                                                </label>
+                                            </div>
                                         </div>
 
+
                                         <div class="form-group">
-                                            <label for="ventilacion_sitio" class="form-label">Sitio</label>
-                                            <select id="ventilacion_sitio" name="ventilacion_sitio"
-                                                class="form-control">
-                                                <option value="">Seleccione el Sitio</option>
-                                                <option value="apical"
-                                                {{($phase7->ventilacion_sitio ?? '') === 'apical' ? 'selected'  : ''}}>Apical</option>
-                                                <option value="base"
-                                                {{($phase7->ventilacion_sitio ?? '') === 'base' ? 'selected'  : ''}}>Base</option>
-                                            </select>
+                                            <label class="form-label">Sitio</label>
+                                            <div class="flex space-x-4">
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_sitio[]" value="apical"
+                                                        {{ in_array('apical', $ventilacion_sitio ?? []) ? 'checked' : '' }}>
+                                                    <span>Apical</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="ventilacion_sitio[]" value="base"
+                                                        {{ in_array('base', $ventilacion_sitio ?? []) ? 'checked' : '' }}>
+                                                    <span>Base</span>
+                                                </label>
+                                            </div>
                                         </div>
+
                                     </div>
 
                                     <div  style="padding: 0 10px;">
@@ -1600,22 +1628,42 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="circulacion_calidad" class="form-label">Calidad</label>
-                                            <select id="circulacion_calidad" name="circulacion_calidad"
-                                                class="form-control">
-                                                <option value="">Seleccione la Calidad</option>
-                                                <option value="normal"
-                                                {{($phase7->circulacion_calidad ?? '') === 'normal' ? 'selected'  : ''}}>Normal</option>
-                                                <option value="rapido"
-                                                {{($phase7->circulacion_calidad ?? '') === 'rapido' ? 'selected'  : ''}}>Rápido</option>
-                                                <option value="lento"
-                                                {{($phase7->circulacion_calidad ?? '') === 'lento' ? 'selected'  : ''}}>Lento</option>
-                                                <option value="ritmico"
-                                                {{($phase7->circulacion_calidad ?? '') === 'ritmico' ? 'selected'  : ''}}>Rítmico</option>
-                                                <option value="arritmico"
-                                                {{($phase7->circulacion_calidad ?? '') === 'arritmico' ? 'selected'  : ''}}>Arrítmico</option>
-                                            </select>
+                                            <label class="form-label">Calidad</label>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <!-- Grupo 1: Normal, Rápido, Lento -->
+                                                <div>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[velocidad]" value="normal"
+                                                            {{ in_array('normal', $circulacion_calidad ?? []) ? 'checked' : '' }}>
+                                                        <span>Normal</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[velocidad]" value="rapido"
+                                                            {{ in_array('rapido', $circulacion_calidad ?? []) ? 'checked' : '' }}>
+                                                        <span>Rápido</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[velocidad]" value="lento"
+                                                            {{ in_array('lento', $circulacion_calidad ?? []) ? 'checked' : '' }}>
+                                                        <span>Lento</span>
+                                                    </label>
+                                                </div>
+                                                <!-- Grupo 2: Rítmico, Arrítmico -->
+                                                <div>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[ritmica]" value="ritmico"
+                                                            {{ in_array('ritmico', $circulacion_calidad ?? []) ? 'checked' : '' }}>
+                                                        <span>Rítmico</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="radio" name="circulacion_calidad[ritmica]" value="arritmico"
+                                                            {{ in_array('arritmico', $circulacion_calidad ?? []) ? 'checked' : '' }}>
+                                                        <span>Arrítmico</span>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
+
 
                                         <div class="form-group">
                                             <label for="circulacion_piel" class="form-label">Piel</label>
@@ -1660,7 +1708,6 @@
 
                                 <div style="max-height: 60vh; overflow-y: auto;">
                                     <div style=" display: flex;">
-
                                         <!-- Exploración Física -->
                                        <div style="padding: 0 10px;" >
                                            <h6 class="font-extrabold text-center">Exploración Física</h5>
@@ -1685,160 +1732,148 @@
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="deformidades"
                                                                    name="exploracion_fisica[]" value="deformidades"
-                                                                   {{ in_array('deformidades', (array) $exploracionFisica) ? 'checked' : '' }}
->
-                                                           </td>
+                                                                   {{ in_array('deformidades', (array) $exploracionFisica) ? 'checked' : '' }}>
+                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Deformidades</td>
                                                            <td class="border border-gray-500 px-2 py-1">D
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                2</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="contusiones"
                                                                    name="exploracion_fisica[]" value="contusiones"
-                                                                   {{ in_array('contusiones', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('contusiones', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Contusiones</td>
                                                            <td class="border border-gray-500 px-2 py-1">CD
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                3</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="abrasiones"
                                                                    name="exploracion_fisica[]" value="abrasiones"
-                                                                   {{ in_array('abrasiones', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('abrasiones', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Abrasiones</td>
                                                            <td class="border border-gray-500 px-2 py-1">A</td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                4</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="penetraciones"
                                                                    name="exploracion_fisica[]" value="penetraciones"
-                                                                   {{ in_array('penetraciones', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('penetraciones', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Penetraciones</td>
                                                            <td class="border border-gray-500 px-2 py-1">P</td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                5</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="movimiento_paradójico"
                                                                    name="exploracion_fisica[]"
                                                                    value="movimiento_paradójico"
-                                                                   {{ in_array('movimiento_paradójico', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('movimiento_paradójico', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Movimiento Paradójico</td>
                                                            <td class="border border-gray-500 px-2 py-1">MP
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                6</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="crepitacion"
                                                                    name="exploracion_fisica[]" value="crepitacion"
-                                                                   {{ in_array('crepitacion', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('crepitacion', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Crepitación</td>
                                                            <td class="border border-gray-500 px-2 py-1">C</td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                7</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="heridas"
                                                                    name="exploracion_fisica[]" value="heridas"
-                                                                   {{ in_array('heridas', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('heridas', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Heridas</td>
                                                            <td class="border border-gray-500 px-2 py-1">H</td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                8</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="fracturas"
                                                                    name="exploracion_fisica[]" value="fracturas"
-                                                                   {{ in_array('fracturas', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('fracturas', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Fracturas</td>
                                                            <td class="border border-gray-500 px-2 py-1">F
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                9</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="enfisema_subcutaneo"
                                                                    name="exploracion_fisica[]"
                                                                    value="enfisema_subcutaneo"
-                                                                   {{ in_array('enfisema_subcutaneo', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('enfisema_subcutaneo', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Enfisema Subcutáneo</td>
                                                            <td class="border border-gray-500 px-2 py-1">ES
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                10</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="quemaduras"
                                                                    name="exploracion_fisica[]" value="quemaduras"
-                                                                   {{ in_array('quemaduras', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('quemaduras', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Quemaduras</td>
                                                            <td class="border border-gray-500 px-2 py-1">Q
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                11</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="laceraciones"
                                                                    name="exploracion_fisica[]" value="laceraciones"
-                                                                   {{ in_array('laceraciones', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('laceraciones', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Laceraciones</td>
                                                            <td class="border border-gray-500 px-2 py-1">L
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                12</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="edema"
                                                                    name="exploracion_fisica[]" value="edema"
-                                                                   {{ in_array('edema', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('edema', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">Edema
                                                            </td>
@@ -1852,37 +1887,34 @@
                                                                <input type="checkbox" id="alteracion_sensibilidad"
                                                                    name="exploracion_fisica[]"
                                                                    value="alteracion_sensibilidad"
-                                                                   {{ in_array('alteracion_sensibilidad', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('alteracion_sensibilidad', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Alteración de Sensibilidad</td>
                                                            <td class="border border-gray-500 px-2 py-1">AS
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                14</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="alteracion_movilidad"
                                                                    name="exploracion_fisica[]"
                                                                    value="alteracion_movilidad"
-                                                                   {{ in_array('alteracion_movilidad', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('alteracion_movilidad', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Alteración de Movilidad</td>
                                                            <td class="border border-gray-500 px-2 py-1">AM
                                                            </td>
-                                                       </tr>
-                                                       <tr>
+                                                        </tr>
+                                                        <tr>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                15</td>
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="dolor"
                                                                    name="exploracion_fisica[]" value="dolor"
-                                                                   {{ in_array('dolor', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('dolor', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">Dolor
                                                            </td>
@@ -1895,8 +1927,7 @@
                                                            <td class="border border-gray-500 px-2 py-1 text-center">
                                                                <input type="checkbox" id="amputacion"
                                                                    name="exploracion_fisica[]" value="amputacion"
-                                                                   {{ in_array('amputacion', (array) $exploracionFisica) ? 'checked' : '' }}
->
+                                                                   {{ in_array('amputacion', (array) $exploracionFisica) ? 'checked' : '' }}>
                                                            </td>
                                                            <td class="border border-gray-500 px-2 py-1">
                                                                Amputación</td>
@@ -1982,7 +2013,6 @@
                                                             <label for="ojos5">
                                                                 <input type="radio" name="ojos" id="ojos5" value="5"
                                                                 {{  ($phase8->valor ?? '' ) === '5' ?  'checked' : '' }}>
-                                                                >
                                                             </label>
                                                         </td>
                                                     </tr>
@@ -1991,14 +2021,14 @@
                                        </div>
 
                                        {{-- ZONAS DE LESIÓN --}}
-                                       <div style="width: 80%;">
+                                       <div style="width: 80%;" >
                                            <h5>
                                                Zonas de Lesión
                                            </h5>
                                            <p>Haz clic en la imagen del cuerpo humano para marcar las zonas de
                                                lesión:</p>
 
-                                           <div style="display: none;">
+                                           <div style="display: block;">
                                                <input type="text" id="coordinate" name="coordinate"
                                                value="{{$phase8_zona->zona ?? ''}}">
                                                <input type="text" id="zonaslabel" name="zonaslabel"
@@ -2007,8 +2037,10 @@
 
                                            <!-- Canvas para la imagen del cuerpo humano -->
                                            <div class="flex justify-center">
-                                               <canvas id="bodyCanvas" width="400" height="405"
-                                                   class="border"></canvas>
+                                                <div id="zonalesion">
+                                                    <canvas id="bodyCanvas" width="400" height="405"
+                                                    class="border"></canvas>
+                                                </div>
                                            </div>
 
                                            <!-- Lista de puntos marcados -->
@@ -2035,10 +2067,9 @@
 
                                                    <!-- Fila de datos -->
                                                    <div class="border border-gray-500 p-1">
-                                                       <input type="time" name="hora_es"
-                                                           class="form-control w-full h-10 text-sm border border-gray-400 rounded-md text-center"
-                                                           value="{{$phase8->hora_es ?? ''}}">
-
+                                                        <input type="time" name="hora_es" id="hora_es"
+                                                        class="form-control w-full h-10 text-sm border border-gray-400 rounded-md text-center"
+                                                        value="{{$phase8->hora_es ?? ''}}" step="60">
                                                    </div>
                                                    <div class="border border-gray-500 p-1">
                                                        <input type="number" name="fr" min="0"
@@ -2111,12 +2142,9 @@
                                                </div>
                                            </div>
 
-
                                    <!-- Interrogatorio -->
                                    <div style="width: 90%; margin: 0 auto; padding: 0 10px;">
                                         <h6>Interrogatorio</h6>
-
-
 
                                         <div>
                                             <div style="display: flex;">
@@ -2135,13 +2163,13 @@
                                                         <p class="font-semibold">Atendido por primer responsable:</p>
                                                         <div class="flex items-center space-x-4">
                                                             <label>
-                                                                <input type="radio" name="atendido" value="1"
-                                                                {{  ($phase8->atendido ?? '' ) === 1 ?  'checked' : '' }}>
+                                                                <input type="radio" name="atendido" value="si"
+                                                                {{  ($phase8->atendido ?? '' ) === 'si' ?  'checked' : '' }}>
                                                                 Si
                                                             </label>
                                                             <label>
-                                                                <input type="radio" name="atendido" value="0"
-                                                                {{  ($phase8->atendido ?? '' ) === 0 ?  'checked' : '' }}>
+                                                                <input type="radio" name="atendido" value="no"
+                                                                {{  ($phase8->atendido ?? '' ) === 'no' ?  'checked' : '' }}>
                                                                 No
                                                             </label>
                                                         </div>
@@ -2258,7 +2286,7 @@
 
                             </div>
 
-                            <!-- Fase 9: Evaluación Secundaria -->
+                            <!-- Fase 9: tratamiento -->
                             <div class="phase" id="phase9" style="display:none;">
                                 <h6 class="text-2xl font-extrabold text-center text-blue-600 mb-4">Tratamiento</h6>
                                 <div style="max-height: 60vh;  overflow-y: auto;">
@@ -2269,23 +2297,25 @@
                                             <div class="mb-4">
                                                 <h5 class="font-semibold">Vía Aérea:</h5>
                                                 <select name="via_aerea" id="via_aerea">
-                                                    <option value="aspiracion">Aspiración</option>
+                                                    <option value="aspiracion"
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'aspiracion' ?  'selected' : '' }}
+                                                    >Aspiración</option>
                                                     <option value="canula_orofaringea"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'canula_orofaringea' ?  'select' : '' }}>Cánula Orofaríngea</option>
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'canula_orofaringea' ?  'selected' : '' }}>Cánula Orofaríngea</option>
                                                     <option value="canula_nasofaringea"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'canula_nasofaringea' ?  'select' : '' }}>Cánula Nasofaríngea</option>
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'canula_nasofaringea' ?  'selected' : '' }}>Cánula Nasofaríngea</option>
                                                     <option value="intubacion_orotraqueal"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'intubacion_orotraqueal' ?  'select' : '' }}>Intubación Orotraqueal
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'intubacion_orotraqueal' ?  'selected' : '' }}>Intubación Orotraqueal
                                                     </option>
                                                     <option value="intubacion_nasotraqueal"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'intubacion_nasotraqueal' ?  'select' : '' }}>Intubación Nasotraqueal
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'intubacion_nasotraqueal' ?  'selected' : '' }}>Intubación Nasotraqueal
                                                     </option>
                                                     <option value="manual"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'manual' ?  'select' : '' }}>Manual</option>
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'manual' ?  'selected' : '' }}>Manual</option>
                                                     <option value="mascarilla_laringea"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'mascarilla_laringea' ?  'select' : '' }}>Mascarilla Laríngea</option>
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'mascarilla_laringea' ?  'selected' : '' }}>Mascarilla Laríngea</option>
                                                     <option value="cricotiroidotomia"
-                                                    {{  ($phase9->via_aerea ?? '' ) === 'cricotiroidotomia' ?  'select' : '' }}>Cricotiroidotomía por Punción
+                                                    {{  ($phase9->via_aerea ?? '' ) === 'cricotiroidotomia' ?  'selected' : '' }}>Cricotiroidotomía por Punción
                                                     </option>
                                                 </select>
                                             </div>
@@ -2295,128 +2325,138 @@
                                                 <h5 class="font-semibold mb-2">Control Cervical:</h5>
                                                 <select name="control_cervical" class="w-full p-2 border rounded cursor-pointer">
                                                   <option value="manual"
-                                                  {{  ($phase9->control_cervical ?? '' ) === 'manual' ?  'select' : '' }}>Manual</option>
+                                                  {{  ($phase9->control_cervical ?? '' ) === 'manual' ?  'selected' : '' }}>Manual</option>
                                                   <option value="collarin_rigido"
-                                                  {{  ($phase9->control_cervical ?? '' ) === 'collarin_rigido' ?  'select' : '' }}>Collarín Rígido</option>
+                                                  {{  ($phase9->control_cervical ?? '' ) === 'collarin_rigido' ?  'selected' : '' }}>Collarín Rígido</option>
                                                   <option value="collarin_blando"
-                                                  {{  ($phase9->control_cervical ?? '' ) === 'collarin_bland-' ?  'select' : '' }}>Collarín Blando</option>
+                                                  {{  ($phase9->control_cervical ?? '' ) === 'collarin_bland-' ?  'selected' : '' }}>Collarín Blando</option>
                                                 </select>
                                             </div>
 
 
                                             <!-- Asistencia Ventilatoria -->
-                                            <div class="mb-4">
+                                            <div class="mb-4" style="border: 1px solid; padding: 10px;">
                                                 <h5 class="font-semibold">Asistencia Ventilatoria:</h5>
                                                 <select name="asistencia_ventilatoria" id="asistencia_ventilatoria" class="w-full p-2 border rounded cursor-pointer">
                                                   <option value="">Seleccione una opción</option>
                                                   <option value="balon_mascarilla"
-                                                  {{  ($phase9->asistencia_ventilatoria ?? '' ) === 'balon_mascarilla' ?  'select' : '' }}>Balón-Válvula-Mascarilla</option>
+                                                  {{  ($phase9->asistencia_ventilatoria ?? '' ) === 'balon_mascarilla' ?  'selected' : '' }}>Balón-Válvula-Mascarilla</option>
                                                   <option value="valvula_demanda"
-                                                  {{  ($phase9->asistencia_ventilatoria ?? '' ) === 'valvula_demanda' ?  'select' : '' }}>Válvula de Demanda</option>
+                                                  {{  ($phase9->asistencia_ventilatoria ?? '' ) === 'valvula_demanda' ?  'selected' : '' }}>Válvula de Demanda</option>
                                                   <option value="ventilador_automatico"
-                                                  {{  ($phase9->asistencia_ventilatoria ?? '' ) === 'ventilador_automatico' ?  'select' : '' }}>Ventilador Automático</option>
+                                                  {{  ($phase9->asistencia_ventilatoria ?? '' ) === 'ventilador_automatico' ?  'selected' : '' }}>Ventilador Automático</option>
                                                 </select>
 
-                                                <div id="ventilador_opciones" class="mt-4 hidden" >
-                                                    <div style="display: flex;">
-                                                        <div class="mt-2" style="margin-right: 10px;">
-                                                            <label for="FREC" class="font-semibold">FREC: </label>
-                                                            <input type="text" id="FREC" name="FREC"
-                                                            {{$phase8->FREC ?? ''}}
-                                                            class="form-control w-full border border-gray-400 rounded-md">
-                                                          </div>
-                                                          <div class="mt-2">
-                                                            <label for="volumen" class="font-semibold">VOL: </label>
-                                                            <input type="text" id="volumen" name="volumen"
-                                                            {{$phase8->volumen ?? ''}} class="form-control w-full border border-gray-400 rounded-md">
-                                                          </div>
+                                                @if ($phase9->asistencia_ventilatoria === 'ventilador_automatico')
+                                                    <div id="ventilador_opciones" class="mt-4">
+                                                @else
+                                                    <div id="ventilador_opciones" class="mt-4 hidden">
+                                                @endif
+                                                        <div style="display: flex;">
+                                                            <div class="mt-2" style="margin-right: 10px;">
+                                                                <label for="FREC" class="font-semibold">FREC: </label>
+                                                                <input
+                                                                    type="number"
+                                                                    id="FREC"
+                                                                    name="FREC"
+                                                                    value="{{ $phase9->FREC ?? $phase8->FREC ?? '' }}"
+                                                                    class="form-control w-full border border-gray-400 rounded-md"
+                                                                >
+                                                            </div>
+                                                            <div class="mt-2">
+                                                                <label for="volumen" class="font-semibold">VOL: </label>
+                                                                <input
+                                                                    type="number"
+                                                                    id="volumen"
+                                                                    name="volumen"
+                                                                    value="{{ $phase9->volumen ?? $phase8->volumen ?? '' }}"
+                                                                    class="form-control w-full border border-gray-400 rounded-md"
+                                                                >
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                </div>
-                                              </div>
+                                                    <div class="flex justify-center items-center mt-2 space-x-6">
+                                                        <label class="flex items-center space-x-2">
+                                                            <input type="checkbox" name="heperventilacion" value="si"
+                                                            {{  ($phase9->heperventilacion ?? '' ) === 'si' ?  'checked' : '' }}>
+                                                            <span>Hiperventilación</span>
+                                                        </label>
+                                                        <label class="flex items-center space-x-2">
+                                                            <input type="checkbox" name="descompresión_pleural_con_agua" value="si"
+                                                            {{  ($phase9->descompresión_pleural_con_agua ?? '' ) === 'si' ?  'checked' : '' }}>
+                                                            <span>Descompresión Pleural Con Agua</span>
+                                                        </label>
+                                                    </div>
+                                            </div>
 
 
 
                                             <!-- Oxigenoterapia -->
-                                            <div class="mb-4">
+                                            <div class="mb-4" style="border: 1px solid; padding: 10px;">
                                                 <h5 class="font-semibold">Oxigenoterapia:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                        {{  ($phase9->oxigenoterapia ?? '' ) === 'puntas_nasales' ?  'checked' : '' }}
-                                                            value="puntas_nasales">
-                                                        Puntas Nasales
+                                                <div class="grid grid-cols-2 gap-4 mt-2">
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="puntas_nasales"
+                                                        {{ in_array('puntas_nasales', $oxigenoterapia ?? []) ? 'checked' : '' }}>
+                                                        <span>Puntas Nasales</span>
                                                     </label>
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                        {{  ($phase9->oxigenoterapia ?? '' ) === 'mascarilla_simple' ?  'checked' : '' }}
-                                                            value="mascarilla_simple">
-                                                        Mascarilla Simple
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="mascarilla_simple"
+                                                        {{ in_array('mascarilla_simple', $oxigenoterapia ?? []) ? 'checked' : '' }}>
+                                                        <span>Mascarilla Simple</span>
                                                     </label>
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                        {{  ($phase9->oxigenoterapia ?? '' ) === 'mascarilla_reservorio' ?  'checked' : '' }}
-                                                            value="mascarilla_reservorio">
-                                                        Mascarilla con Reservorio
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="mascarilla_reservorio"
+                                                        {{ in_array('mascarilla_reservorio', $oxigenoterapia ?? []) ? 'checked' : '' }}>
+                                                        <span>Mascarilla con Reservorio</span>
                                                     </label>
-                                                    <label>
-                                                        <input type="checkbox" name="oxigenoterapia[]"
-                                                        {{  ($phase9->oxigenoterapia ?? '' ) === 'mascarilla_venturi' ?  'checked' : '' }}
-                                                            value="mascarilla_venturi">
-                                                        Mascarilla Venturi
+                                                    <label class="flex items-center space-x-2">
+                                                        <input type="checkbox" name="oxigenoterapia[]" value="mascarilla_venturi"
+                                                        {{ in_array('mascarilla_venturi', $oxigenoterapia ?? []) ? 'checked' : '' }}>
+                                                        <span>Mascarilla Venturi</span>
                                                     </label>
                                                 </div>
-                                                <div class="mt-2">
+
+                                                <div class="mt-4">
                                                     <label for="litros" class="font-semibold">LTS x Min:</label>
-                                                    <input type="text" id="litros" name="litros"
-                                                    {{$phase9->litros ?? ''}}
-                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                    <input type="number" id="litros" name="litros"
+                                                        class="form-control w-full border border-gray-400 rounded-md mt-1"
+                                                         value="{{$phase9->litros ?? ''}}" >
+                                                </div>
+
+                                                  <!-- Hemotorax -->
+                                                  <div class="mb-4" style="margin-top: 10px;">
+                                                    <div class="flex items-center space-x-4">
+                                                        <label class="flex items-center space-x-2">
+                                                            <input type="checkbox" name="hemitorax[]" value="hemitorax_derecho"
+                                                                @checked(in_array('hemitorax_derecho', $hemitorax ?? []))>
+                                                            <span>Hemitórax Derecho</span>
+                                                        </label>
+                                                        <label class="flex items-center space-x-2">
+                                                            <input type="checkbox" name="hemitorax[]" value="hemitorax_izquierdo"
+                                                                @checked(in_array('hemitorax_izquierdo', $hemitorax ?? []))>
+                                                            <span>Hemitórax Izquierdo</span>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <!-- Procedimientos adicionales -->
-                                            <div class="mb-4">
-                                                <h5 class="font-semibold">Procedimientos Adicionales:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                        {{  ($phase9->procedimientos_adicionales ?? '' ) === 'hiperventilacion' ?  'checked' : '' }}
-                                                            value="hiperventilacion">
-                                                        Hiperventilación
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                        {{  ($phase9->procedimientos_adicionales ?? '' ) === 'descompresion_pleural' ?  'checked' : '' }}
-                                                            value="descompresion_pleural">
-                                                        Descompresión Pleural con Aguja
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                        {{  ($phase9->procedimientos_adicionales ?? '' ) === 'hemitorax_derecho' ?  'checked' : '' }}
-                                                            value="hemitorax_derecho">
-                                                        Hemitórax Derecho
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="procedimientos_adicionales[]"
-                                                        {{  ($phase9->procedimientos_adicionales ?? '' ) === 'hemitorax_izquierdo' ?  'checked' : '' }}
-                                                            value="hemitorax_izquierdo">
-                                                        Hemitórax Izquierdo
-                                                    </label>
-                                                </div>
-                                            </div>
+
+
 
                                              <!-- Control de Hemorragias -->
                                              <div class="mb-4">
                                                 <h5 class="font-semibold">Control de Hemorragias:</h5>
-                                                <select name="control_hemorragias[]" id="control_hemorragias">
+                                                <select name="control_hemorragias" id="control_hemorragias">
                                                     <option value="presion_directa"
-                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'presion_directa' ?  'select' : '' }}> Presión Directa</option>
+                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'presion_directa' ?  'selected' : '' }}> Presión Directa</option>
                                                     <option value="torniquete"
-                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'torniquete' ?  'select' : '' }}>Torniquete</option>
+                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'torniquete' ?  'selected' : '' }}>Torniquete</option>
                                                     <option value="empaquetamiento"
-                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'empaquetamiento' ?  'select' : '' }}>Empaquetamiento</option>
+                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'empaquetamiento' ?  'selected' : '' }}>Empaquetamiento</option>
                                                     <option value="vendaje_compresivo"
-                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'vendaje_compresivo' ?  'select' : '' }}>Vendaje Compresivo</option>
+                                                    {{  ($phase9->control_hemorragias ?? '' ) === 'vendaje_compresivo' ?  'selected' : '' }}>Vendaje Compresivo</option>
                                                 </select>
 
                                             </div>
@@ -2432,82 +2472,88 @@
                                             <!-- Vías Venosas -->
                                             <div class="mb-4">
                                                 <h5 class="font-semibold">Vías Venosas:</h5>
-                                                <div class="mt-2">
-                                                    <label for="linea_iv" class="font-semibold">Línea IV
-                                                        (#):</label>
-                                                    <input type="text" id="linea_iv" name="vias_venosas[linea_iv]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                <div class="flex items-center space-x-4 mt-2">
+                                                    <div class="flex items-center space-x-2">
+                                                        <label for="linea_iv" class="font-semibold">Línea IV (#):</label>
+                                                        <input type="number" id="linea_iv" name="vias_venosas[linea_iv]"
+                                                            class="form-control border border-gray-400 rounded-md w-24"
+                                                            value="{{ $vias_venosas['linea_iv'] ?? '' }}">
+                                                    </div>
+                                                    <div class="flex items-center space-x-2">
+                                                        <label for="cateter" class="font-semibold">Catéter (#):</label>
+                                                        <input type="number" id="cateter" name="vias_venosas[cateter]"
+                                                            class="form-control border border-gray-400 rounded-md w-24"
+                                                            value="{{ $vias_venosas['cateter'] ?? '' }}">
+                                                    </div>
                                                 </div>
-                                                <div class="mt-2">
-                                                    <label for="cateter" class="font-semibold">Catéter (#):</label>
-                                                    <input type="text" id="cateter" name="vias_venosas[cateter]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
-                                                </div>
+                                            </div>
+
+
+
+
+                                           <!-- Sitio de Aplicación -->
+                                           <div class="mb-4">
+                                            <h5 class="font-semibold">Sitio de Aplicación:</h5>
+                                            <select name="sitio_aplicacion" class="form-control w-full border border-gray-400 rounded-md">
+                                                <option value="mano"
+                                                {{  ($phase9->sitio_aplicacion ?? '' ) === 'mano' ?  'selected' : '' }}>Mano</option>
+                                                <option value="pliegue_antecubital"
+                                                {{  ($phase9->sitio_aplicacion ?? '' ) === 'pliegue_antecubital' ?  'selected' : '' }}>Pliegue Antecubital</option>
+                                                <option value="intraosea"
+                                                {{  ($phase9->sitio_aplicacion ?? '' ) === 'intraosea' ?  'selected' : '' }}>Intraósea</option>
+                                                <option value="otra"
+                                                {{  ($phase9->sitio_aplicacion ?? '' ) === 'otra' ?  'selected' : '' }}>Otra</option>
+                                            </select>
+                                        </div>
+
+                                       <!-- Tipos de Soluciones -->
+                                        <div class="mb-4">
+                                            <h5 class="font-semibold">Tipos de Soluciones:</h5>
+                                            <div class="grid grid-cols-2 gap-4 mt-2">
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="tipo_soluciones[]" value="hartmann"
+                                                    {{ in_array('hartmann', $tipo_soluciones ?? []) ? 'checked' : '' }}>
+                                                    <span>Hartmann</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="tipo_soluciones[]" value="nacl_09"
+                                                    {{ in_array('nacl_09', $tipo_soluciones ?? []) ? 'checked' : '' }}>
+                                                    <span>NaCl 0.9%</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="tipo_soluciones[]" value="mixta"
+                                                    {{ in_array('mixta', $tipo_soluciones ?? []) ? 'checked' : '' }}>
+                                                    <span>Mixta</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="tipo_soluciones[]" value="glucosa_5"
+                                                    {{ in_array('glucosa_5', $tipo_soluciones ?? []) ? 'checked' : '' }}>
+                                                    <span>Glucosa 5%</span>
+                                                </label>
+                                                <label class="flex items-center space-x-2">
+                                                    <input type="checkbox" name="tipo_soluciones[]" value="otra"
+                                                    {{ in_array('otra', $tipo_soluciones ?? []) ? 'checked' : '' }}>
+                                                    <span>Otra</span>
+                                                </label>
                                             </div>
 
 
-                                            <!-- Sitio de Aplicación -->
-                                            <div class="mb-4">
-                                                <h5 class="font-semibold">Sitio de Aplicación:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion" value="mano">
-                                                        Mano
-                                                    </label>
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion"
-                                                            value="pliegue_antecubital">
-                                                        Pliegue Antecubital
-                                                    </label>
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion" value="intraosea">
-                                                        Intraósea
-                                                    </label>
-                                                    <label>
-                                                        <input type="radio" name="sitio_aplicacion" value="otra">
-                                                        Otra
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <!-- Tipos de Soluciones -->
-                                            <div class="mb-4">
-                                                <h5 class="font-semibold">Tipos de Soluciones:</h5>
-                                                <div class="flex flex-col space-y-2">
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="hartmann">
-                                                        Hartmann
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="nacl_09">
-                                                        NaCl 0.9%
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="mixta">
-                                                        Mixta
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="glucosa_5">
-                                                        Glucosa 5%
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="tipo_soluciones[]" value="otra">
-                                                        Otra
-                                                    </label>
-                                                </div>
-                                                <label for="soluciones_especifique"
-                                                class="font-semibold">Especifique:</label>
-
-                                                <div class="mt-2">
+                                            <h5 class="font-semibold">Especifique:</h5>
+                                            <div class="flex flex-col md:flex-row md:space-x-4 mt-1">
+                                                <div>
                                                     <label for="cantidad" class="font-semibold">Cantidad:</label>
                                                     <input type="text" id="cantidad" name="soluciones[cantidad]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                        class="form-control border border-gray-400 rounded-md mt-1 w-full md:w-40"
+                                                        value="{{ $soluciones['cantidad'] ?? '' }}">
                                                 </div>
-                                                <div class="mt-2">
+                                                <div>
                                                     <label for="infusiones" class="font-semibold">Infusiones:</label>
                                                     <input type="text" id="infusiones" name="soluciones[infusiones]"
-                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                        class="form-control border border-gray-400 rounded-md mt-1 w-full md:w-40"
+                                                        value="{{ $soluciones['infusiones'] ?? '' }}">
                                                 </div>
                                             </div>
+                                        </div>
                                         </div>
 
                                     </div>
@@ -2515,44 +2561,61 @@
 
                                     <!-- Tabla para Manejo Farmacológico y Terapia Eléctrica -->
                                     <div class="mb-4">
-                                        <h5 class="font-semibold">Registro de Medicamentos y Terapia
-                                            Eléctrica:</h5>
+                                        <h5 class="font-semibold">Registro de Medicamentos y Terapia Eléctrica:</h5>
                                         <table class="table-auto w-full border-collapse border border-gray-400">
                                             <thead>
                                                 <tr class="bg-gray-200">
                                                     <th class="border border-gray-400 px-4 py-2">Hora</th>
-                                                    <th class="border border-gray-400 px-4 py-2">Medicamento
-                                                    </th>
+                                                    <th class="border border-gray-400 px-4 py-2">Medicamento</th>
                                                     <th class="border border-gray-400 px-4 py-2">Dosis</th>
-                                                    <th class="border border-gray-400 px-4 py-2">Vía de
-                                                        Administración</th>
-                                                    <th class="border border-gray-400 px-4 py-2">Terapia
-                                                        Eléctrica</th>
+                                                    <th class="border border-gray-400 px-4 py-2">Vía de Administración</th>
+                                                    <th class="border border-gray-400 px-4 py-2">Terapia Eléctrica</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="pharmaTableBody">
+                                                @foreach($medicamentos_terapia as $index => $medicamento)
                                                 <tr>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="time" name="hora[]"
-                                                            class="form-control w-full border border-gray-400 rounded-md">
+                                                        <input type="time" name="medicamentos_terapia[{{ $index }}][hora]"
+                                                            class="form-control w-full border border-gray-400 rounded-md"
+                                                            value="{{ $medicamento['hora'] ?? '' }}">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="medicamento[]"
-                                                            class="form-control w-full border border-gray-400 rounded-md">
+                                                        <input type="text" name="medicamentos_terapia[{{ $index }}][medicamento]"
+                                                            class="form-control w-full border border-gray-400 rounded-md"
+                                                            value="{{ $medicamento['medicamento'] ?? '' }}">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="dosis[]"
-                                                            class="form-control w-full border border-gray-400 rounded-md">
+                                                        <input type="number" name="medicamentos_terapia[{{ $index }}][dosis]"
+                                                            class="form-control w-full border border-gray-400 rounded-md"
+                                                            value="{{ $medicamento['dosis'] ?? '' }}">
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="via_administracion[]"
-                                                            class="form-control w-full border border-gray-400 rounded-md">
+                                                        <select name="medicamentos_terapia[{{ $index }}][via_administracion]"
+                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                            <option value="">Seleccionar</option>
+                                                            <option value="oral" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'oral') ? 'selected' : '' }}>Oral</option>
+                                                            <option value="sublingual" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'sublingual') ? 'selected' : '' }}>Sublingual</option>
+                                                            <option value="intravenosa" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'intravenosa') ? 'selected' : '' }}>Intravenosa</option>
+                                                            <option value="intramuscular" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'intramuscular') ? 'selected' : '' }}>Intramuscular</option>
+                                                            <option value="subcutanea" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'subcutanea') ? 'selected' : '' }}>Subcutánea</option>
+                                                            <option value="intradermica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'intradermica') ? 'selected' : '' }}>Intradérmica</option>
+                                                            <option value="topica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'topica') ? 'selected' : '' }}>Tópica</option>
+                                                            <option value="rectal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'rectal') ? 'selected' : '' }}>Rectal</option>
+                                                            <option value="nasal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'nasal') ? 'selected' : '' }}>Nasal</option>
+                                                            <option value="oftalmica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'oftalmica') ? 'selected' : '' }}>Oftálmica</option>
+                                                            <option value="otica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'otica') ? 'selected' : '' }}>Ótica</option>
+                                                            <option value="vaginal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'vaginal') ? 'selected' : '' }}>Vaginal</option>
+                                                            <option value="bucal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'bucal') ? 'selected' : '' }}>Bucal</option>
+                                                        </select>
                                                     </td>
                                                     <td class="border border-gray-400 px-4 py-2">
-                                                        <input type="text" name="terapia_electrica[]"
-                                                            class="form-control w-full border border-gray-400 rounded-md">
+                                                        <input type="text" name="medicamentos_terapia[{{ $index }}][terapia_electrica]"
+                                                            class="form-control w-full border border-gray-400 rounded-md"
+                                                            value="{{ $medicamento['terapia_electrica'] ?? '' }}">
                                                     </td>
                                                 </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                         <div class="flex justify-end mt-2">
@@ -2567,68 +2630,120 @@
                                         <h5 class="font-semibold">RCP y Procedimientos:</h5>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="rcp_basica"> RCP
-                                                    Básica</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="rcp_basica"
+                                                    {{ in_array('rcp_basica', $rcp_procedimientos ?? []) ? 'checked' : '' }}>
+                                                    RCP Básica
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="rcp_avanzada"> RCP
-                                                    Avanzada</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="rcp_avanzada"
+                                                    {{ in_array('rcp_avanzada', $rcp_procedimientos ?? []) ? 'checked' : '' }}>
+                                                    RCP Avanzada
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="inmovilizacion">
-                                                    Inmovilización de Extremidades</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="inmovilizacion"
+                                                    {{ in_array('inmovilizacion', $rcp_procedimientos ?? []) ? 'checked' : '' }}>
+                                                    Inmovilización de Extremidades
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="empaquetamiento">
-                                                    Empaquetamiento</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="empaquetamiento"
+                                                    {{ in_array('empaquetamiento', $rcp_procedimientos ?? []) ? 'checked' : '' }}>
+                                                    Empaquetamiento
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="curacion">
-                                                    Curación</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="curacion"
+                                                    {{ in_array('curacion', $rcp_procedimientos ?? []) ? 'checked' : '' }}>
+                                                    Curación
+                                                </label>
                                             </div>
                                             <div class="border border-gray-400 p-2">
-                                                <label><input type="checkbox" name="vendaje">
-                                                    Vendaje</label>
+                                                <label>
+                                                    <input type="checkbox" name="rcp_procedimientos[]" value="vendaje"
+                                                    {{ in_array('vendaje', $rcp_procedimientos ?? []) ? 'checked' : '' }}>
+                                                    Vendaje
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
 
+
+
                             <!-- Botón Registrar Atención -->
                             <div class="flex justify-center">
-                                <button type="submit"
+                                <button type="submit" id="btnGuardar"
                                     class="px-4 py-4 bg-blue-500 text-white font-medium rounded-lg shadow-md hover:bg-blue-600 transition">
                                     <i class="bi bi-check-circle"></i> Guardar Atención
                                 </button>
                             </div>
                         </div>
                     </div>
+                    <!-- Campo oculto para almacenar la imagen -->
+                    <input type="text" id="captura_imagen" name="captura_imagen">
+
                 </form>
             </div>
 
             <script>
-                 // Función para mostrar/ocultar el campo "Otro Lugar" dependiendo del valor seleccionado.
-                 function manejarLugarOcurrencia() {
-                // Referencias a los elementos del DOM
-                const lugar = document.getElementById('lugar_ocurrencia');
-                const otroLugarDiv = document.getElementById('otro_lugar');
-                const inputOtroLugar = document.getElementById('otro_lugar_input');
 
-                // Verificar si el valor seleccionado es 'otro'
-                if (lugar.value === 'otro') {
-                    otroLugarDiv.style.display = 'block'; // Mostrar el campo "Otro Lugar"
-                } else {
-                    otroLugarDiv.style.display = 'none'; // Ocultar el campo "Otro Lugar"
-                    inputOtroLugar.value = ''; // Limpiar el valor del campo si está oculto
+
+                function capturarZonaLesion() {
+                    // Obtener los elementos necesarios
+                    const divParaCapturar = document.getElementById("zonalesion");
+
+                   // Sobrescribe el método de creación de canvas
+                    HTMLCanvasElement.prototype.getContext = (function(original) {
+                        return function(type, options) {
+                            if (type === '2d') {
+                                options = options || {};
+                                options.willReadFrequently = true; // Establece la opción
+                            }
+                            return original.call(this, type, options);
+                        };
+                    })(HTMLCanvasElement.prototype.getContext);
+
+                    // Llama a html2canvas como de costumbre
+                    html2canvas(document.getElementById("zonalesion")).then(function(canvas) {
+                        const imgData = canvas.toDataURL("image/png");
+                        document.getElementById("captura_imagen").value = imgData;
+                    });
+
                 }
-            }
 
-            // Evento de cambio para el selector de lugar de ocurrencia
-            document.getElementById('lugar_ocurrencia').addEventListener('change', manejarLugarOcurrencia);
 
-            // Aplicar el estado inicial al cargar la página
-            window.addEventListener('load', manejarLugarOcurrencia);
+
+                 // Función para mostrar/ocultar el campo "Otro Lugar" dependiendo del valor seleccionado.
+
+                function manejarLugarOcurrencia() {
+                    // Referencias a los elementos del DOM
+                    const lugar = document.getElementById('lugar_ocurrencia');
+                    const otroLugarDiv = document.getElementById('otro_lugar');
+                    const inputOtroLugar = document.getElementById('otro_lugar_input');
+
+                    // Verificar si el valor seleccionado es 'otro'
+                    if (lugar.value === 'otro') {
+                        otroLugarDiv.style.display = 'block'; // Mostrar el campo "Otro Lugar"
+                    } else {
+                        otroLugarDiv.style.display = 'none'; // Ocultar el campo "Otro Lugar"
+                        inputOtroLugar.value = ''; // Limpiar el valor del campo si está oculto
+                    }
+                }
+
+                // Evento de cambio para el selector de lugar de ocurrencia
+                document.getElementById('lugar_ocurrencia').addEventListener('change', manejarLugarOcurrencia);
+
+                // Aplicar el estado inicial al cargar la página
+                window.addEventListener('load', manejarLugarOcurrencia);
 
 
                 document.getElementById('origen_probable').addEventListener('change', function() {
@@ -2691,10 +2806,6 @@
                 // Aplicar el estado inicial al cargar la página
                 window.addEventListener('load', agente_causal);
 
-
-
-
-
                 function mostrarDetallesAccidente() {
                     // Obtener el valor seleccionado del tipo de accidente
                     var tipoAccidente = document.getElementById("tipo_accidente").value;
@@ -2714,33 +2825,32 @@
                     }
                 }
 
-
                 function limpiarCamposAccidente() {
                     var tipoAccidente = document.getElementById("tipo_accidente").value;
-                // Crear un conjunto de IDs de los divs visibles para excluirlos de la limpieza
-                var todosAccidentes = document.querySelectorAll('[id^="accidente_"]');
-                var detallesSeleccionados = document.querySelectorAll('[id^="accidente_' + tipoAccidente + '"]');
-                const idsVisibles = new Set([...detallesSeleccionados].map(detalle => detalle.id));
+                    // Crear un conjunto de IDs de los divs visibles para excluirlos de la limpieza
+                    var todosAccidentes = document.querySelectorAll('[id^="accidente_"]');
+                    var detallesSeleccionados = document.querySelectorAll('[id^="accidente_' + tipoAccidente + '"]');
+                    const idsVisibles = new Set([...detallesSeleccionados].map(detalle => detalle.id));
 
-                    // Limpiar los campos de los divs ocultos (no incluidos en los divs visibles)
-                    todosAccidentes.forEach(detalle => {
-                        if (!idsVisibles.has(detalle.id)) {
-                            const campos = detalle.querySelectorAll("input, select, textarea");
-                            campos.forEach(campo => {
-                                if (campo.type === "checkbox" || campo.type === "radio") {
-                                    campo.checked = false; // Desmarcar checkboxes y radios
-                                } else {
-                                    campo.value = ""; // Limpiar texto, select y otros inputs
-                                }
-                            });
-                        }
-                    });
+                        // Limpiar los campos de los divs ocultos (no incluidos en los divs visibles)
+                        todosAccidentes.forEach(detalle => {
+                            if (!idsVisibles.has(detalle.id)) {
+                                const campos = detalle.querySelectorAll("input, select, textarea");
+                                campos.forEach(campo => {
+                                    if (campo.type === "checkbox" || campo.type === "radio") {
+                                        campo.checked = false; // Desmarcar checkboxes y radios
+                                    } else {
+                                        campo.value = ""; // Limpiar texto, select y otros inputs
+                                    }
+                                });
+                            }
+                        });
                 }
 
             document.getElementById('tipo_accidente').addEventListener('change', () => {
                     mostrarDetallesAccidente();
                     limpiarCamposAccidente();
-                });
+            });
 
                 // Aplicar el estado inicial al cargar la página
                 window.addEventListener('load', mostrarDetallesAccidente);
@@ -2799,29 +2909,62 @@
                 });
 
                 // Función para añadir una nueva fila a la tabla
+                let rowCount = {{ count($medicamentos_terapia) }}; // Establecer el contador a la cantidad de filas actuales
+
+
                 function addPharmaRow() {
-                    const tableBody = document.getElementById('pharmaTableBody');
-                    const newRow = `
-                                    <tr>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="time" name="hora[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="medicamento[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="dosis[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="via_administracion[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                        <td class="border border-gray-400 px-4 py-2">
-                                            <input type="text" name="terapia_electrica[]" class="form-control w-full border border-gray-400 rounded-md">
-                                        </td>
-                                    </tr>
-                                `;
-                    tableBody.insertAdjacentHTML('beforeend', newRow);
+                    const tableBody = document.getElementById("pharmaTableBody");
+
+                    // Crear una nueva fila
+                    const newRow = document.createElement("tr");
+
+                    // Crear celdas de la nueva fila
+                    newRow.innerHTML = `
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="time" name="medicamentos_terapia[${rowCount}][hora]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="text" name="medicamentos_terapia[${rowCount}][medicamento]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="number" name="medicamentos_terapia[${rowCount}][dosis]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <select name="medicamentos_terapia[{{ $index }}][via_administracion]"
+                                                        class="form-control w-full border border-gray-400 rounded-md">
+                                                            <option value="">Seleccionar</option>
+                                                            <option value="oral" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'oral') ? 'selected' : '' }}>Oral</option>
+                                                            <option value="sublingual" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'sublingual') ? 'selected' : '' }}>Sublingual</option>
+                                                            <option value="intravenosa" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'intravenosa') ? 'selected' : '' }}>Intravenosa</option>
+                                                            <option value="intramuscular" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'intramuscular') ? 'selected' : '' }}>Intramuscular</option>
+                                                            <option value="subcutanea" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'subcutanea') ? 'selected' : '' }}>Subcutánea</option>
+                                                            <option value="intradermica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'intradermica') ? 'selected' : '' }}>Intradérmica</option>
+                                                            <option value="topica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'topica') ? 'selected' : '' }}>Tópica</option>
+                                                            <option value="rectal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'rectal') ? 'selected' : '' }}>Rectal</option>
+                                                            <option value="nasal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'nasal') ? 'selected' : '' }}>Nasal</option>
+                                                            <option value="oftalmica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'oftalmica') ? 'selected' : '' }}>Oftálmica</option>
+                                                            <option value="otica" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'otica') ? 'selected' : '' }}>Ótica</option>
+                                                            <option value="vaginal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'vaginal') ? 'selected' : '' }}>Vaginal</option>
+                                                            <option value="bucal" {{ (isset($medicamento['via_administracion']) && $medicamento['via_administracion'] === 'bucal') ? 'selected' : '' }}>Bucal</option>
+                                                        </select>
+                        </td>
+                        <td class="border border-gray-400 px-4 py-2">
+                            <input type="text" name="medicamentos_terapia[${rowCount}][terapia_electrica]"
+                                class="form-control w-full border border-gray-400 rounded-md">
+                        </td>
+                    `;
+
+                    // Agregar la nueva fila a la tabla
+                    tableBody.appendChild(newRow);
+
+                    // Incrementar el contador de filas
+                    rowCount++;
                 }
+
+                //Fin función  para añadir una nueva fila a la tabla
 
                 const canvas = document.getElementById('bodyCanvas');
                 const ctx = canvas.getContext('2d');
@@ -2957,6 +3100,8 @@
                 ];
 
                 const marks = []; // Almacena las marcas realizadas
+                const coordenadas = [];
+                const zonas = [];
 
                 // Dibujar la imagen del cuerpo humano en el canvas
                 bodyImage.onload = function() {
@@ -3005,10 +3150,11 @@
                 // Actualizar la lista de puntos marcados
 
                 function actualizarMarcas() {
-                    const coordenadas = [];
-                    const zonas = [];
+
 
                     listaZonas.innerHTML = '';
+                    coordinate.value = '';
+                    zonaslabel.value = ''
 
                     // Simulación de datos obtenidos de la base de datos
                     const coordenadasBD = "{{ $phase8_zona->coordinate }}";
@@ -3022,41 +3168,46 @@
 
                     const zonasArray = zonasBD.split(' | ');
 
-                    // Combinar coordenadas y zonas en objetos de marcas
+                    // Combinar coordenadas y zonas en objetos de marcas y eliminar las vacías
                     const nuevasMarcas = coordenadasArray.map((coord, index) => ({
                         ...coord,
-                        label: zonasArray[index] || ''
-                    }));
+                        label: zonasArray[index]?.trim() || ''
+                    })).filter(marca => marca.label !== '');
 
-                    // Evitar duplicados: agregar solo si la marca no existe ya en `marks`
-                    nuevasMarcas.forEach((nuevaMarca) => {
-                        const existe = marks.some(mark =>
-                            mark.x === nuevaMarca.x &&
-                            mark.y === nuevaMarca.y &&
-                            mark.label === nuevaMarca.label
-                        );
+                    // Evitar duplicados y eliminar marcas que no deberían estar
+                    const marcasExistentes = new Set(marks.map(mark => `${mark.x},${mark.y},${mark.label}`));
 
-                        if (!existe) {
+                    nuevasMarcas.forEach(nuevaMarca => {
+                        const marcaClave = `${nuevaMarca.x},${nuevaMarca.y},${nuevaMarca.label}`;
+
+                        if (!marcasExistentes.has(marcaClave)) {
                             marks.push(nuevaMarca);
-                            marks.forEach((mark, index) => {
-                                drawMark(mark.x, mark.y);
-                            });
+                            marcasExistentes.add(marcaClave);
+
+
                         }
                     });
 
-                    // Actualizar la interfaz con las marcas
+                    // Actualizar la interfaz con las marcas y eliminar marcas innecesarias
                     marks.forEach((mark, index) => {
-                        const item = document.createElement('li');
-                        coordenadas.push(`(${mark.x}, ${mark.y})`);
-                        zonas.push(mark.label);
-                        item.textContent = `Zona ${index + 1}: ${mark.label}`;
-                        listaZonas.appendChild(item);
+                        if (mark.label) { // Asegurarse de que no se agreguen zonas vacías
+                            const item = document.createElement('li');
+                            coordenadas.push(`(${mark.x}, ${mark.y})`);
+                            zonas.push(mark.label);
+                            item.textContent = `Zona ${index + 1}: ${mark.label}`;
+                            listaZonas.appendChild(item);
+                        }
                     });
 
                     // Actualizar los campos de texto con los datos procesados
                     coordinate.value = coordenadas.join(' | ');
                     zonaslabel.value = zonas.join(' | ');
+
+                    // Eliminar marcas vacías del arreglo `marks`
+                    marks = marks.filter(mark => mark.label !== '');
                 }
+
+
 
                 // Manejar clics en el canvas
                 canvas.addEventListener('click', function(event) {
@@ -3082,10 +3233,13 @@
                             // Si ya está marcado, quitar la marca
                             dropMark(clickedPoint.x, clickedPoint.y);
                             marks.splice(clickedPoint, 1);
+                            coordenadas.splice(clickedPoint,1);
+                            zonas.splice(clickedPoint,1);
                         } else {
                             // Si no está marcado, agregar la marca
                             marks.push(clickedPoint);
                             drawMark(clickedPoint.x, clickedPoint.y);
+                            capturarZonaLesion();
                         }
                         actualizarMarcas(); // Actualizar la lista de zonas
                     }
@@ -3103,40 +3257,17 @@
                             // Si no está marcado, agregar la marca
                             marks.push(clickedPoint2);
                             drawMark(clickedPoint2.x, clickedPoint2.y);
+                            capturarZonaLesion();
                         }
                         actualizarMarcas(); // Actualizar la lista de zonas
+
                     }
                 });
-
-
-                window.onload = function() {
-                    actualizarMarcas(); // Dibuja las marcas al cargar la página
-                };
-
+                window.addEventListener('load', actualizarMarcas);
 
 
 
             </script>
-
-            <style>
-                #bodyCanvas {
-                    display: block;
-                    margin: auto;
-                }
-
-                .border {
-                    border: 1px solid #ccc;
-                    border-radius: 5px;
-                }
-
-                ul {
-                    padding-left: 0;
-                }
-
-                li {
-                    margin-bottom: 4px;
-                }
-            </style>
         </main>
     </div>
 

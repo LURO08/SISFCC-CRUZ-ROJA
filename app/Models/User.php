@@ -75,4 +75,24 @@ class User extends Authenticatable
     {
         return $this->created_at->format('H:i');
     }
+
+    /**
+     * Get the name of the first role of the user.
+     *
+     * @return string
+     */
+    public function getFirstRoleName(): string
+    {
+        return $this->roles->pluck('name')->first() ?? 'Sin rol';
+    }
+
+     /**
+     * Accessor for 'role'. This allows you to access $user->role directly.
+     *
+     * @return string
+     */
+    public function getRoleAttribute(): string
+    {
+        return $this->getFirstRoleName();
+    }
 }

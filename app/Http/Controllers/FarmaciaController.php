@@ -20,6 +20,18 @@ class FarmaciaController extends Controller
             $query->where('destino', 'farmacia');
         })->get();
 
+        $recetas->each(function($receta) {
+            if (!empty($receta->tratamiento)) {
+                $tratamiento = explode("\n", $receta->tratamiento); // Divide la cadena por saltos de línea
+                $tratamiento = array_map('trim', $tratamiento); // Elimina espacios extra
+                $tratamiento = array_map(function($medicamento) {
+                    return str_replace(['-', ','], '', $medicamento); // Elimina guiones y comas
+                }, $tratamiento);
+                $receta->tratamiento = $tratamiento; // Asigna el tratamiento procesado
+            }
+
+        });
+
         date_default_timezone_set('America/Mexico_City');
           // Obtener la fecha actual
         $hoy = date('Y-m-d');  // Fecha actual en formato Y-m-d
@@ -38,9 +50,11 @@ class FarmaciaController extends Controller
         $proveedores = Proveedor::all();
         $PedidoProveedor = PedidoProveedor::all();
         $recetasSurtidas = MedicamentoSurtido::orderBy('receta_id')->get();
-        $recetasMedicas = RecetaMedica::all();
+        $recetasMedicas = RecetaMedica::with('medicamentosSurtidos.medicamento')->get();
 
-            return view('farmacia.index', compact('PedidoProveedor','proveedores','donaciones','recetasMedicas','recetas','medicamentos','productos','proveedores', 'medicamentosCantidad','recetasSurtidas'));
+
+
+        return view('farmacia.index', compact('PedidoProveedor','proveedores','donaciones','recetasMedicas','recetas','medicamentos','productos','proveedores', 'medicamentosCantidad','recetasSurtidas'));
     }
 
     public function surtirReceta(Request $request)

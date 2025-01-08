@@ -171,9 +171,10 @@
                         <div class="mt-4">
                             <x-label for="placa" value="{{ __('Placa') }}" />
                             <x-input id="placa" class="block mt-1 w-full" type="text" name="placa"
-                                pattern="^[A-Z0-9\-]{5,10}$" minlength="5" maxlength="10"
-                                title="La placa debe contener entre 5 y 10 caracteres alfanuméricos en mayúsculas (letras, números y guiones)."
-                                placeholder="Ejemplo: ABC-123" required autocomplete="placa" />
+                                    pattern="^[A-Z0-9\-]{5,10}$" minlength="5" maxlength="10"
+                                    title="La placa debe contener entre 5 y 10 caracteres alfanuméricos en mayúsculas (letras, números y guiones). Ejemplo: ABC-123"
+                                    placeholder="Ejemplo: ABC-123" required autocomplete="placa"
+                                    oninput="this.value = this.value.toUpperCase(); this.setCustomValidity(this.validity.patternMismatch ? 'La placa debe seguir el formato: ABC-123' : '')" />
                         </div>
 
                         <!-- Campo de Tipo de Vehículo -->
@@ -194,9 +195,18 @@
                         <!-- Campo de Año -->
                         <div class="mt-4">
                             <x-label for="año" value="{{ __('Año') }}" />
-                            <x-input id="año" class="block mt-1 w-full" type="number" name="año"
-                                min="1900" max="2100" title="El año debe ser un número entre 1900 y 2100."
-                                placeholder="Ejemplo: 2023" required autocomplete="año" />
+                            @php
+                                $currentYear = date('Y'); // Año actual
+                                $startYear = 1200;        // Año inicial del rango
+                                $endYear = max(2024, $currentYear + 10); // Año máximo dinámico
+                            @endphp
+                            <select id="año" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    name="año" required>
+                                <option value="" disabled>Seleccionar Año</option>
+                                @for ($year = $startYear; $year <= $endYear; $year++)
+                                    <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>{{ $year }}</option>
+                                @endfor
+                            </select>
                         </div>
 
                         <!-- Campo de Cantidad -->
@@ -330,7 +340,8 @@
         <div class="modal-body">
             <form method="POST" action="{{ route('almacen.medico.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; height: 70vh; overflow-y: auto;" >
 
                     <!-- Contenedor de la foto -->
                     <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
@@ -365,7 +376,7 @@
                             <textarea id="descripcion"
                                 class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-red-500 focus:ring focus:ring-red-500 focus:ring-opacity-50"
                                 name="descripcion" minlength="10" maxlength="300" title="La descripción debe tener entre 10 y 300 caracteres."
-                                placeholder="Escribe una breve descripción del material." required autocomplete="descripcion">{{ old('descripcion') }}</textarea>
+                                placeholder="Escribe una breve descripción del material." autocomplete="descripcion">{{ old('descripcion') }}</textarea>
                         </div>
 
                         <!-- Campo de Tipo de Material -->
@@ -390,14 +401,30 @@
                                 placeholder="Ejemplo: 20" :value="old('cantidad')" required autocomplete="cantidad" />
                         </div>
 
+                        <div>
+                            <x-label for="precio" value="{{ __('Precio') }}" />
+                            <x-input id="precio" class="block mt-1 w-full" type="number" name="precio"
+                                min="1" max="1000" title="El precio debe ser un número entre 1 y 1000."
+                                placeholder="Ejemplo: 10" :value="old('precio')" required autocomplete="precio" />
+                        </div>
+
                         <!-- Campo de Fecha de Caducidad -->
                         <div>
                             <x-label for="fecha_caducidad" value="{{ __('Fecha de Caducidad') }}" />
-                            <x-input id="fecha_caducidad" class="block mt-1 w-full" type="date"
-                                name="fecha_caducidad" min="{{ date('Y-m-d') }}"
-                                title="Por favor selecciona una fecha válida." placeholder="Selecciona una fecha"
-                                :value="old('fecha_caducidad')" required autocomplete="fecha_caducidad" />
+                            <x-input
+                                id="fecha_caducidad"
+                                class="block mt-1 w-full"
+                                type="date"
+                                name="fecha_caducidad"
+                                min="{{ date('Y-m-d') }}"
+                                title="Por favor selecciona una fecha válida."
+                                placeholder="Selecciona una fecha"
+                                :value="old('fecha_caducidad')"
+                                required
+                                autocomplete="fecha_caducidad"
+                            />
                         </div>
+
                     </div>
                 </div>
 
@@ -423,7 +450,7 @@
         <div class="modal-body">
             <form method="POST" action="{{ route('almacen.limpieza.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                <div class="contenedor">
 
                     <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
                         <div id="foto-previewMaterialLimpieza"

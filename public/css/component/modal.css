@@ -29,6 +29,11 @@
         display: flex;
     }
 
+    .modal input, .modal select{
+        border-radius: 10px;
+        border: 1px solid #c5c5c5;
+    }
+
     /* Contenido del modal */
     .modal-content {
         background-color: var(--text-color);

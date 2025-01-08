@@ -187,7 +187,7 @@
 
     .view-treatment-btn {
         background-color: var(--primary-color);
-        color:  var(--text-color);
+        color: var(--text-color);
         border: none;
         padding: 5px 10px;
         border-radius: 5px;
@@ -205,7 +205,7 @@
         font-size: 2rem;
         font-style: italic;
         font-weight: bold;
-        color:var(--primary-color);
+        color: var(--primary-color);
         margin: 20px 0;
         padding: 20px;
         border-radius: 8px;
@@ -253,7 +253,7 @@
     }
 
     #PanelMostrarPedidos .table-responsive,
-    #MedicamentosSurtidos .table-responsive{
+    #MedicamentosSurtidos .table-responsive {
         max-height: 300px;
     }
 
@@ -334,13 +334,13 @@
 
     .tableMedicamentos th,
     .tableMedicamentosASurtir th,
-    .tableConsultas th{
+    .tableConsultas th {
         background-color: #007bff;
         color: #fff;
         font-weight: bold;
         padding: 10px;
         text-align: center;
-     }
+    }
 
     .tableMedicamentos td,
     .tableConsultas td,
@@ -373,7 +373,7 @@
     }
 
     .list-group-item ul,
-    .list-group-item li  {
+    .list-group-item li {
         justify-content: center;
         justify-items: center;
         align-items: center;
@@ -447,48 +447,24 @@
         margin-left: 5%;
     }
 
-    .modalNuevoProveedor,
-    .modalProductoadd,
-    .modalMedicamentosSurtidos,
-    .modalDonaciones,
-    .tratamientoModal,
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        z-index: 999;
-        justify-content: center;
-        align-items: center;
+    .tratamientoModal .modal-content {
+        max-width: 850px;
     }
 
-    .modalNuevoProveedor:target,
-    .modalProductoadd:target,
-    .modalMedicamentosSurtidos:target,
-    .modalDonaciones:target,
-    .tratamientoModal:target,
-    .modal:target {
-        display: flex;
+    .tratamientoModal .cerrar {
+        background-color: #565a5e;
+        padding: 10px 30px;
+        color: #fff;
+        border-radius: 5px;
+        margin-bottom: 10px;
     }
 
-    .modal-content{
-        background-color: #fff;
-        padding: 20px 20px 0;
-        border-radius: 8px;
-        width: 100%;
-        position: relative;
-        justify-content: space-between;
+    .tratamientoModal .cerrar:hover {
+        background-color: #3d3f41;
     }
 
-    .tratamientoModal .modal-content{
-        max-width: 700px;
-    }
-
-    .modalNuevoProveedor .modal-content  {
-        max-width: 600px;
+    .modalNuevoProveedor .modal-content {
+        max-width: 400px;
     }
 
     .modalProductoadd .modal-content {
@@ -496,73 +472,15 @@
     }
 
     .modalMedicamentosSurtidos .modal-content {
-        max-width: 480px;
+        max-width: 680px;
     }
 
     .modalDonaciones .modal-content {
         max-width: 500px;
     }
 
-    .modalDonaciones .modal-body,
-    .modalMedicamentosSurtidos .modal-body {
-        padding: 20px;
-        max-height: 50vh;
-        overflow-y: auto;
-        height: 50vh;
-    }
-
-    .modalNuevoProveedor .modal-header,
-    .modalProductoadd .modal-header,
-    .modal-header
-     {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #dee2e6;
-        margin-bottom: 15px;
-        background-color: #007bff;
-        color: #fff;
-        border-radius: 10px;
-        padding: 5px;
-    }
-
-    .modal-title,
-    .modalNuevoProveedor .modal-title {
-        font-size: 1.25rem;
-        margin: 0;
-    }
-
-    .modalNuevoProveedor .close,
-    .close {
-        font-size: 1.5rem;
-        color: #fff;
-        text-decoration: none;
-        cursor: pointer;
-        margin-right: 10px;
-    }
-
-    .modalNuevoProveedor .close:hover,
-    .close:hover {
-        color: #dcdcdc;
-    }
-
     .form-group {
         margin-bottom: 15px;
-    }
-
-    .modal-footer {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;
-    }
-
-    .modal-footer button {
-        margin: 10px;
-    }
-
-    .modal-footer a {
-        margin-top: 15px;
     }
 
     .modalNuevoProveedor .modalProveedor-body {
@@ -705,34 +623,60 @@
     .col:last-child {
         border-right: none;
     }
+
+    .modalMedicamentosSurtidos .modal-body {
+        padding: 10px;
+    }
 </style>
+<link rel="stylesheet" href="{{ asset('css/component/modal.css') }}">
 
 <body>
     @if (session('success'))
-        <div class="notification alert alert-success alert-dismissible fade show" role="alert"
+        <div id="successNotification" class="notification alert alert-success alert-dismissible fade show" role="alert"
             style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
-            background-color: #4CAF50; color: white; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
+        background-color: #4CAF50; color: white; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
             <a type="button" class="btn-close" href=""
-            style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
-            text-decoration: none; opacity: 0.8;">
+                style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
+        text-decoration: none; opacity: 0.8;">
                 &times;</a>
             <strong>Éxito!</strong> {{ session('success') }}
         </div>
+        <script>
+            // Oculta la notificación después de 5 segundos (5000 ms)
+            setTimeout(() => {
+                const notification = document.getElementById('successNotification');
+                if (notification) {
+                    notification.style.transition = "opacity 0.5s ease";
+                    notification.style.opacity = "0"; // Transición de desvanecimiento
+                    setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
+                }
+            }, 3000);
+        </script>
     @endif
 
     @if (session('error'))
-        <div class="notification alert alert-error alert-dismissible fade show" role="alert"
+        <div id="successNotification" class="notification alert alert-error alert-dismissible fade show" role="alert"
             style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
-            background-color: #e14a4a; color: white; border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px;
-            text-align: center;">
+        background-color: #f63737; color: white; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
             <a type="button" class="btn-close" href=""
-            style="position: absolute; top: 10px; right: 10px; font-size: 22px;
-            color: white; text-decoration: none; opacity: 0.8;">
+                style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
+        text-decoration: none; opacity: 0.8;">
                 &times;</a>
-            <strong>Error!</strong> {{ session('success') }}
+            <strong>Error!</strong> {{ session('error') }}
         </div>
+        <script>
+            // Oculta la notificación después de 5 segundos (5000 ms)
+            setTimeout(() => {
+                const notification = document.getElementById('successNotification');
+                if (notification) {
+                    notification.style.transition = "opacity 0.5s ease";
+                    notification.style.opacity = "0"; // Transición de desvanecimiento
+                    setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
+                }
+            }, 3000);
+        </script>
     @endif
 
     <aside id="aside">
@@ -780,410 +724,443 @@
     <div class="central">
 
         <div id="MedicamentosSurtidos" class="container mt-4">
-                <h2 class="mb-4 text-center">Consulta de Recetas Surtidas</h2>
-                @if ($recetasSurtidas->isEmpty())
-                    <div class="alert alert-warning text-center">No hay recetas surtidas disponibles.</div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead class="thead-dark">
+            <h2 class="mb-4 text-center">Consulta de Recetas Surtidas</h2>
+            @if ($recetasSurtidas->isEmpty())
+                <div class="alert alert-warning text-center">No hay recetas surtidas disponibles.</div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Folio Receta</th>
+                                <th>Paciente</th>
+                                <th>Fecha de Surtido</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($recetasSurtidas->unique('receta_id') as $recetaSu)
                                 <tr>
-                                    <th>Folio Receta</th>
-                                    <th>Paciente</th>
-                                    <th>Fecha de Surtido</th>
-                                    <th>Acciones</th>
+                                    <td>{{ $recetaSu->receta->folio() }}</td>
+                                    <td>{{ $recetaSu->paciente->nombre }}</td>
+                                    <td>{{ $recetaSu->created_at->format('d/m/Y') }}</td>
+                                    <td>
+                                        <a class="btn btn-info" data-toggle="modal"
+                                            href="#detallesModal-{{ $recetaSu->receta_id }}">
+                                            Ver Detalles
+                                        </a>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($recetasSurtidas->unique('receta_id') as $recetaSu)
-                                    <tr>
-                                        <td>{{ str_pad($recetaSu->receta_id, 4, '0', STR_PAD_LEFT) }}</td>
-                                        <td>{{ $recetaSu->paciente->nombre }}</td>
-                                        <td>{{ $recetaSu->created_at->format('d/m/Y') }}</td>
-                                        <td>
-                                            <a class="btn btn-info" data-toggle="modal"
-                                                href="#detallesModal-{{ $recetaSu->receta_id }}">
-                                                Ver Detalles
-                                            </a>
-                                        </td>
-                                    </tr>
-
+                            @endforeach
                             </tbody>
                         </table>
 
+                        @foreach ($recetasSurtidas->unique('receta_id') as $recetaSu)
                         <!-- Modal para los detalles de la receta -->
-                        <div class="modalMedicamentosSurtidos" id="detallesModal-{{ $recetaSu->receta_id }}" tabindex="-1"
-                            role="dialog" aria-labelledby="detallesModalLabel-{{ $recetaSu->receta_id }}"
-                            aria-hidden="true">
+                            <div class="modal modalMedicamentosSurtidos" id="detallesModal-{{ $recetaSu->receta_id }}"
+                                tabindex="-1" role="dialog" aria-labelledby="detallesModalLabel-{{ $recetaSu->receta_id }}"
+                                aria-hidden="true">
 
-                            <div class="modal-content">
-                                <div class="modal-header bg-primary text-white">
-                                    <h5 class="modal-title" id="detallesModalLabel-{{ $recetaSu->receta_id }}">Detalles de
-                                        Receta Surtida</h5>
-                                    <a class="close text-white" href="">&times;
-                                    </a>
-                                </div>
-                                <div class="modal-body">
-                                    <div style="text-align: left;">
-                                        <p><strong>Folio Receta:</strong>
-                                            {{ str_pad($recetaSu->receta_id, 4, '0', STR_PAD_LEFT) }}</p>
-                                        <p><strong>Paciente:</strong> <br>
-                                            {{ $recetaSu->paciente->nombre }} {{ $recetaSu->paciente->apellidopaterno }}
-                                            {{ $recetaSu->paciente->apellidomaterno }}</p>
-                                        <p><strong>Fecha de Surtido:</strong> {{ $recetaSu->created_at->format('d/m/Y') }}
-                                            a las {{ $recetaSu->created_at->format('H:i') }}</p>
-                                        <p><strong>Tratamiento de la receta:</strong> <br>
-                                            {{ $recetaSu->receta->tratamiento }}</p>
-                                        <br>
-                                        <p><strong>Medicamentos Surtidos:</strong></p>
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title" id="detallesModalLabel-{{ $recetaSu->receta_id }}">Detalles de
+                                            Receta Surtida</h5>
+                                        <a class="close text-white" href="">&times;
+                                        </a>
                                     </div>
+                                    <div class="modal-body" style="display: flex;">
+                                        <div>
+                                            <div style="text-align: left;">
+                                                <p><strong>Folio Receta:</strong>
+                                                    {{ $recetaSu->receta->folio() }}</p>
+                                                <p><strong>Paciente:</strong> <br>
+                                                    {{ $recetaSu->paciente->nombre }}
+                                                    {{ $recetaSu->paciente->apellidopaterno }}
+                                                    {{ $recetaSu->paciente->apellidomaterno }}</p>
+                                                <p><strong>Fecha de Surtido:</strong>
+                                                    {{ $recetaSu->created_at->format('d/m/Y') }}
+                                                    a las {{ $recetaSu->created_at->format('H:i') }}</p>
+                                                <p><strong>Tratamiento de la receta:</strong> <br>
+                                                    {{ $recetaSu->receta->tratamiento }}</p>
+                                                <br>
 
-                                    <table class="table table-blue">
-                                        <thead class="thead-light">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p><strong>Medicamentos Surtidos:</strong></p>
+                                            <table class="table table-blue">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Nombre</th>
+                                                        <th>Dosis</th>
+                                                        <th>Cantidad</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @foreach ($recetasMedicas as $medicamento)
+                                                        @foreach ($medicamento->medicamentosSurtidos as $medicamentoSurtido)
+                                                            <!-- Filtra medicamentos por receta_id -->
+                                                            <tr>
+                                                                <td>{{ $medicamentoSurtido->medicamento->nombre }}</td>
+                                                                <td>{{ $medicamentoSurtido->medicamento->dosis }}</td>
+                                                                <td>{{ $medicamentoSurtido->cantidad }}</td>
+
+                                                            </tr>
+                                                            @endforeach
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+
+
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+        </div>
+        @endif
+    </div>
+
+    <div class="Donaciones" id="donaciones" style="display: none;">
+        <div class="panelOpcionesDonaciones">
+            <!-- Botón para ver donaciones -->
+            <button class="btn-custom  w-50" style="margin-right: 5px;" onclick="MostrarDonaciones()">
+                <i class="fas fa-eye"></i> Ver Donaciones
+            </button>
+
+            <!-- Botón para registrar donaciones -->
+            <button class="btn-custom  w-50" style="margin-left: 5px;" onclick="RegistrarDonaciones()">
+                <i class="fas fa-plus"></i> Registrar Donación
+            </button>
+        </div>
+
+        <div id="PanelMostrarDonaciones" style="display: none;">
+
+            <h2 class="mb-4 text-center">Consulta de Donaciones de Medicamentos</h2>
+            @if ($donaciones->isEmpty())
+                <div class="alert alert-warning text-center">No hay donaciones disponibles.</div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Folio Donación</th>
+                                <th>Donante</th>
+                                <th>Fecha de Donación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($donaciones->unique('donacion_id') as $donacion)
+                                <tr>
+                                    <td>{{ str_pad($donacion->id, 4, '0', STR_PAD_LEFT) }}</td>
+                                    <td>{{ $donacion->nombredonante }}</td>
+                                    <td>{{ $donacion->created_at->format('d/m/Y') }}</td>
+                                    <td>
+                                        <a class="btn btn-info" data-toggle="modal"
+                                            href="#detallesDonacionModal-{{ $donacion->donacion_id }}">
+                                            Ver Detalles
+                                        </a>
+                                    </td>
+
+                                    <!-- Modal para los detalles de la donación -->
+                                    <div class="modalDonaciones"
+                                        id="detallesDonacionModal-{{ $donacion->donacion_id }}" tabindex="-1"
+                                        role="dialog"
+                                        aria-labelledby="detallesDonacionModalLabel-{{ $donacion->donacion_id }}"
+                                        aria-hidden="true">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title"
+                                                    id="detallesDonacionModalLabel-{{ $donacion->donacion_id }}">
+                                                    Detalles
+                                                    de Donación</h5>
+                                                <a class="close text-white" href="">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </a>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="text-align: left;">
+                                                    <p><strong>Folio Donación:</strong>
+                                                        {{ str_pad($donacion->id, 4, '0', STR_PAD_LEFT) }}</p>
+                                                    <p><strong>Donante:</strong> {{ $donacion->nombredonante }}</p>
+                                                    <p><strong>Fecha de Donación:</strong>
+                                                        {{ \Carbon\Carbon::parse($donacion->fecha_donacion)->format('d/m/Y') }}
+                                                    </p>
+                                                    <p><strong>Fecha de Creación:</strong>
+                                                        {{ $donacion->created_at->format('d/m/Y H:m') }}</p>
+                                                    <br>
+                                                    <p><strong>Medicamentos Donados:</strong></p>
+                                                </div>
+
+                                                <div class="table-container">
+                                                    <div class="table-header">
+                                                        <div class="row header-row">
+                                                            <div class="col">Nombre</div>
+                                                            <div class="col">Cantidad</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="table-body">
+                                                        @foreach ($donaciones->where('donacion_id', $donacion->donacion_id) as $donacion)
+                                                            <div class="row body-row">
+                                                                <div class="col">
+                                                                    {{ $donacion->medicamentos->nombre }}</div>
+                                                                <div class="col">
+                                                                    {{ $donacion->medicamento_cantidad }}</div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a href="" class="btn btn-secondary"
+                                                    data-dismiss="modal">Cerrar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+
+        <div class="PanelRegistrarDonación" id="PanelRegistrarDonación">
+            <!-- Título principal -->
+            <h1 style="font-size: 28px; font-weight: 700;">Registrar Donación</h1>
+            <!-- Formulario de Datos de la Donación -->
+            <div class="d-flex justify-content-between mb-4 w-100">
+                <div class="col-md-6">
+                    <form action="{{ route('farmacia.donaciones.medicammentos') }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group">
+                            <label for="nombreDonante"><strong>Nombre del Donante:</strong></label>
+                            <input type="text" id="nombreDonante" name="nombreDonante" class="form-control"
+                                placeholder="Nombre del donante" required>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fechaDonacion"><strong>Fecha de Donación:</strong></label>
+                                <input type="date" id="fechaDonacion" name="fechaDonacion" class="form-control"
+                                    required>
+                            </div>
+                        </div>
+
+                        <!-- Aquí se agregarán los medicamentos seleccionados como inputs ocultos -->
+                        <div id="medicamentosSeleccionados"></div>
+
+                        <div class="d-flex" style="width: 100%; margin: 0 auto;">
+                            <!-- Sección de búsqueda y medicamentos disponibles -->
+                            <div style="width: 50%; float: left;">
+
+                                <h5 class="font-weight-bold" style="font-size: 25px;">Medicamentos Disponibles</h5>
+                                <a href="#addProductModal" class="btn btn-primary w-50">Registrar Medicamento</a>
+                                <div class="form-group mb-3 d-flex align-items-center">
+                                    <strong class="mr-2">Buscar:</strong>
+                                    <input type="search" class="form-control" id="buscarMedicamento"
+                                        placeholder="Buscar medicamento" onkeyup="filtrarMedicamentos()"
+                                        style="width: 80%;">
+
+                                </div>
+
+                                <!-- Tabla de Medicamentos con desplazamiento -->
+                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                    <table class="table tablaMedicamentos">
+                                        <thead>
                                             <tr>
                                                 <th>Nombre</th>
+                                                <th>Dosis</th>
+                                                <th>Cantidad Stock</th>
                                                 <th>Cantidad</th>
+                                                <th>Acción</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @foreach ($recetasSurtidas as $medicamento)
-                                                @if ($medicamento->receta_id == $recetaSu->receta_id)
-                                                    <!-- Filtra medicamentos por receta_id -->
+                                        <tbody id="tablaMedicamentos">
+                                            @foreach ($productos as $medicamento)
+                                                @if ($medicamento->cantidad >= 1)
                                                     <tr>
-                                                        <td>{{ $medicamento->medicamento->nombre }}</td>
+                                                        <td>{{ $medicamento->nombre }}</td>
+                                                        <td>{{ $medicamento->dosis }} {{ $medicamento->medida }}</td>
                                                         <td>{{ $medicamento->cantidad }}</td>
+                                                        <td>
+                                                            <input type="number"
+                                                                id="cantidadMedicamento-{{ $medicamento->id }}"
+                                                                class="form-control" value="1" min="1"
+                                                                max="{{ $medicamento->cantidad }}"
+                                                                style="width: 60px; display: inline-block;"
+                                                                oninput="this.value = Math.min(Math.max(this.value, 1), {{ $medicamento->cantidad }})"
+                                                                required>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button"
+                                                                class="btn btn-success btnAgregarMedicamento"
+                                                                onclick="añadirMedicamentoDonados('{{ $medicamento->nombre }}', '{{ $medicamento->id }}', document.getElementById('cantidadMedicamento-{{ $medicamento->id }}').value)">Añadir</button>
+                                                        </td>
                                                     </tr>
                                                 @endif
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="modal-footer">
-                                    <a href="" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+                            </div>
+
+                            <!-- Sección para mostrar los medicamentos agregados -->
+                            <div style="width: 50%; float: right; height: 46vh;">
+                                <h5 class="font-weight-bold" style="font-size: 25px;">Medicamentos Agregados</h5>
+                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                    <div id="listaMedicamentosDonados" class="list-group listaMedicamentos">
+                                        <!-- Aquí se agregarán los medicamentos seleccionados -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                @endforeach
-
+                        <div class="d-flex justify-content-center align-items-center w-100 mt-4">
+                            <button type="submit" class="btn-custom">Registrar Donación</button>
+                        </div>
+                    </form>
                 </div>
-                @endif
-        </div>
-
-        <div class="Donaciones" id="donaciones" style="display: none;">
-            <div class="panelOpcionesDonaciones">
-                <!-- Botón para ver donaciones -->
-                <button class="btn-custom  w-50" style="margin-right: 5px;" onclick="MostrarDonaciones()">
-                    <i class="fas fa-eye"></i> Ver Donaciones
-                </button>
-
-                <!-- Botón para registrar donaciones -->
-                <button class="btn-custom  w-50" style="margin-left: 5px;" onclick="RegistrarDonaciones()">
-                    <i class="fas fa-plus"></i> Registrar Donación
-                </button>
             </div>
 
-            <div id="PanelMostrarDonaciones" style="display: none;">
+        </div>
+    </div>
 
-                <h2 class="mb-4 text-center">Consulta de Donaciones de Medicamentos</h2>
-                @if ($donaciones->isEmpty())
-                    <div class="alert alert-warning text-center">No hay donaciones disponibles.</div>
-                @else
+    <div class="PedidosAProveedor" id="PedidosProveedor">
+
+        <div class="panelOpcionesPedidos" style="display: flex; padding: 10px;">
+            <!-- Botón para ver donaciones -->
+            <button class="btn-custom" style="margin-right: 5px; width: 50%;" onclick="MostrarPedidos()">
+                <i class="fas fa-eye"></i> Ver Pedidos
+            </button>
+
+            <!-- Botón para registrar donaciones -->
+            <button class="btn-custom  " style="margin-left: 5px; width: 50%;" onclick="RegistrarPedidos()">
+                <i class="fas fa-plus"></i> Registrar Pedido
+            </button>
+        </div>
+
+        <div id="PanelMostrarPedidos" style="display: none;">
+            <h2 class="mb-4 text-center">Consulta los pedidos de Medicamentos</h2>
+            @if ($PedidoProveedor->isEmpty())
+                <div class="alert alert-warning text-center">No hay pedidos disponibles.</div>
+            @else
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered" >
-                        <thead class="thead-dark" >
-                                <tr >
-                                    <th>Folio Donación</th>
-                                    <th>Donante</th>
-                                    <th>Fecha de Donación</th>
-                                    <th>Acciones</th>
+                    <table class="table table-striped table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Folio del pedido</th>
+                                <th>Proveedor</th>
+                                <th>Fecha de Pedido</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($PedidoProveedor->unique('pedido_id') as $Pedido)
+                                <tr>
+                                    <td>{{ str_pad($Pedido->pedido_id, 4, '0', STR_PAD_LEFT) }}</td>
+                                    <td>{{ $Pedido->proveedor->nombre }}</td>
+                                    <td>{{ $Pedido->created_at->format('d/m/Y H:m:s') }}</td>
+                                    <td>
+                                        <a class="btn btn-info" data-toggle="modal"
+                                            href="#detallesPedidosModal-{{ $Pedido->pedido_id }}">
+                                            Ver Detalles
+                                        </a>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($donaciones->unique('donacion_id') as $donacion)
-                                    <tr>
-                                        <td>{{ str_pad($donacion->id, 4, '0', STR_PAD_LEFT) }}</td>
-                                        <td>{{ $donacion->nombredonante }}</td>
-                                        <td>{{ $donacion->created_at->format('d/m/Y') }}</td>
-                                        <td>
-                                            <a class="btn btn-info" data-toggle="modal"
-                                                href="#detallesDonacionModal-{{ $donacion->donacion_id }}">
-                                                Ver Detalles
+
+                                <!-- Modal para los detalles
+                                        de la donación -->
+                                <div class="modalDonaciones" id="detallesPedidosModal-{{ $Pedido->pedido_id }}"
+                                    tabindex="-1" role="dialog"
+                                    aria-labelledby="detallesPedidosModalLabel-{{ $Pedido->pedido_id }}"
+                                    aria-hidden="true">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-primary text-white">
+                                            <h5 class="modal-title"
+                                                id="detallesDonacionModalLabel-{{ $Pedido->pedido_id }}">Detalles
+                                                de Pedidos</h5>
+                                            <a class="close text-white" href="">
+                                                <span aria-hidden="true">&times;</span>
                                             </a>
-                                        </td>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div style="text-align: left;">
+                                                <p><strong>Folio Pedido:</strong>
+                                                    {{ str_pad($Pedido->pedido_id, 4, '0', STR_PAD_LEFT) }}</p>
+                                                <p><strong>Proveedor:</strong> {{ $Pedido->proveedor->nombre }}</p>
 
-                                        <!-- Modal para los detalles de la donación -->
-                                        <div class="modalDonaciones" id="detallesDonacionModal-{{ $donacion->donacion_id }}" tabindex="-1"
-                                            role="dialog" aria-labelledby="detallesDonacionModalLabel-{{ $donacion->donacion_id }}"
-                                            aria-hidden="true">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title" id="detallesDonacionModalLabel-{{ $donacion->donacion_id }}">Detalles
-                                                            de Donación</h5>
-                                                        <a  class="close text-white" href="">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div style="text-align: left;">
-                                                            <p><strong>Folio Donación:</strong>
-                                                                {{ str_pad($donacion->id, 4, '0', STR_PAD_LEFT) }}</p>
-                                                            <p><strong>Donante:</strong> {{ $donacion->nombredonante }}</p>
-                                                            <p><strong>Fecha de Donación:</strong> {{ \Carbon\Carbon::parse($donacion->fecha_donacion)->format('d/m/Y') }}</p>
-                                                            <p><strong>Fecha de Creación:</strong> {{$donacion->created_at->format('d/m/Y H:m') }}</p>
-                                                            <br>
-                                                            <p><strong>Medicamentos Donados:</strong></p>
-                                                        </div>
+                                                <p><strong>Fecha de Creación:</strong>
+                                                    {{ $Pedido->created_at->format('d/m/Y H:m') }}</p>
+                                                <br>
+                                                <p><strong>Medicamentos Pedidos:</strong></p>
+                                            </div>
 
-                                                        <div class="table-container">
-                                                            <div class="table-header">
-                                                                <div class="row header-row">
-                                                                    <div class="col">Nombre</div>
-                                                                    <div class="col">Cantidad</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="table-body">
-                                                                @foreach ($donaciones->where('donacion_id', $donacion->donacion_id) as $donacion)
-                                                                    <div class="row body-row">
-                                                                        <div class="col">{{ $donacion->medicamentos->nombre }}</div>
-                                                                        <div class="col">{{ $donacion->medicamento_cantidad }}</div>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <a href="" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+                                            <div class="table-container">
+                                                <div class="table-header">
+                                                    <div class="row header-row">
+                                                        <div class="col">Nombre</div>
+                                                        <div class="col">Cantidad</div>
                                                     </div>
                                                 </div>
+                                                <div class="tbody">
+                                                    @foreach ($PedidoProveedor->where('pedido_id', $Pedido->pedido_id) as $medicamento)
+                                                        <div class="row body-row">
+                                                            <div class="col">
+                                                                {{ $medicamento->medicamento->nombre }}</div>
+                                                            <div class="col">
+                                                                {{ $medicamento->medicamento_cantidad }}</div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+
+
                                         </div>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
-
-            <div class="PanelRegistrarDonación" id="PanelRegistrarDonación">
-                <!-- Título principal -->
-                <h1 style="font-size: 28px; font-weight: 700;">Registrar Donación</h1>
-                <!-- Formulario de Datos de la Donación -->
-                <div class="d-flex justify-content-between mb-4 w-100">
-                    <div class="col-md-6">
-                        <form action="{{ route('farmacia.donaciones.medicammentos') }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
-                            <div class="form-group">
-                                <label for="nombreDonante"><strong>Nombre del Donante:</strong></label>
-                                <input type="text" id="nombreDonante" name="nombreDonante" class="form-control"
-                                    placeholder="Nombre del donante" required>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fechaDonacion"><strong>Fecha de Donación:</strong></label>
-                                    <input type="date" id="fechaDonacion" name="fechaDonacion" class="form-control"
-                                        required>
-                                </div>
-                            </div>
-
-                            <!-- Aquí se agregarán los medicamentos seleccionados como inputs ocultos -->
-                            <div id="medicamentosSeleccionados"></div>
-
-                            <div class="d-flex" style="width: 100%; margin: 0 auto;">
-                                <!-- Sección de búsqueda y medicamentos disponibles -->
-                                <div style="width: 50%; float: left;">
-
-                                    <h5 class="font-weight-bold" style="font-size: 25px;">Medicamentos Disponibles</h5>
-                                    <a href="#addProductModal" class="btn btn-primary w-50">Registrar Medicamento</a>
-                                    <div class="form-group mb-3 d-flex align-items-center">
-                                        <strong class="mr-2">Buscar:</strong>
-                                        <input type="search" class="form-control" id="buscarMedicamento"
-                                            placeholder="Buscar medicamento" onkeyup="filtrarMedicamentos()"
-                                            style="width: 80%;">
-
-                                    </div>
-
-                                    <!-- Tabla de Medicamentos con desplazamiento -->
-                                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                        <table class="table tablaMedicamentos">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nombre</th>
-                                                    <th>Dosis</th>
-                                                    <th>Cantidad Stock</th>
-                                                    <th>Cantidad</th>
-                                                    <th>Acción</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tablaMedicamentos">
-                                                @foreach ($productos as $medicamento)
-                                                    @if ($medicamento->cantidad >= 1)
-                                                        <tr>
-                                                            <td>{{ $medicamento->nombre }}</td>
-                                                            <td>{{ $medicamento->dosis }} {{ $medicamento->medida }}</td>
-                                                            <td>{{ $medicamento->cantidad }}</td>
-                                                            <td>
-                                                                <input type="number"
-                                                                    id="cantidadMedicamento-{{ $medicamento->id }}"
-                                                                    class="form-control" value="1" min="1"
-                                                                    max="{{ $medicamento->cantidad }}"
-                                                                    style="width: 60px; display: inline-block;"
-                                                                    oninput="this.value = Math.min(Math.max(this.value, 1), {{ $medicamento->cantidad }})"
-                                                                    required>
-                                                            </td>
-                                                            <td>
-                                                                <button type="button"
-                                                                    class="btn btn-success btnAgregarMedicamento"
-                                                                    onclick="añadirMedicamentoDonados('{{ $medicamento->nombre }}', '{{ $medicamento->id }}', document.getElementById('cantidadMedicamento-{{ $medicamento->id }}').value)">Añadir</button>
-                                                            </td>
-                                                        </tr>
-                                                    @endif
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <!-- Sección para mostrar los medicamentos agregados -->
-                                <div style="width: 50%; float: right; height: 46vh;">
-                                    <h5 class="font-weight-bold" style="font-size: 25px;">Medicamentos Agregados</h5>
-                                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                        <div id="listaMedicamentosDonados" class="list-group listaMedicamentos">
-                                            <!-- Aquí se agregarán los medicamentos seleccionados -->
+                                        <div class="modal-footer">
+                                            <a href="" class="btn btn-secondary"
+                                                data-dismiss="modal">Cerrar</a>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center w-100 mt-4">
-                                <button type="submit" class="btn-custom">Registrar Donación</button>
-                            </div>
-                        </form>
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-
-            </div>
+            @endif
         </div>
 
-        <div class="PedidosAProveedor" id="PedidosProveedor">
-
-            <div class="panelOpcionesPedidos" style="display: flex; padding: 10px;">
-                <!-- Botón para ver donaciones -->
-                <button class="btn-custom" style="margin-right: 5px; width: 50%;" onclick="MostrarPedidos()">
-                    <i class="fas fa-eye"></i> Ver Pedidos
-                </button>
-
-                <!-- Botón para registrar donaciones -->
-                <button class="btn-custom  " style="margin-left: 5px; width: 50%;" onclick="RegistrarPedidos()">
-                    <i class="fas fa-plus"></i> Registrar Pedido
-                </button>
-            </div>
-
-            <div id="PanelMostrarPedidos" style="display: none;">
-                <h2 class="mb-4 text-center">Consulta los pedidos de Medicamentos</h2>
-                @if ($PedidoProveedor->isEmpty())
-                    <div class="alert alert-warning text-center">No hay pedidos disponibles.</div>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>Folio del pedido</th>
-                                    <th>Proveedor</th>
-                                    <th>Fecha de Pedido</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($PedidoProveedor->unique('pedido_id') as $Pedido)
-                                    <tr>
-                                        <td>{{ str_pad($Pedido->pedido_id, 4, '0', STR_PAD_LEFT) }}</td>
-                                        <td>{{ $Pedido->proveedor->nombre }}</td>
-                                        <td>{{ $Pedido->created_at->format('d/m/Y H:m:s') }}</td>
-                                        <td>
-                                            <a class="btn btn-info" data-toggle="modal"
-                                                href="#detallesPedidosModal-{{ $Pedido->pedido_id }}">
-                                                Ver Detalles
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <!-- Modal para los detalles
-                                        de la donación -->
-                    <div class="modalDonaciones" id="detallesPedidosModal-{{ $Pedido->pedido_id }}" tabindex="-1"
-                        role="dialog" aria-labelledby="detallesPedidosModalLabel-{{ $Pedido->pedido_id }}"
-                        aria-hidden="true">
-                            <div class="modal-content">
-                                <div class="modal-header bg-primary text-white">
-                                    <h5 class="modal-title" id="detallesDonacionModalLabel-{{ $Pedido->pedido_id }}">Detalles
-                                        de Pedidos</h5>
-                                    <a  class="close text-white" href="">
-                                        <span aria-hidden="true">&times;</span>
-                                    </a>
-                                </div>
-                                <div class="modal-body">
-                                    <div style="text-align: left;">
-                                        <p><strong>Folio Pedido:</strong>
-                                            {{ str_pad($Pedido->pedido_id, 4, '0', STR_PAD_LEFT) }}</p>
-                                        <p><strong>Proveedor:</strong> {{ $Pedido->proveedor->nombre }}</p>
-
-                                        <p><strong>Fecha de Creación:</strong> {{$Pedido->created_at->format('d/m/Y H:m') }}</p>
-                                        <br>
-                                        <p><strong>Medicamentos Pedidos:</strong></p>
-                                    </div>
-
-                                    <div class="table-container">
-                                        <div class="table-header">
-                                            <div class="row header-row">
-                                                <div class="col">Nombre</div>
-                                                <div class="col">Cantidad</div>
-                                            </div>
-                                        </div>
-                                        <div class="tbody">
-                                            @foreach ($PedidoProveedor->where('pedido_id', $Pedido->pedido_id) as $medicamento)
-                                                <div class="row body-row">
-                                                    <div class="col">{{ $medicamento->medicamento->nombre }}</div>
-                                                    <div class="col">{{ $medicamento->medicamento_cantidad }}</div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
-                                </div>
-                            </div>
-                        </div>
-                                @endforeach
-                            </tbody>
-                        </table>
+        <div id="PanelRegistrarPedido">
+            <!-- Título principal -->
+            <h1 class="text-center">Pedidos a Proveedor</h1>
+            <form action="{{ route('farmacia.pedidos.medicammentos') }}" method="POST"
+                enctype="multipart/form-data">
+                @csrf
+                <div class="d-flex flex-column" style="width: 100%;">
+                    <!-- Sección de selección de proveedor -->
+                    <div class="col-md-5 mb-3 mx-auto">
+                        <label for="seleccionarProveedor"><strong>Seleccionar Proveedor:</strong></label>
+                        <select id="proveedor_id" name="proveedor_id" class="form-select">
+                            <option value="">Seleccione un proveedor</option>
+                            @foreach ($proveedores as $proveedor)
+                                <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('proveedor_id')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-                @endif
-            </div>
-
-            <div id="PanelRegistrarPedido" >
-                    <!-- Título principal -->
-                <h1 class="text-center">Pedidos a Proveedor</h1>
-                <form action="{{ route('farmacia.pedidos.medicammentos') }}" method="POST"
-                            enctype="multipart/form-data">
-                            @csrf
-                            <div class="d-flex flex-column" style="width: 100%;">
-                                <!-- Sección de selección de proveedor -->
-                                <div class="col-md-5 mb-3 mx-auto">
-                                    <label for="seleccionarProveedor"><strong>Seleccionar Proveedor:</strong></label>
-                                    <select id="proveedor_id" name="proveedor_id" class="form-select">
-                                        <option value="">Seleccione un proveedor</option>
-                                        @foreach ($proveedores as $proveedor)
-                                            <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('proveedor_id')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
+                </div>
 
                 <div class="d-flex" style="width: 100%; margin: 0 auto;">
                     <!-- Sección de búsqueda y medicamentos disponibles -->
@@ -1225,7 +1202,8 @@
                                                         required>
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-success btnAgregarMedicamento"
+                                                    <button type="button"
+                                                        class="btn btn-success btnAgregarMedicamento"
                                                         onclick="añadirMedicamentoProveedor('{{ $medicamento->nombre }}', '{{ $medicamento->id }}')">Añadir</button>
                                                 </td>
                                             </tr>
@@ -1244,21 +1222,23 @@
                                 <!-- Aquí se agregarán los medicamentos seleccionados -->
 
                                 @error('proveedor_id')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
 
-                    <div  style="display: flex; justify-content: center; width: 100%;">
-                        <button type="submit" class="btn-custom" style="text-align: center; justify-content: center;  width: 50%;">Pedir a Proveedor</button>
+                    <div style="display: flex; justify-content: center; width: 100%;">
+                        <button type="submit" class="btn-custom"
+                            style="text-align: center; justify-content: center;  width: 50%;">Pedir a
+                            Proveedor</button>
                     </div>
-                </form>
-                </div>
-
-            </div>
-
+            </form>
         </div>
+
+    </div>
+
+    </div>
 
 
     <div id="panelCentral" class="panelCentral">
@@ -1279,7 +1259,7 @@
         <h3 style="margin: 0; text-align: center; font-size: 25px;">DE LA </h3>
         <h2 style="margin: 0; text-align: center; font-size: 27px;">CRUZ ROJA MEXICANA DELEGACIÓN CHILPANCINGO
         </h2>
-        </div>
+    </div>
     </div>
 
     <div class="derecha" id="recetas-container">
@@ -1322,109 +1302,127 @@
                 </div>
 
                 @foreach ($recetas as $receta)
-                    <div class=" fade tratamientoModal" id="tratamientoModal-{{ $receta->id }}" tabindex="-1"
-                        role="dialog" aria-labelledby="tratamientoModalLabel-{{ $receta->id }}"
+                    <div class=" fade modal tratamientoModal" id="tratamientoModal-{{ $receta->id }}"
+                        tabindex="-1" role="dialog" aria-labelledby="tratamientoModalLabel-{{ $receta->id }}"
                         aria-hidden="true">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="tratamientoModalLabel-{{ $receta->id }}">
-                                        Tratamiento
-                                        para {{ $receta->paciente->nombre }}</h5>
-                                    <button type="button" class="close" data-id="{{ $receta->id }}"
-                                        aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    </button>
-                                </div>
-                                <div class="modal-body" style=" height: 85vh; overflow: auto;">
-                                    <form action="{{ route('farmacia.surtir.receta') }}"method="POST"
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tratamientoModalLabel-{{ $receta->id }}">
+                                    Tratamiento
+                                    para {{ $receta->paciente->nombre }}
+                                    {{ $receta->paciente->apellidopaterno }}
+                                    {{ $receta->paciente->apellidomaterno }}</h5>
+                                <button type="button" class="close" data-id="{{ $receta->id }}"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('farmacia.surtir.receta') }}"method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
-                                    <div class="tratamiento-container"
-                                        style="margin: 10px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-                                        <h3 style="margin-bottom: 8px; color: #2c3e50;">Tratamiento</h3>
+                                    <div style="display: flex; justify-content: center; overflow: auto; height: 60vh;">
+                                        <div class="tratamiento-container"
+                                            style="margin: 0 20px;  border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;
+                                            padding: 10px;">
+                                            <h3 style="margin-bottom: 8px; font-weight: 700;">Tratamiento</h3>
 
-                                        @if (!empty($receta->tratamiento))
-                                            <p style="line-height: 1.6; font-size: 16px; color: #34495e;">
-                                                {{ $receta->tratamiento }}
-                                            </p>
-                                        @else
-                                            <p style="font-style: italic; color: #7f8c8d;">No se ha especificado ningún
-                                                tratamiento.</p>
-                                        @endif
-                                    </div>
-
-                                    <br>
-                                    <!-- Barra de búsqueda -->
-                                    <div class="form-group">
-                                        <strong>Buscar: </strong>
-                                        <input type="search" class="form-control"
-                                            id="searchMedicamento-{{ $receta->id }}"
-                                            placeholder="Buscar medicamento"
-                                            onkeyup="filterMedicamentos({{ $receta->id }})">
-                                    </div>
-
-                                    <!-- Tabla de Medicamentos con desplazamiento -->
-                                    <div style="max-height: 200px; overflow-y: auto;">
-                                        <h5>Medicamentos Recetados</h5>
-                                        <table class="table tableMedicamentosASurtir">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nombre</th>
-                                                    <th>Dosis</th>
-                                                    <th>Cantidad</th>
-                                                    <th>Acción</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="medicamentosBody-{{ $receta->id }}">
-                                                @foreach ($productos as $medicamento)
-                                                    <tr>
-                                                        <td>{{ $medicamento->nombre }}</td>
-                                                        <td>{{ $medicamento->dosis }} {{ $medicamento->medida }}
-                                                        </td>
-                                                        <td>
-                                                            <input type="number"
-                                                                id="cantidad-{{ $receta->id }}-{{ $medicamento->id }}"
-                                                                class="form-control" value="1" min="1"
-                                                                max="{{ $medicamento->cantidad }}"
-                                                                style="width: 60px; display: inline-block;"
-                                                                title="Ingrese la cantidad (mínimo: 1, máximo: {{ $medicamento->cantidad }})"
-                                                                aria-label="Cantidad de {{ $medicamento->nombre }}"
-                                                                oninput="this.value = Math.min(Math.max(this.value, 1), {{ $medicamento->cantidad }})"
-                                                                required>
-
-                                                        </td>
-                                                        <td>
-                                                            <button type="button"
-                                                                class="btn btn-primary agregar-medicamento"
-                                                                onclick="agregarMedicamentoASurtir({{ $receta->id }}, '{{ $medicamento->nombre }}', '{{ $medicamento->id }}')">Agregar</button>
-                                                        </td>
-                                                    </tr>
+                                            @if (!empty($receta->tratamiento))
+                                                @foreach ($receta->tratamiento as $medicamento)
+                                                    <p style="line-height: 1.6; font-size: 16px; color: #34495e;">
+                                                        {{ $medicamento }}
+                                                    </p>
                                                 @endforeach
-                                            </tbody>
-                                        </table>
+                                            @else
+                                                <p style="font-style: italic; color: #7f8c8d;">No se ha especificado
+                                                    ningún
+                                                    tratamiento.</p>
+                                            @endif
+                                            <br>
+
+                                            <!-- Sección para mostrar los medicamentos agregados -->
+                                            <div>
+                                                <h5 style="font-weight: 700;">Medicamentos Agregados</h5>
+                                                <input type="hidden" name="paciente_id"
+                                                    value="{{ $receta->paciente->id }}">
+                                                <div id="medicamentosAgregados-{{ $receta->id }}"
+                                                    style="max-height: 150px; overflow-y: auto; width: 100%; justify-content: center;">
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <!-- Barra de búsqueda -->
+                                            <div class="form-group">
+                                                <strong>Buscar: </strong>
+                                                <input type="search" class="form-control"
+                                                    id="searchMedicamento-{{ $receta->id }}"
+                                                    placeholder="Buscar medicamento"
+                                                    onkeyup="filterMedicamentos({{ $receta->id }})">
+                                            </div>
+
+                                            <!-- Tabla de Medicamentos con desplazamiento -->
+                                            <div style="max-height: 200px; overflow-y: auto;">
+                                                <h5 style="font-weight: 700; margin-bottom: 5px;">Medicamentos
+                                                    Recetados</h5>
+                                                <table class="table tableMedicamentosASurtir">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nombre</th>
+                                                            <th>Dosis</th>
+                                                            <th>Cantidad</th>
+                                                            <th>Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="medicamentosBody-{{ $receta->id }}">
+                                                        @foreach ($productos as $medicamento)
+                                                            <tr>
+                                                                <td>{{ $medicamento->nombre }}</td>
+                                                                <td>{{ $medicamento->dosis }}
+                                                                    {{ $medicamento->medida }}
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number"
+                                                                        id="cantidad-{{ $receta->id }}-{{ $medicamento->id }}"
+                                                                        class="form-control" value="1"
+                                                                        min="1"
+                                                                        max="{{ $medicamento->cantidad }}"
+                                                                        style="width: 60px; display: inline-block;"
+                                                                        title="Ingrese la cantidad (mínimo: 1, máximo: {{ $medicamento->cantidad }})"
+                                                                        aria-label="Cantidad de {{ $medicamento->nombre }}"
+                                                                        oninput="this.value = Math.min(Math.max(this.value, 1), {{ $medicamento->cantidad }})"
+                                                                        required>
+
+                                                                </td>
+                                                                <td>
+                                                                    <button type="button"
+                                                                        class="btn btn-primary agregar-medicamento"
+                                                                        onclick="agregarMedicamentoASurtir({{ $receta->id }}, '{{ $medicamento->nombre }}', '{{ $medicamento->id }}')">Agregar</button>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Sección para mostrar los medicamentos agregados -->
-                                        <h5>Medicamentos Agregados</h5>
-                                        <input type="hidden" name="paciente_id"
-                                            value="{{ $receta->paciente->id }}">
-                                        <div id="medicamentosAgregados-{{ $receta->id }}"
-                                            style="max-height: 200px; overflow-y: auto; width: 100%; justify-content: center;">
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">
+                                            Surtir Receta
+                                        </button>
+                                        <button type="button" class="cerrar close" data-id="{{ $receta->id }}"
+                                            aria-label="Cerrar">
+                                            <span aria-hidden="true">Cerrar</span>
+                                        </button>
+                                    </div>
 
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-success">
-                                                Surtir Receta
-                                            </button>
-                                            <button type="button" class="close" data-id="{{ $receta->id }}"
-                                                aria-label="Close">
-                                                <span aria-hidden="true">Cerrar</span>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
+
+
+
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -1518,14 +1516,15 @@
     </div>
 
     <!-- Add Proveedor Modal -->
-    <div id="modalNuevoProveedor" class="modalNuevoProveedor">
+    <div id="modalNuevoProveedor" class="modal modalNuevoProveedor">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar Nuevo Proveedor</h5>
                 <a href="" class="close">&times;</a>
             </div>
             <div class="modalProveedor-body">
-                <form action="{{ route('farmacia.proveedor.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('farmacia.proveedor.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="formContent">
                         <div class="form-group col-md-6">
@@ -1569,7 +1568,7 @@
     </div>
 
     <!-- Add Product Modal -->
-    <div id="addProductModal" class="modalProductoadd">
+    <div id="addProductModal" class="modal modalProductoadd">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar Nuevo Producto</h5>
@@ -2054,14 +2053,18 @@
             const donaciones = document.getElementById('donaciones');
             const inventario = document.getElementById('Inventario');
             const Proveedores = document.getElementById('Proveedores');
+            const MedicamentosSurtidos = document.getElementById('MedicamentosSurtidos'); // Agregado
+            const panelPedidosProveedor = document.getElementById('panelPedidosProveedor'); // Agregado
 
-            MedicamentosSurtidos.style.display = 'block';
-            panelPedidosProveedor.style.display = 'none';
-            panelCentral.style.display = 'none';
-            donaciones.style.display = 'none';
-            inventario.style.display = 'none';
-            Proveedores.style.display = 'none';
+            // Verificar si los elementos existen antes de acceder a sus propiedades
+            if (MedicamentosSurtidos) MedicamentosSurtidos.style.display = 'block';
+            if (panelPedidosProveedor) panelPedidosProveedor.style.display = 'none';
+            if (panelCentral) panelCentral.style.display = 'none';
+            if (donaciones) donaciones.style.display = 'none';
+            if (inventario) inventario.style.display = 'none';
+            if (Proveedores) Proveedores.style.display = 'none';
         }
+
 
         function PedidosAProveedor() {
             const panelCentral = document.getElementById('panelCentral');

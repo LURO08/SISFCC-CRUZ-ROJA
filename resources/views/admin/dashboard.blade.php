@@ -170,21 +170,7 @@
     }
 
     /* Panel central */
-    #panelCentral {
-        text-align: center;
-        font-size: 2rem;
-        font-style: italic;
-        font-weight: bold;
-        color: var(--primary-color);
-        margin: 20px 0;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
+
 
     /* Panel central */
     #PedidosProveedor {
@@ -275,12 +261,7 @@
     }
 
 
-    #panelCentral h1 {
-        text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.2);
-        letter-spacing: 1px;
-        font-weight: 800;
-        justify-content: center;
-    }
+
 
     .tableMedicamenrtos,
     .tableConsultas,
@@ -925,7 +906,7 @@
                 <!-- Cuadrado central alargado vertical -->
                 <rect x="37" y="30" width="26" height="40" fill="red" />
             </svg>
-            <h1 style="margin: 0; text-align: center; font-size: 30px; font-weight: 800; color: #1a73e8;">SISTEMA DE ADMINISTRADOR</h1>
+            <h1 style="margin: 0; font-size: 30px; font-weight: 800; color: #1a73e8;">SISTEMA DE ADMINISTRADOR</h1>
             <h3 style="margin: 0; text-align: center; font-size: 25px; font-weight: 800;  color: #1a73e8;">DE LA </h3>
             <h2 style="margin: 0; text-align: center; font-size: 27px;  color: #1a73e8;">CRUZ ROJA MEXICANA DELEGACIÓN CHILPANCINGO
             </h2>

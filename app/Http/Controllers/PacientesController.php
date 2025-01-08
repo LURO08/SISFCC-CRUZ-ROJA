@@ -9,8 +9,12 @@ class PacientesController extends Controller
 {
     public function index()
     {
-        $pacientes = Pacientes::all();
-        return view('doctor.pacientes.index', compact('pacientes'));
+        $todosLosPacientes = Pacientes::all()->map(function($pacientes) {
+            $pacientes->folio = $pacientes->getID();
+            return $pacientes;
+        });
+        $pacientes = Pacientes::paginate(4);
+        return view('doctor.pacientes.index', compact('pacientes','todosLosPacientes'));
     }
 
     public function store(Request $request)

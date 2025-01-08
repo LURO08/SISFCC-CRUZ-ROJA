@@ -3,8 +3,9 @@
 return [
     'admin' => 'Administrador',
     'almacenista' => 'Almacenista',
-    'Jefe de Socorros' => 'Jefe de Socorros',
+    'socorros' => 'Socorros',
     'doctor' => 'Doctor',
     'cajero' => 'Cajero',
     'farmacia' => 'Farmacia',
+    'sin_rol' => 'Sin Rol',
 ];

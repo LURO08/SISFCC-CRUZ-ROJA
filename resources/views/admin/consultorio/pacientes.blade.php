@@ -535,6 +535,7 @@
     </div>
 
     <script>
+        const todosLosPacientes = @json($pacientesall); // Traer todos los pacientes
         var menuDatos = document.getElementById('MenuDatos');
         document.getElementById("menu").style.display = 'block';
 
@@ -575,7 +576,7 @@
             }
         }
 
-        const todosLosPacientes = @json($todosLosPacientes); // Traer todos los pacientes
+
 
         function buscarPaciente() {
             const searchValue = document.getElementById('buscarPaciente').value.toLowerCase();

@@ -91,31 +91,56 @@ class AlmacenController extends Controller
     public function storeMedico(Request $request)
     {
 
-       // Validar los datos del formulario
-        $inventario = $request->validate([
+
+        // Validar los datos del formulario
+        $validatedData = $request->validate([
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'required|string',
+            'descripcion' => 'nullable|string',
             'tipo' => 'required|string|max:255',
             'cantidad' => 'required|integer|min:1',
+            'precio' => 'required|integer|min:1',
             'fecha_caducidad' => 'required|date|after:today',
-            'rutaimg' => 'nullable|image', // Validación para imagen
+            'rutaimg' => 'nullable|image|max:2048', // Validación para imagen con tamaño máximo
         ]);
 
-        if ($request->hasFile('rutaimg') && $request->file('rutaimg')->isValid()) {
-            $file = $request->file('rutaimg');
-            $nombreImagen = time() . '_' .  $request->nombre . '.' . $file->getClientOriginalExtension();
-            $rutaImagen = 'images/inventario/vehicular/' . $nombreImagen;
-            $file->move(public_path('images/inventario/vehicular/'), $nombreImagen);
-            $inventario['rutaimg'] = $rutaImagen;
+        // Validar que la fecha de caducidad sea válida
+        $fechaCaducidad = $request->input('fecha_caducidad');
+        if (strtotime($fechaCaducidad) <= strtotime('today')) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['fecha_caducidad' => 'La fecha de caducidad debe ser posterior a la fecha actual.']);
         }
 
+        // Procesar la imagen si está presente
+        if ($request->hasFile('rutaimg') && $request->file('rutaimg')->isValid()) {
+            $file = $request->file('rutaimg');
+            $nombreImagen = time() . '_' . str_replace(' ', '_', $validatedData['nombre']) . '.' . $file->getClientOriginalExtension();
+            $rutaImagen = 'images/inventario/vehicular/' . $nombreImagen;
+
+            try {
+                $file->move(public_path('images/inventario/vehicular/'), $nombreImagen);
+                $validatedData['rutaimg'] = $rutaImagen;
+            } catch (\Exception $e) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['rutaimg' => 'Error al subir la imagen. Intente nuevamente.']);
+            }
+        }
 
         // Crear un nuevo registro en la tabla de inventario_medicos
-        $inventarioMedico = InventarioMedico::create($inventario);
+        try {
+            $inventarioMedico = InventarioMedico::create($validatedData);
 
-        return redirect()->route('almacenista.index', ['category' => 'medico'])
-                         ->with('success', 'Material de oficina creado correctamente.');
+            return redirect()->route('almacenista.index', ['category' => 'medico'])
+                ->with('success', 'Material médico creado correctamente.');
+        } catch (\Exception $e) {
+            // Manejar errores durante la creación del registro
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Ocurrió un error al guardar el material médico. Intente nuevamente.']);
+        }
     }
+
 
     public function storeOficina(Request $request)
     {

@@ -14,7 +14,8 @@ class emergencyphase8_Zonas extends Model
         'folio',
         'id_phase',
         'zona',
-        'coordinate'
+        'coordinate',
+        'capturas'
     ];
 
     // Aquí puedes agregar otras relaciones o métodos si es necesario

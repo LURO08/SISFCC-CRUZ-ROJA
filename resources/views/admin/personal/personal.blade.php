@@ -661,17 +661,17 @@
                                                 Seleccione un usuario (Opcional)
                                             </option>
                                             @php
-    $selectedUserId = $personal->user_id ?? old('user_id'); // Respaldo al valor de 'old' si no hay $personal
-@endphp
+                                    $selectedUserId = $personal->user_id ?? old('user_id'); // Respaldo al valor de 'old' si no hay $personal
+                                @endphp
 
-@foreach ($usuarios as $usuario)
-    <option
-        value="{{ $usuario->id }}"
-        {{ $selectedUserId == $usuario->id ? 'selected' : '' }}
-    >
-        {{ $usuario->name }} ({{ $usuario->email }})
-    </option>
-@endforeach
+                                @foreach ($usuarios as $usuario)
+                                    <option
+                                        value="{{ $usuario->id }}"
+                                        {{ $selectedUserId == $usuario->id ? 'selected' : '' }}
+                                    >
+                                        {{ $usuario->name }} ({{ $usuario->email }})
+                                    </option>
+                                @endforeach
 
                                         </select>
                                     </div>
@@ -754,6 +754,7 @@
     });
 
     const todosLospersonals = @json($personalsall); // Traer todos los personales
+
 
     function buscarpersonal() {
         const searchValue = document.getElementById('buscarpersonal').value.trim().toLowerCase();

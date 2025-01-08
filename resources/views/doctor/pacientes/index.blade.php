@@ -19,6 +19,29 @@
             #panelOpciones{
                 background-color: #d32f2f;
             }
+
+            main {
+                display: flex;
+                height: 50;
+            }
+
+            body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #190101;
+}
+
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #d32f2f;
+    color: white;
+    bottom: 0;
+    width: 100%;
+    height: 20%;
+}
         </style>
 
         <!-- Styles -->
@@ -40,12 +63,15 @@
             @endif
 
             <!-- Page Content -->
-            <main  class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-             @include('doctor.pacientes.pacientes')
-
-
+            <main>
+                @include('doctor.pacientes.pacientes')
             </main>
         </div>
+
+        <footer>
+            <p>&copy; 2024 Cruz Roja Mexicana - Delegación Chilpancingo</p>
+            <p style="padding-top: 10px;"> <b> Creado por: </b> Jose Luis Romero Palacios</p>
+        </footer>
 
 
         @livewireScripts
