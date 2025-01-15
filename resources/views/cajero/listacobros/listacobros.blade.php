@@ -575,7 +575,7 @@
             </a>
         </li>
         <li>
-            <a class="btn" href="{{route('cajero.cobros.lista.index')}}" id="cobrosBtn">
+            <a class="btn" href="#" id="cobrosBtn" onclick="showPanel('cobrosPanel')">
                 <span class="icon">💸</span>
                 <span class="text" style="font-weight: bold;">Cobros</span>
             </a>
@@ -605,7 +605,7 @@
 
 <div class="central">
 
-    <div id="panelCentral" class="panelCentral">
+    <div id="panelCentral" class="panelCentral" style="display: none;">
         <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <!-- Cuadrado superior -->
             <rect x="35" y="10" width="30" height="30" fill="red" stroke="white" stroke-width="4" />
@@ -624,7 +624,7 @@
         <h2 style="margin: 0; text-align: center; font-size: 27px;">CRUZ ROJA MEXICANA DELEGACIÓN CHILPANCINGO</h2>
     </div>
 
-    <div id="cobrosPanel" class="panelCentral" style="display: none;">
+    <div id="cobrosPanel" class="panelCentral">
         <h1>Historial de Cobros</h1>
         <h2>Aquí puedes realizar y gestionar los cobros de los servicios.</h2>
 
@@ -664,14 +664,8 @@
 
                     <!-- Campo de Búsqueda -->
                     <div style="flex: 2; display: flex; align-items: center;">
-                        <input
-                            type="search"
-                            id="buscarCobro"
-                            class="form-control"
-                            placeholder="Buscar Cobro..."
-                            style="flex: 1; padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc;"
-                            onkeyup="buscarServicio()"
-                            aria-label="Buscar Servicio">
+                        <input type="search" class="form-control" placeholder="Buscar cobro..." id="buscarcobro"
+                    style="padding: 10px; flex: 1; border-radius: 4px;" onkeyup="buscarcobro()">
                     </div>
                 </div>
             </div>
@@ -682,7 +676,7 @@
 
         <div class="cobros-historial">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped " style="min-width: 100%;">
                     <thead class="thead-dark">
                         <tr >
                             <th style="text-align: center;">Folio</th>
@@ -693,9 +687,11 @@
                             <th style="text-align: center;">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tbodycobros">
                         @if ($cobros->isEmpty())
-                            <p>No hay datos de cobros disponibles.</p>
+                            <tr>
+                                <td  style="text-align: center;" colspan="6">No hay datos de cobros disponibles.</td>
+                            </tr>
                         @else
                             {{-- Se asume que 'cobros' es una colección de cobros obtenidos del modelo --}}
                             @foreach ($paginador as $cobro)
@@ -704,11 +700,13 @@
                                     <td>{{ $cobro->getID() }}</td>
                                     <td>{{ $cobro->paciente->nombre ?? 'Sin Asignar' }} {{ $cobro->paciente->apellidopaterno ?? '' }}
                                         {{ $cobro->paciente->apellidomaterno ?? '' }}</td>
-                                        <td>
+                                        <td style="text-align: center;">
                                             @if(is_array($cobro->servicios))
                                                 @foreach($cobro->servicios as $servicio)
                                                     <div>{{ $servicio['nombre'] }}</div>
                                                 @endforeach
+                                            @else
+                                                <div> Sin Servicios</div>
                                             @endif
                                         </td>
                                     <td>${{ number_format($cobro->monto, 2) }}</td>
@@ -1522,6 +1520,88 @@
     var menuDatos = document.getElementById('MenuDatos');
     var derecha = document.querySelectorAll('.derecha');
     var ServicioTotal = 0;
+
+    const todosLoscobros = @json($cobros); // Traer todos los cobros
+
+    function buscarcobro() {
+    const searchValue = document.getElementById('buscarcobro').value.toLowerCase();
+
+    // Si la búsqueda está vacía, recargar la página
+    if (searchValue.trim() === '') {
+        window.location.reload();
+        return;
+    }
+
+    const tbody = document.getElementById('tbodycobros');
+    tbody.innerHTML = ''; // Limpiar la tabla
+
+    function normalizarTexto(texto) {
+        return texto
+            .normalize("NFD") // Descompone caracteres con acentos en sus componentes base
+            .replace(/[̀-ͯ]/g, "") // Elimina los diacríticos (acentos)
+            .toLowerCase(); // Convierte a minúsculas
+    }
+
+    // Filtrar los cobros
+    const resultados = todosLoscobros.filter(cobro => {
+        // Normalizar valores para evitar errores
+        const idcobro = String(cobro.id || '').padStart(3, '0');
+        const nombrePaciente = normalizarTexto(`${cobro.paciente?.nombre || ''} ${cobro.paciente?.apellidopaterno || ''} ${cobro.paciente?.apellidomaterno || ''}`);
+        const servicios = cobro.servicios ? cobro.servicios.map(s => normalizarTexto(s.nombre)).join(' ') : '';
+        const monto = parseFloat(cobro.monto).toFixed(2);
+        const facturado = cobro.facturacion ? 'sí' : 'no';
+        const searchNormalized = normalizarTexto(searchValue);
+
+        // Comparar los valores normalizados
+        return (
+            idcobro.includes(searchValue) ||
+            nombrePaciente.includes(searchNormalized) ||
+            servicios.includes(searchNormalized) ||
+            monto.includes(searchNormalized) ||
+            facturado.includes(searchNormalized)
+        );
+    });
+
+    // Mostrar resultados
+    if (resultados.length > 0) {
+        resultados.forEach(cobro => {
+            const servicios = cobro.servicios?.map(servicio => `<div>${servicio.nombre}</div>`).join('') || 'Sin servicios';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="text-align: center;">${String(cobro.id).padStart(3, '0')}</td>
+                <td style="text-align: center;">
+                    ${cobro.paciente?.nombre || 'Sin Asignar'}
+                    ${cobro.paciente?.apellidopaterno || ''}
+                    ${cobro.paciente?.apellidomaterno || ''}
+                </td>
+                <td style="text-align: center;">${servicios}</td>
+                <td style="text-align: center;">
+                    $${parseFloat(cobro.monto).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+                <td style="text-align: center;">${cobro.facturacion ? 'Sí' : 'No'}</td>
+                <td style="text-align: center;" >
+                    <div style="display: flex; justify-content: center; ">
+                        <!-- Verificar si el cobro no tiene facturación -->
+                        ${!cobro.facturacion ? `<a class="btn" href="#solicitarFacturaModal-${cobro.id}">Facturar</a>` : ''}
+                        <!-- Enlace para descargar el ticket -->
+                        <a class="btn descargar-btn" href="${downloadTicketUrl.replace(':id', cobro.id)}" target="_blank">Descargar</a>
+                        <!-- Enlace para ver más información -->
+                        </div>
+                        <a class="btn" href="#modalInfoCobro-${cobro.id}">Ver</a>
+
+                </td>
+            `;
+
+
+            tbody.appendChild(row);
+        });
+    } else {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No se encontraron resultados</td></tr>`;
+    }
+}
+
+
 
 
     document.getElementById("menu").style.display = 'block';

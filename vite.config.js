@@ -11,4 +11,11 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    // server: {
+    //     host: '0.0.0.0', // Permite que el servidor escuche en todas las interfaces
+    //     port: 5173,      // Cambia el puerto si es necesario
+    //     hmr: {
+    //         host: '192.168.1.102', // IP del servidor Laravel
+    //     },
+    // },
 });

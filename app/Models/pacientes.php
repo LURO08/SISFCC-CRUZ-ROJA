@@ -27,4 +27,9 @@ class Pacientes extends Model
     {
         return str_pad($this->attributes['id'], 3, '0', STR_PAD_LEFT);
     }
+
+    public function cobrosServicios()
+    {
+        return $this->hasMany(CobrosServicios::class, 'paciente_id');
+    }
 }

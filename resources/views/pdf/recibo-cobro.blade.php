@@ -149,10 +149,11 @@
             <th>Und</th>
             <th>Total</th>
         </tr>
+        @php $totalMedicamentos = 0;  $totalMaterial = 0; @endphp
         <!-- Mostrar solo si hay medicamentos -->
         @if (count($medicamentos) > 0)
 
-                @php $totalMedicamentos = 0; @endphp
+
                 @foreach ($medicamentos as $medicamento)
                     @if ($medicamento->receta_id == $cobro->receta_id)
                         @php
@@ -169,8 +170,6 @@
                 @endforeach
 
         @endif
-
-        @php $totalMaterial = 0; @endphp
 
     @foreach ($receta->material as $material )
         @if (!empty($material))

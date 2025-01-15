@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -137,6 +138,25 @@ return new class extends Migration
             $table->decimal('costo', 8, 2)->nullable();
             $table->text('descripcion');
             $table->timestamps();
+        });
+
+        Schema::create('cobros_servicios', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('paciente_id')->nullable()->index();
+            $table->unsignedBigInteger('receta_id')->nullable()->index();
+            $table->unsignedBigInteger('personal_id')->nullable()->index();
+
+            $table->text('servicios')->nullable();
+            $table->text('medicamentos')->nullable();
+            $table->text('material')->nullable();
+            $table->decimal('monto', 10, 2);
+            $table->boolean('facturación')->default(false);
+            $table->string('rutaticket')->nullable();
+            $table->timestamps();
+
+            $table->foreign('paciente_id')->references('id')->on('pacientes');
+            $table->foreign('receta_id')->references('id')->on('receta_medicas')->onDelete('cascade');
+            $table->foreign('personal_id')->references('id')->on('personal')->onDelete('cascade');
         });
 
 
@@ -447,7 +467,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_phase')->nullable();
             $table->string('zona')->nullable();
             $table->string('coordinate')->nullable();// Coordenadas
-            $table->mediumBlob('capturas')->nullable();
+            $table->binary('capturas')->nullable();
             $table->timestamps();
 
             $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
@@ -494,14 +514,6 @@ return new class extends Migration
 
             $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
         });
-
-
-
-
-
-
-
-
     }
 
     /**
@@ -509,6 +521,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('doctores');
+        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
+
         Schema::dropIfExists('receta_medicas');
         Schema::dropIfExists('pacientes');
         Schema::dropIfExists('medicamentos');

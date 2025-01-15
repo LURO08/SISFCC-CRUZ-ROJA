@@ -101,16 +101,26 @@ Route::middleware('auth')->group(function () {
         // Cajero
         Route::middleware('role:cajero')->group(function () {
             Route::get('/cajero', [CajeroController::class, 'index'])->name('cajero.index');
+            Route::get('/cajero/cobros/lista', [CajeroController::class, 'indexlistaCobros'])->name('cajero.cobros.lista.index');
+
+            Route::get('/cajero/cobros', [CajeroController::class, 'RegistroCobro'])->name('cajero.cobro.register');
+            Route::post('/cajero/cobros/store', [CajeroController::class, 'storeCobros'])->name('cajero.cobros.store')->middleware('auth');
+
+            Route::post('/cajero/cobro/store', [CajeroController::class, 'storeNuevoCobro'])->name('cajero.cobro.store')->middleware('auth');
+            Route::get('/cajero/cobro/editar', [CajeroController::class, 'EditarCobro'])->name('cajero.cobro.editar');
+            Route::put('/cajero/cobro/update/{id}', [CajeroController::class, 'UpdateNuevoCobro'])->name('cajero.cobro.update')->middleware('auth');
+
 
             Route::post('/cajero/cobros', [CajeroController::class, 'storeCobro'])->name('cajero.cobros.store')->middleware('auth');
             Route::put('/cajero/cobros/update/{id}', [CajeroController::class, 'updateCobro'])->name('cajero.cobros.update')->middleware('auth');
 
             Route::post('/cajero/facturas', [CajeroController::class, 'storeSolicitudFactura'])->name('cajero.solicitar.factura.store')->middleware('auth');
 
-            Route::get('/ticket/{id}/descargar', [CajeroController::class, 'generarReciboPDF'])->name('ticket.descargar');
+            Route::get('/ticket/{id}/descargar', [CajeroController::class, 'GenerarTicketCobroServicios'])->name('ticket.descargar');
             Route::get('/factura/{id}/descargar', [CajeroController::class, 'DescargarFactura'])->name('factura.descargar');
             Route::get('/cobros/reporte', [CajeroController::class, 'generarReporteDiario'])->name('reporte.diario');
             Route::post('/cobros/reporte/descargar', [CajeroController::class, 'descargarReporte'])->name('cobros.reporte.descargar');
+
 
 
 
