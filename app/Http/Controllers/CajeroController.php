@@ -17,6 +17,7 @@ use App\Models\CobrosServicios;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -51,8 +52,15 @@ class CajeroController extends Controller
         });
 
         // Obtener y combinar cobros normales y de servicios
-        $cobrosNormales = Cobros::all();
-        $cobrosServicios = CobrosServicios::with('paciente')->get(); // Incluye datos del paciente
+        $cobrosNormales = CobrosServicios::all();
+
+        $cobrosServicios = CobrosServicios::with('paciente') // Incluye la relación con Paciente
+        ->whereHas('personal', function ($query) {
+            $query->where('user_id', Auth::id()); // Filtra por el user_id del usuario autenticado
+        })
+        ->get(); // Obtiene los registros
+
+
         $cobros = $cobrosNormales->merge($cobrosServicios)->sortByDesc('fecha')->values();
 
         // Procesar servicios de los cobros
@@ -110,6 +118,7 @@ class CajeroController extends Controller
         ));
     }
 
+    // Cobros de Servicios
     public function indexlistaCobros()
     {
 
@@ -140,8 +149,43 @@ class CajeroController extends Controller
 
         // Obtener y combinar cobros normales y de servicios
         $cobrosNormales = Cobros::all();
-        $cobrosServicios = CobrosServicios::with('paciente')->get(); // Incluye datos del paciente
-        $cobros = $cobrosNormales->merge($cobrosServicios)->sortByDesc('fecha')->values();
+        $cobrosAll = CobrosServicios::all();
+
+        $cobrosAll = CobrosServicios::with('paciente') // Incluye la relación con Paciente
+        ->orderBy('created_at', 'desc') // Ordena los resultados por el campo created_by en orden descendente
+        ->get(); // Obtiene los registros
+
+        $cobrosAll->each(function ($cobro) {
+            if (!empty($cobro->servicios)) {
+                $cobro->servicios = array_map(function ($linea) {
+                    preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)$/i', $linea, $matches);
+                    return [
+                        'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
+                        'costo' => isset($matches[2]) ? (float)$matches[2] : null,
+                    ];
+                }, array_map('trim', explode("\n", $cobro->servicios)));
+            }
+
+            if (!empty($cobro->medicamentos)) {
+                $cobro->medicamentos = array_map(function ($linea) {
+                    preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
+                    return [
+                        'nombre' => trim($matches[1] ?? ''), // Extraer el nombre del medicamento
+                        'costo' => isset($matches[2]) ? (float)$matches[2] : null, // Extraer el costo como float
+                        'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
+                        'propio' => trim($matches[5] ?? ''),
+
+                    ];
+                }, array_map('trim', explode("\n", $cobro->medicamentos)));
+            }
+        });
+
+        $cobros = CobrosServicios::with('paciente') // Incluye la relación con Paciente
+        ->whereHas('personal', function ($query) {
+            $query->where('user_id', Auth::id()); // Filtra por el user_id del usuario autenticado
+        })
+        ->orderBy('created_at', 'desc') // Ordena los resultados por el campo created_by en orden descendente
+        ->get(); // Obtiene los registros
 
         // Procesar servicios de los cobros
         $cobros->each(function ($cobro) {
@@ -153,6 +197,18 @@ class CajeroController extends Controller
                         'costo' => isset($matches[2]) ? (float)$matches[2] : null,
                     ];
                 }, array_map('trim', explode("\n", $cobro->servicios)));
+            }
+
+            if (!empty($cobro->medicamentos)) {
+                $cobro->medicamentos = array_map(function ($linea) {
+                    preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
+                    return [
+                        'nombre' => trim($matches[1] ?? ''), // Extraer el nombre del medicamento
+                        'costo' => isset($matches[2]) ? (float)$matches[2] : null, // Extraer el costo como float
+                        'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
+                        'propio' => trim($matches[5] ?? ''),
+                    ];
+                }, array_map('trim', explode("\n", $cobro->medicamentos)));
             }
         });
 
@@ -176,10 +232,16 @@ class CajeroController extends Controller
         $servicios = Servicio::all();
         $recetasSurtidas = MedicamentoSurtido::orderBy('receta_id')->get();
         $inventarioMedico = InventarioMedico::all();
-        $fechasDisponibles = CobrosServicios::selectRaw('DATE(created_at) as fecha')
-            ->distinct()
-            ->orderBy('fecha', 'desc')
-            ->pluck('fecha');
+        $fechasDisponibles = CobrosServicios::selectRaw("
+            DISTINCT CASE
+                WHEN TIME(created_at) BETWEEN '00:00:00' AND '06:59:59'
+                THEN DATE_SUB(DATE(created_at), INTERVAL 1 DAY)
+                ELSE DATE(created_at)
+            END as fecha
+        ")
+        ->orderBy('fecha', 'desc')
+        ->pluck('fecha');
+
 
         date_default_timezone_set('America/Mexico_City');
 
@@ -194,6 +256,7 @@ class CajeroController extends Controller
             'recetasSurtidas',
             'inventarioMedico',
             'fechasDisponibles',
+            'cobrosAll',
             'paginador'
         ));
     }
@@ -217,66 +280,6 @@ class CajeroController extends Controller
         return view('cajero.cobros.index',compact('inventarioMedico','medicamentos','servicios','pacientes'));
     }
 
-    public function storeCobro(Request $request)
-    {
-        date_default_timezone_set('America/Mexico_City');
-
-        $request->validate([
-            'paciente_id' => 'required|exists:pacientes,id',
-            'receta_id' => 'required|exists:receta_medicas,id',
-            'nombre' => 'required',
-            'servicio' => 'required',
-            'monto' => 'required|numeric|between:0,99999999.99',
-            'fecha' => 'required|date',
-        ]);
-
-        // Verificar si ya existe un cobro para la misma receta
-        $cobroExistente = Cobros::where('paciente_id', $request->paciente_id)
-            ->where('receta_id', $request->receta_id)
-            ->first();
-
-        if ($cobroExistente) {
-            // Generar y devolver el PDF si el cobro ya está registrado
-            return $this->generarReciboPDF($cobroExistente->id, $request->paciente_id);
-        }
-
-        $factura = $request->has('facturacion');
-
-        // Crear nuevo cobro
-        $cobro = new Cobros();
-        $cobro->paciente_id = $request->paciente_id;
-        $cobro->receta_id = $request->receta_id;
-        $cobro->nombre = $request->nombre;
-        $cobro->servicio = $request->servicio;
-        $cobro->monto = $request->monto;
-        $cobro->fecha = $request->fecha;
-        $cobro->facturación = $factura;
-        $cobro->save();
-
-        // Actualizar receta como cobrada
-        $receta = RecetaMedica::find($request->receta_id);
-        if ($receta) {
-            $receta->cobrada = true;
-            $receta->save();
-        }
-
-        // Si se solicita facturación, crear la solicitud de factura
-        if ($factura) {
-            $this->storeSolicitudFactura(new Request([
-                'cobro_id' => $cobro->id,
-                'nombre' => $request->nombreCliente,
-                'rfc' => $request->rfcCliente,
-                'direccion' => $request->direccionCliente,
-                'telefono' => $request->telefono,
-                'correo' => $request->emailCliente,
-                'monto' => $request->monto,
-            ]));
-        }
-
-        // Generar y devolver el PDF del cobro
-        return $this->generarReciboPDF($cobro->id, $request->paciente_id);
-    }
-
     public function storeNuevoCobro(Request $request)
     {
         date_default_timezone_set('America/Mexico_City');
@@ -291,9 +294,17 @@ class CajeroController extends Controller
             'servicios' => 'nullable',
             'medicamentos' => 'nullable',
             'montoTotal' => 'nullable|numeric|between:0,99999999.99',
+            'medicamento_propio' => 'nullable',
         ]);
 
-                 // Buscar si ya existe un cobro similar basado en paciente, servicios y medicamentos
+        $userid = auth()->user()->id;
+        $personal = Personal::where('user_id', $userid)->first();
+        if (!$personal) {
+            return redirect()->back()->with('error', 'No se encontró el personal asociado al usuario.');
+        }
+
+
+        // Buscar si ya existe un cobro similar basado en paciente, servicios y medicamentos
         $cobroExistente = CobrosServicios::where('paciente_id', $request->idPaciente)
                  ->where('servicios', $request->servicios)
                  ->where('medicamentos', $request->medicamentos)
@@ -386,11 +397,69 @@ class CajeroController extends Controller
             }
         }
 
-        $userid = auth()->user()->id;
-        $personal = Personal::where('user_id', $userid)->first();
-        if (!$personal) {
-            return redirect()->back()->with('error', 'No se encontró el personal asociado al usuario.');
+        // Procesar medicamentos
+        if (!empty($request->medicamentos)) {
+            // Dividir los medicamentos en líneas
+            $medicamentos = explode("\n", $request->medicamentos);
+
+            // Procesar y limpiar cada línea
+            $listamedicamentos = array_map(function ($linea) {
+                $linea = trim($linea);
+
+                if (preg_match('/^([\w\s]+?)\s*(\d+)?\s*(mg|g|ml)?\s*-\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches)) {
+                    return [
+                        'nombre' => trim($matches[1] ?? ''), // Nombre base del medicamento
+                        'dosis' => isset($matches[2]) ? (int)$matches[2] : null, // Cantidad de dosis (ej. 500)
+                        'medida' => isset($matches[3]) ? trim($matches[3]) : null, // Unidad de medida (mg, g, ml)
+                        'costo' => isset($matches[4]) ? (float)$matches[4] : null,
+                        'cantidad' => isset($matches[6]) ? (int)$matches[6] : null,
+                        'propio' => filter_var(trim($matches[7] ?? ''), FILTER_VALIDATE_BOOLEAN),
+                    ];
+                }
+
+                return null; // Omitir líneas con formato incorrecto
+            }, $medicamentos);
+
+            // Filtrar medicamentos válidos
+            $listamedicamentos = array_filter($listamedicamentos, function ($medicamento) {
+                return $medicamento !== null && !empty($medicamento['nombre']) && $medicamento['cantidad'] > 0;
+            });
+
+            // Descontar cantidad de medicamentos en la base de datos
+            foreach ($listamedicamentos as $medicamento) {
+                // Buscar en la base de datos por nombre, dosis y unidad
+                $query = Medicamentos::where('nombre', $medicamento['nombre']);
+                if (!empty($medicamento['dosis']) && !empty($medicamento['medida'])) {
+                    $query->where('dosis', $medicamento['dosis'])->where('medida', $medicamento['medida']);
+                }
+
+                $medicamentoDB = $query->first();
+
+                if (!$medicamentoDB) {
+                    return redirect()->back()->with(
+                        'error',
+                        "No se encontró el medicamento '{$medicamento['nombre']} {$medicamento['dosis']}{$medicamento['medida']}' en el inventario."
+                    );
+                }
+
+                if ($medicamentoDB->cantidad < $medicamento['cantidad']) {
+                    return redirect()->back()->with(
+                        'error',
+                        "No hay suficiente stock del medicamento '{$medicamentoDB->nombre} {$medicamentoDB->dosis}{$medicamentoDB->medida}'. Solo quedan {$medicamentoDB->cantidad} en inventario."
+                    );
+                }
+
+                // Descontar cantidad y actualizar en la base de datos
+                $medicamentoDB->update([
+                    'cantidad' => $medicamentoDB->cantidad - $medicamento['cantidad']
+                ]);
+            }
         }
+
+
+
+
+
         // Crear un nuevo cobro
         $cobro = new CobrosServicios();
         $cobro->paciente_id = $paciente ? $paciente->id : null;
@@ -406,7 +475,107 @@ class CajeroController extends Controller
         return $this->generarPDF($cobro);
     }
 
-    private function generarPDF($cobro)
+    public function EditarCobrosServicios($id){
+
+        if (session()->has('pdf_generated')) {
+            return redirect()->route('cajero.index')->with('success', 'Se creo correctamente la receta.');
+        }
+
+        $medicamentos = Medicamentos::all();
+        $pacientes = Pacientes::all();
+        $servicios = Servicio::all();
+        $inventarioMedico = InventarioMedico::all();
+        $cobro = CobrosServicios::find($id);
+
+        date_default_timezone_set('America/Mexico_City');
+
+         // Datos fijos para las facturas
+
+        return view('cajero.cobros.EditarCobros.index',compact('cobro','inventarioMedico','medicamentos','servicios','pacientes'));
+    }
+
+    public function updateNuevoCobro(Request $request, $id)
+    {
+        date_default_timezone_set('America/Mexico_City');
+
+        // Validar los datos de la solicitud
+        $request->validate([
+            'idPaciente' => 'nullable|exists:pacientes,id',
+            'pacienteNombre' => 'nullable|string|max:255',
+            'edad' => 'nullable|integer|min:0|max:150',
+            'sexo' => 'nullable|string|max:10',
+            'tipo_sangre' => 'nullable|string|max:5',
+            'servicios' => 'nullable',
+            'medicamentos' => 'nullable',
+            'montoTotal' => 'nullable|numeric|between:0,99999999.99',
+            'medicamento_propio' => 'nullable',
+        ]);
+
+        // Buscar el cobro existente
+        $cobro = CobrosServicios::findOrFail($id);
+
+        // Verificar si hay servicios o medicamentos antes de actualizar el cobro
+        if (empty($request->servicios) && empty($request->medicamentos)) {
+            return redirect()->back()->with('error', 'No se puede actualizar un cobro sin al menos un servicio o medicamento.');
+        }
+
+        $paciente = null;
+        $nombre = null;
+        $apellidoPaterno = null;
+        $apellidoMaterno = null;
+
+        // Si se proporciona un ID de paciente, buscarlo en la base de datos
+        if ($request->idPaciente) {
+            $paciente = Pacientes::find($request->idPaciente);
+        }
+
+        if (!empty($request->pacienteNombre)) {
+            $nombreCompleto = preg_split('/\s+/', trim($request->pacienteNombre));
+
+            if (count($nombreCompleto) < 3) {
+                $nombre = $request->nombre ?? $nombreCompleto[0] ?? '';
+                $apellidoPaterno = $request->apellidoPaterno ?? '';
+                $apellidoMaterno = $request->apellidoMaterno ?? '';
+            } else {
+                $apellidoMaterno = array_pop($nombreCompleto) ?? $request->apellidoMaterno;
+                $apellidoPaterno = array_pop($nombreCompleto) ?? $request->apellidoPaterno;
+                $nombre = implode(' ', $nombreCompleto) ?? $request->nombre;
+            }
+        }
+
+        // Si el paciente existe, verificar diferencias y actualizarlas si es necesario
+        if ($paciente) {
+            $paciente->update([
+                'nombre' => $nombre,
+                'apellidopaterno' => $apellidoPaterno,
+                'apellidomaterno' => $apellidoMaterno,
+                'edad' => $request->edad ?? $paciente->edad,
+                'sexo' => $request->sexo ?? $paciente->sexo,
+                'tipo_sangre' => $request->tipo_sangre ?? $paciente->tipo_sangre,
+            ]);
+        }
+
+        $userid = auth()->user()->id;
+        $personal = Personal::where('user_id', $userid)->first();
+        if (!$personal) {
+            return redirect()->back()->with('error', 'No se encontró el personal asociado al usuario.');
+        }
+
+        // Actualizar el cobro existente
+        $cobro->update([
+            'paciente_id' => $paciente ? $paciente->id : null,
+            'personal_id' => $personal->id,
+            'servicios' => $request->servicios,
+            'medicamentos' => $request->medicamentos,
+            'monto' => $request->montoTotal,
+            'facturación' => $request->facturacion ?? 0,
+        ]);
+
+        session()->flash('pdf_generated', true);
+        return $this->generarPDF($cobro);
+    }
+
+    private function generarPDF($cobro) //GENERA CON LA ALTURA AUTOMATICA
     {
         $listamedicamentos = [];
         $servicios = [];
@@ -421,11 +590,12 @@ class CajeroController extends Controller
                 $linea = trim($linea);
 
                 // Verificar si cumple con el formato esperado
-                if (preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)$/i', $linea, $matches)) {
+                if (preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches)) {
                     return [
                         'nombre' => trim($matches[1] ?? ''), // Extraer el nombre del medicamento
                         'costo' => isset($matches[2]) ? (float)$matches[2] : null, // Extraer el costo como float
                         'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
+                        'propio' => trim($matches[5] ?? '' ), // Extraer la cantidad como int
                     ];
                 }
 
@@ -434,6 +604,7 @@ class CajeroController extends Controller
                     'nombre' => $linea, // Guardar la línea como está
                     'costo' => null,
                     'cantidad' => null,
+                    'propio' => null, // Extraer la cantidad como int
                 ];
             }, $medicamentos);
 
@@ -469,27 +640,10 @@ class CajeroController extends Controller
         return $pdf->stream('recibo-cobro-' . $cobro->id . '.pdf');
     }
 
-    private function calcularAlturaPDF($cantidadServicios, $cantidadMedicamentos)
+    private function generarPDF3($cobro) //GENERA EN HOJA TAMAÑO CARTA
     {
-        $alto_fila = 30;
-        $alto_encabezado = 84;
-        $alto_parrafo = 50;
-        $alto_margen_superior = 50;
-        $alto_margen_inferior = 40;
-
-        $altura_total = $alto_encabezado + ($cantidadServicios * $alto_fila) + ($cantidadMedicamentos * $alto_fila) + $alto_parrafo + $alto_margen_superior + $alto_margen_inferior;
-        $altura_minima = 350;
-
-        return max($altura_total, $altura_minima);
-    }
-
-    public function GenerarTicketCobroServicios($id){
-
         $listamedicamentos = [];
         $servicios = [];
-
-        $cobro = CobrosServicios::find($id);
-
         // Procesar medicamentos
         if (!empty($cobro->medicamentos)) {
             // Dividir los medicamentos en líneas
@@ -501,11 +655,12 @@ class CajeroController extends Controller
                 $linea = trim($linea);
 
                 // Verificar si cumple con el formato esperado
-                if (preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)$/i', $linea, $matches)) {
+                if (preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches)) {
                     return [
                         'nombre' => trim($matches[1] ?? ''), // Extraer el nombre del medicamento
                         'costo' => isset($matches[2]) ? (float)$matches[2] : null, // Extraer el costo como float
                         'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
+                        'propio' => trim($matches[5] ?? '' ), // Extraer la cantidad como int
                     ];
                 }
 
@@ -514,6 +669,7 @@ class CajeroController extends Controller
                     'nombre' => $linea, // Guardar la línea como está
                     'costo' => null,
                     'cantidad' => null,
+                    'propio' => null, // Extraer la cantidad como int
                 ];
             }, $medicamentos);
 
@@ -540,197 +696,111 @@ class CajeroController extends Controller
                 ];
             }, $servicios);
         }
-
-        // Generar el PDF
         $listaServicios = Servicio::all();
-        $altura_total_mm = 0;
-        $alto_fila = 30;
-        $alto_encabezado = 84;
-        $alto_parrafo = 50;
-        $alto_margen_superior = 50;
-        $alto_margen_inferior = 40;
-        $altura_total = $alto_encabezado + (count($servicios) * $alto_fila) + (count($listamedicamentos) * $alto_fila) + $alto_parrafo + $alto_margen_superior + $alto_margen_inferior;
-        $altura_minima = 350;
-        $altura_total = $altura_total + 30;
 
-        if ($altura_total <= 300) {
-            $altura_total_mm = $altura_minima;
-        }else{
-            $altura_total_mm = $altura_total;
-        }
+        // Ajuste para hoja tamaño carta, orientación horizontal
+        $altura_total = $this->calcularAlturaPDF(count($servicios), count($listamedicamentos));
 
-
+        // Configurando el tamaño y la orientación del papel
         $pdf = Pdf::loadView('pdf.cobro_recibo', compact('listaServicios', 'cobro', 'servicios', 'listamedicamentos'))
-        ->setPaper([0, 0, 238, $altura_total_mm], 'portrait');
+            ->setPaper('letter', 'portrait') // Usar carta en orientación horizontal
+            ->setOption('margin-top', 10) // Márgenes superiores
+            ->setOption('margin-left', 10)
+            ->setOption('margin-right', 10);
 
-        // Devolver el PDF como respuesta
         return $pdf->stream('recibo-cobro-' . $cobro->id . '.pdf');
     }
 
-    public function EditarCobro($id){
+    private function calcularAlturaPDF($cantidadServicios, $cantidadMedicamentos)
+    {
+        // Definir las alturas de los diferentes componentes
+        $alto_fila = 30;                // Alto de cada fila
+        $alto_encabezado = 84;          // Alto del encabezado
+        $alto_parrafo = 50;             // Alto del párrafo
+        $alto_margen_superior = 50;     // Alto del margen superior
+        $alto_margen_inferior = 40;     // Alto del margen inferior
 
-        $medicamentos = Medicamentos::all();
-        $pacientes = Pacientes::all();
-        $servicios = Servicio::all();
-        $inventarioMedico = InventarioMedico::all();
+        // Calcular la altura total del PDF
+        $altura_total = $alto_encabezado +
+                    ($cantidadServicios * $alto_fila) +
+                    ($cantidadMedicamentos * $alto_fila) +
+                    $alto_parrafo +
+                    $alto_margen_superior +
+                    $alto_margen_inferior;
+
+        // Asegurar que la altura mínima sea de 360 mm
+        $altura_minima = 350;
+        $altura_total = max($altura_total, $altura_minima);
+
+        return $altura_total + 30; // Añadir un extra de 30 mm para posibles ajustes adicionales
+    }
+
+    public function GenerarTicketCobroServicios($id){//Descargar el ticket recibe el id y lo manda a generar-
+
         $cobro = CobrosServicios::find($id);
+        return $this->generarPDF($cobro);
 
+    }
+
+    //Cobros Normales
+    public function storeCobro(Request $request)
+    {
         date_default_timezone_set('America/Mexico_City');
 
-         // Datos fijos para las facturas
-
-        return view('cajero.cobros.EditarCobros.index',compact('cobro','inventarioMedico','medicamentos','servicios','pacientes'));
-    }
-
-    public function UpdateNuevoCobro(Request $request, $id)
-    {
-        // Validar los datos de la solicitud
         $request->validate([
-            'idPaciente' => 'nullable|exists:pacientes,id',
-            'nombre' => 'nullable|string|max:255',
-            'edad' => 'nullable|integer|min:0|max:150',
-            'sexo' => 'nullable|string|max:10',
-            'tipo_sangre' => 'nullable|string|max:5',
-            'servicios' => 'nullable',
-            'medicamentos' => 'nullable',
-            'montoTotal' => 'nullable|numeric|between:0,99999999.99',
+            'paciente_id' => 'required|exists:pacientes,id',
+            'receta_id' => 'required|exists:receta_medicas,id',
+            'nombre' => 'required',
+            'servicio' => 'required',
+            'monto' => 'required|numeric|between:0,99999999.99',
             'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
         ]);
 
-        $paciente = null;
-        $listamedicamentos = [];
-        $servicios = [];
+        // Verificar si ya existe un cobro para la misma receta
+        $cobroExistente = Cobros::where('paciente_id', $request->paciente_id)
+            ->where('receta_id', $request->receta_id)
+            ->first();
 
-        // Buscar el cobro existente
-        $cobro = CobrosServicios::find($id);
-
-        if (!$cobro) {
-            return response()->json(['error' => 'El cobro no existe.'], 404);
+        if ($cobroExistente) {
+            // Generar y devolver el PDF si el cobro ya está registrado
+            return $this->generarReciboPDF($cobroExistente->id, $request->paciente_id);
         }
 
-        // Si se proporciona un ID de paciente, buscarlo en la base de datos
-        if ($request->idPaciente) {
-            $paciente = Pacientes::find($request->idPaciente);
+        $factura = $request->has('facturacion');
+
+        // Crear nuevo cobro
+        $cobro = new Cobros();
+        $cobro->paciente_id = $request->paciente_id;
+        $cobro->receta_id = $request->receta_id;
+        $cobro->nombre = $request->nombre;
+        $cobro->servicio = $request->servicio;
+        $cobro->monto = $request->monto;
+        $cobro->fecha = $request->fecha;
+        $cobro->facturación = $factura;
+        $cobro->save();
+
+        // Actualizar receta como cobrada
+        $receta = RecetaMedica::find($request->receta_id);
+        if ($receta) {
+            $receta->cobrada = true;
+            $receta->save();
         }
 
-        // Actualizar datos del paciente si es necesario
-        if ($paciente) {
-            $hayCambios = false;
-
-            if (
-                $paciente->nombre !== $request->nombre ||
-                $paciente->edad !== $request->edad ||
-                $paciente->sexo !== $request->sexo ||
-                $paciente->tipo_sangre !== $request->tipo_sangre
-            ) {
-                $hayCambios = true;
-
-                // Actualizar los datos del paciente
-                $paciente->update([
-                    'nombre' => $request->nombre ?? $paciente->nombre,
-                    'edad' => $request->edad ?? $paciente->edad,
-                    'sexo' => $request->sexo ?? $paciente->sexo,
-                    'tipo_sangre' => $request->tipo_sangre ?? $paciente->tipo_sangre,
-                ]);
-            }
-        } else {
-            // Crear un nuevo paciente si no existe y hay datos suficientes
-            if ($request->nombre && $request->edad && $request->sexo && $request->tipo_sangre) {
-                $paciente = Pacientes::create([
-                    'nombre' => $request->nombre,
-                    'edad' => $request->edad,
-                    'sexo' => $request->sexo,
-                    'tipo_sangre' => $request->tipo_sangre,
-                ]);
-            }
+        // Si se solicita facturación, crear la solicitud de factura
+        if ($factura) {
+            $this->storeSolicitudFactura(new Request([
+                'cobro_id' => $cobro->id,
+                'nombre' => $request->nombreCliente,
+                'rfc' => $request->rfcCliente,
+                'direccion' => $request->direccionCliente,
+                'telefono' => $request->telefono,
+                'correo' => $request->emailCliente,
+                'monto' => $request->monto,
+            ]));
         }
 
-        // Verificar si hay servicios o monto antes de actualizar el cobro
-        if (is_null($request->servicios) && is_null($request->montoTotal)) {
-            return response()->json([
-                'error' => 'No se puede registrar un cobro sin servicios o monto.',
-            ], 400);
-        }
-
-        // Actualizar el cobro
-        $cobro->update([
-            'paciente_id' => $paciente ? $paciente->id : null,
-            'servicios' => $request->servicios,
-            'medicamentos' => $request->medicamentos,
-            'monto' => $request->montoTotal,
-            'fecha' => $request->fecha,
-            'hora' => $request->hora,
-            'facturación' => $request->facturacion ?? $cobro->facturación,
-        ]);
-
-        // Procesar medicamentos
-        if (!empty($request->medicamentos)) {
-            $medicamentos = explode("\n", $request->medicamentos);
-
-            $listamedicamentos = array_map(function ($linea) {
-                $linea = trim($linea);
-
-                if (preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)$/i', $linea, $matches)) {
-                    return [
-                        'nombre' => trim($matches[1] ?? ''),
-                        'costo' => isset($matches[2]) ? (float)$matches[2] : null,
-                        'cantidad' => isset($matches[4]) ? (int)$matches[4] : null,
-                    ];
-                }
-
-                return [
-                    'nombre' => $linea,
-                    'costo' => null,
-                    'cantidad' => null,
-                ];
-            }, $medicamentos);
-
-            $listamedicamentos = array_filter($listamedicamentos, function ($medicamento) {
-                return !empty($medicamento['nombre']);
-            });
-        }
-
-        // Procesar servicios
-        if (!empty($request->servicios)) {
-            $servicios = explode("\n", $request->servicios);
-            $servicios = array_map('trim', $servicios);
-
-            $servicios = array_map(function ($linea) {
-                preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)$/i', $linea, $matches);
-
-                $nombre = trim($matches[1] ?? '');
-                $nombreSinIconos = preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', $nombre);
-
-                return [
-                    'nombre' => $nombreSinIconos,
-                    'costo' => isset($matches[2]) ? (float)$matches[2] : null,
-                ];
-            }, $servicios);
-        }
-
-        // Generar el PDF
-        $listaServicios = Servicio::all();
-        $altura_total_mm = 0;
-        $alto_fila = 30;
-        $alto_encabezado = 84;
-        $alto_parrafo = 50;
-        $alto_margen_superior = 50;
-        $alto_margen_inferior = 40;
-        $altura_total = $alto_encabezado + (count($servicios) * $alto_fila) + (count($listamedicamentos) * $alto_fila) + $alto_parrafo + $alto_margen_superior + $alto_margen_inferior;
-        $altura_minima = 350;
-        $altura_total += 30;
-
-        if ($altura_total <= 300) {
-            $altura_total_mm = $altura_minima;
-        } else {
-            $altura_total_mm = $altura_total;
-        }
-
-        $pdf = Pdf::loadView('pdf.cobro_recibo', compact('listaServicios', 'cobro', 'servicios', 'listamedicamentos'))
-            ->setPaper([0, 0, 238, $altura_total_mm], 'portrait');
-
-        return $pdf->stream('recibo-cobro-' . $cobro->id . '.pdf');
+        // Generar y devolver el PDF del cobro
+        return $this->generarReciboPDF($cobro->id, $request->paciente_id);
     }
 
     public function generarReciboPDF($idCobro)
@@ -780,7 +850,7 @@ class CajeroController extends Controller
         $altura_total_mm = $altura_total;
 
         $pdf = Pdf::loadView('pdf.recibo-cobro', compact('receta', 'medicamentos', 'cobro', 'paciente', 'inventarioMedico','totalServicio'))
-            ->setPaper([0, 0, 227, $altura_total_mm], 'portrait');
+            ->setPaper([0, 0, 227, 1000], 'portrait');
 
         $pdf->save($path);
 
@@ -969,6 +1039,8 @@ class CajeroController extends Controller
         return response()->json(['error' => 'Factura no encontrada o no disponible.'], 404);
     }
 
+    //REPORTES GENERADOS
+
     public function generarReporteDiario(Request $request)
     {
         $fecha = $request->input('fecha');
@@ -989,12 +1061,13 @@ class CajeroController extends Controller
             ->whereTime('created_at', '<=', '19:00:00')
             ->get();
 
-        $nocturno = CobrosServicios::whereDate('created_at', $fecha)
-            ->where(function ($query) {
-                $query->whereTime('created_at', '>=', '19:00:00')
-                    ->orWhereTime('created_at', '<', '07:00:00');
-            })
-            ->get();
+            $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
+                $query->whereBetween('created_at', [
+                    $fecha . ' 19:00:00',
+                    date('Y-m-d', strtotime($fecha . ' +1 day')) . ' 06:59:59'
+                ]);
+            })->get();
+
 
         // Procesar servicios en cada turno
         $procesarServicios = function ($cobros) {
@@ -1012,7 +1085,168 @@ class CajeroController extends Controller
 
                 if (!empty($cobro->medicamentos)) {
                     $cobro->medicamentos = array_map(function ($linea) {
-                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)$/i', $linea, $matches);
+                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
+                        return [
+                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
+                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
+                            'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
+
+                        ];
+                    }, array_map('trim', explode("\n", $cobro->medicamentos)));
+                }
+
+            });
+        };
+
+        $procesarServicios($matutino);
+        $procesarServicios($vespertino);
+        $procesarServicios($nocturno);
+
+
+        // Generar el PDF con los datos y el diseño de la vista
+        $pdf = Pdf::loadView('pdf.reporte-diario', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
+
+        // Define la ruta donde se guardará el PDF
+        $directoryPath = public_path('reportesDiarios');
+        $filename = "reporte-diario-{$fecha}.pdf";
+        $filePath = $directoryPath . '/' . $filename;
+
+        // Crear la carpeta si no existe
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0777, true);
+        }
+
+        // Guardar el PDF en la ruta especificada
+        $pdf->save($filePath);
+
+        // Retornar el archivo para que se visualice en otra página
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function generarReporteMedicementos(Request $request)
+    {
+        $fecha = $request->input('fecha');
+
+        // Validar que la fecha no sea nula
+        if (!$fecha) {
+            return redirect()->back()->withErrors(['fecha' => 'Debe seleccionar una fecha válida.']);
+        }
+
+        // Filtrar registros por turnos
+        $matutino = CobrosServicios::whereDate('created_at', $fecha)
+            ->whereTime('created_at', '>=', '07:00:00')
+            ->whereTime('created_at', '<=', '13:00:00')
+            ->get();
+
+        $vespertino = CobrosServicios::whereDate('created_at', $fecha)
+            ->whereTime('created_at', '>=', '13:00:00')
+            ->whereTime('created_at', '<=', '19:00:00')
+            ->get();
+
+            $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
+                $query->whereBetween('created_at', [
+                    $fecha . ' 19:00:00',
+                    date('Y-m-d', strtotime($fecha . ' +1 day')) . ' 06:59:59'
+                ]);
+            })->get();
+
+
+        // Procesar servicios en cada turno
+        $procesarServicios = function ($cobros) {
+            $cobros->each(function ($cobro) {
+
+                if (!empty($cobro->medicamentos)) {
+                    $cobro->medicamentos = array_map(function ($linea) {
+                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
+                        return [
+                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
+                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
+                            'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
+                            'propio' => trim($matches[5] ?? '' ), // Extraer la cantidad como int
+                        ];
+                    }, array_map('trim', explode("\n", $cobro->medicamentos)));
+                }
+
+            });
+        };
+
+        $procesarServicios($matutino);
+        $procesarServicios($vespertino);
+        $procesarServicios($nocturno);
+
+
+        // Generar el PDF con los datos y el diseño de la vista
+        $pdf = Pdf::loadView('pdf.reporte-diarioMedicamentos', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
+
+        // Define la ruta donde se guardará el PDF
+        $directoryPath = public_path('reportesDiarios');
+        $filename = "reporte-diario-{$fecha}.pdf";
+        $filePath = $directoryPath . '/' . $filename;
+
+        // Crear la carpeta si no existe
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0777, true);
+        }
+
+        // Guardar el PDF en la ruta especificada
+        $pdf->save($filePath);
+
+        // Retornar el archivo para que se visualice en otra página
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function generarReporteDiarioIngresos(Request $request)
+    {
+        $fecha = $request->input('fecha');
+
+        // Validar que la fecha no sea nula
+        if (!$fecha) {
+            return redirect()->back()->withErrors(['fecha' => 'Debe seleccionar una fecha válida.']);
+        }
+
+        // Filtrar registros por turnos
+        $matutino = CobrosServicios::whereDate('created_at', $fecha)
+            ->whereTime('created_at', '>=', '07:00:00')
+            ->whereTime('created_at', '<=', '13:00:00')
+            ->get();
+
+        $vespertino = CobrosServicios::whereDate('created_at', $fecha)
+            ->whereTime('created_at', '>=', '13:00:00')
+            ->whereTime('created_at', '<=', '19:00:00')
+            ->get();
+
+            $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
+                $query->whereBetween('created_at', [
+                    $fecha . ' 19:00:00',
+                    date('Y-m-d', strtotime($fecha . ' +1 day')) . ' 06:59:59'
+                ]);
+            })->get();
+
+
+
+        // Procesar servicios en cada turno
+        $procesarServicios = function ($cobros) {
+            $cobros->each(function ($cobro) {
+
+                if (!empty($cobro->servicios)) {
+                    $cobro->servicios = array_map(function ($linea) {
+                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)$/i', $linea, $matches);
+                        return [
+                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
+                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
+                        ];
+                    }, array_map('trim', explode("\n", $cobro->servicios)));
+                }
+
+                if (!empty($cobro->medicamentos)) {
+                    $cobro->medicamentos = array_map(function ($linea) {
+                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
                         return [
                             'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
                             'costo' => isset($matches[2]) ? (float)$matches[2] : null,
@@ -1029,7 +1263,7 @@ class CajeroController extends Controller
 
 
         // Generar el PDF con los datos y el diseño de la vista
-        $pdf = Pdf::loadView('pdf.reporte-diario', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
+        $pdf = Pdf::loadView('pdf.reporte-diarioIngresos', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
 
         // Define la ruta donde se guardará el PDF
         $directoryPath = public_path('reportesDiarios');

@@ -311,7 +311,7 @@
             </a>
         </li>
         <li>
-            <a class="btn" href="{{ route('cajero.index') }}" id="cobrosBtn">
+            <a class="btn" href="{{ route('cajero.cobros.lista.index') }}" id="cobrosBtn">
                 <span class="icon">💸</span>
                 <span class="text" style="font-weight: bold;">Cobros</span>
             </a>
@@ -526,7 +526,7 @@
 
                     {{-- MODAL MEDICAMENTO --}}
                     <div class="modal fade" id="medicamentoModal" tabindex="-1"
-                        aria-labelledby="medicamentoModalLabel" aria-hidden="true">
+                        aria-labelledby="medicamentoModalLabel" aria-hidden="true" >
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -559,7 +559,7 @@
                                         <div style="display: flex; align-items: center;">
                                             <span style="margin-right: 10px;">$ </span>
                                             <input type="number" id="CostoMedicamento" min="0"
-                                                class="form-control">
+                                                class="form-control" disabled>
                                         </div>
                                     </div>
 
@@ -569,6 +569,18 @@
                                             <span style="margin-right: 10px;"> </span>
                                             <input type="number" id="CantidadMedicamento" min="0"
                                                 class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div style="width: 100%; display: flex;">
+                                            <label for="medicamento_propio" style="display: flex; align-items: center; gap: 10px; cursor: pointer; ">
+                                                Medicamento Propio
+                                                <input type="checkbox" id="medicamento_propioON" value="true" style="width: 18px; height: 18px; cursor: pointer;">
+
+                                            </label>
+                                            <input type="hidden" name="medicamento_propio" id="medicamento_propio" value="false">
+
                                         </div>
                                     </div>
 
@@ -606,94 +618,94 @@
     document.getElementById('searchPatient').addEventListener('input', searchPatient);
 
     function searchPatient() {
-    const searchQuery = document.getElementById('searchPatient').value.trim();
-    const searchResults = document.getElementById('searchResults');
-    const detailedFields = document.getElementById('detailedFields');
+        const searchQuery = document.getElementById('searchPatient').value.trim();
+        const searchResults = document.getElementById('searchResults');
+        const detailedFields = document.getElementById('detailedFields');
 
-    // Resetea resultados y campos adicionales
-    resetFields(['edad', 'sexo', 'tipo_sangre']);
-    searchResults.innerHTML = '';
-    detailedFields.style.display = 'none';
-
-    // Si la búsqueda está vacía, no hace nada
-    if (searchQuery === '') return;
-
-    // Filtra los pacientes según la búsqueda
-    const filteredPacientes = pacientes.filter(paciente =>
-        [paciente.nombre, paciente.apellidopaterno, paciente.apellidomaterno || '']
-            .some(field => field.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-
-    // Renderiza resultados si se encuentran pacientes
-    if (filteredPacientes.length > 0) {
-        filteredPacientes.forEach(paciente => {
-            const div = createSearchResultDiv(paciente);
-            searchResults.appendChild(div);
-        });
-    } else {
-        // Maneja el caso donde no se encuentran resultados
-        handleNoResults(searchQuery, searchResults, detailedFields);
-    }
-}
-
-// Función para resetear campos
-function resetFields(fieldIds) {
-    fieldIds.forEach(id => {
-        document.getElementById(id).value = '';
-    });
-}
-
-// Función para crear un div de resultado
-function createSearchResultDiv(paciente) {
-    const div = document.createElement('div');
-    div.textContent = `${paciente.nombre} ${paciente.apellidopaterno} ${paciente.apellidomaterno || ''}`.trim();
-    div.className = 'search-result-item'; // Clase CSS opcional
-    div.onclick = () => selectPatient(
-        paciente.id,
-        div.textContent,
-        paciente.edad,
-        paciente.sexo,
-        paciente.tipo_sangre
-    );
-    return div;
-}
-
-// Función para manejar casos donde no hay resultados
-function handleNoResults(searchQuery, searchResults, detailedFields) {
-    const words = searchQuery.split(' ');
-
-    if (words.length === 2) {
-        // Muestra mensaje con campos de entrada adicionales si hay dos palabras
-        searchResults.innerHTML = `
-            <div>
-                <p style="color: red; font-weight: bold;">
-                    Por favor, separe el nombre o ingrese un nombre con un mínimo de 3 palabras.
-                </p>
-                <div style="display: flex; gap: 10px;">
-                    <div >
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre" required>
-                    </div>
-                    <div >
-                        <label for="apellidoPaterno">Apellido Paterno:</label>
-                        <input type="text" id="apellidoPaterno" name="apellidoPaterno" class="form-control" placeholder="Apellido Paterno" required>
-                    </div>
-                    <div >
-                        <label for="apellidoMaterno">Apellido Materno:</label>
-                        <input type="text" id="apellidoMaterno" name="apellidoMaterno" class="form-control" placeholder="Apellido Materno" required>
-                    </div>
-                </div>
-            </div>`;
-        detailedFields.style.display = 'block';
-    } else {
-        // Muestra un mensaje básico si no hay resultados
-        searchResults.innerHTML = `
-            <div>
-                <p>No se encontraron pacientes.</p>
-            </div>`;
+        // Resetea resultados y campos adicionales
+        resetFields(['edad', 'sexo', 'tipo_sangre']);
+        searchResults.innerHTML = '';
         detailedFields.style.display = 'none';
+
+        // Si la búsqueda está vacía, no hace nada
+        if (searchQuery === '') return;
+
+        // Filtra los pacientes según la búsqueda
+        const filteredPacientes = pacientes.filter(paciente =>
+            [paciente.nombre, paciente.apellidopaterno, paciente.apellidomaterno || '']
+                .some(field => field.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+
+        // Renderiza resultados si se encuentran pacientes
+        if (filteredPacientes.length > 0) {
+            filteredPacientes.forEach(paciente => {
+                const div = createSearchResultDiv(paciente);
+                searchResults.appendChild(div);
+            });
+        } else {
+            // Maneja el caso donde no se encuentran resultados
+            handleNoResults(searchQuery, searchResults, detailedFields);
+        }
     }
-}
+
+    // Función para resetear campos
+    function resetFields(fieldIds) {
+        fieldIds.forEach(id => {
+            document.getElementById(id).value = '';
+        });
+    }
+
+    // Función para crear un div de resultado
+    function createSearchResultDiv(paciente) {
+        const div = document.createElement('div');
+        div.textContent = `${paciente.nombre} ${paciente.apellidopaterno} ${paciente.apellidomaterno || ''}`.trim();
+        div.className = 'search-result-item'; // Clase CSS opcional
+        div.onclick = () => selectPatient(
+            paciente.id,
+            div.textContent,
+            paciente.edad,
+            paciente.sexo,
+            paciente.tipo_sangre
+        );
+        return div;
+    }
+
+    // Función para manejar casos donde no hay resultados
+    function handleNoResults(searchQuery, searchResults, detailedFields) {
+        const words = searchQuery.split(' ');
+
+        if (words.length === 2) {
+            // Muestra mensaje con campos de entrada adicionales si hay dos palabras
+            searchResults.innerHTML = `
+                <div>
+                    <p style="color: red; font-weight: bold;">
+                        Por favor, separe el nombre o ingrese un nombre con un mínimo de 3 palabras.
+                    </p>
+                    <div style="display: flex; gap: 10px;">
+                        <div >
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre" required>
+                        </div>
+                        <div >
+                            <label for="apellidoPaterno">Apellido Paterno:</label>
+                            <input type="text" id="apellidoPaterno" name="apellidoPaterno" class="form-control" placeholder="Apellido Paterno" required>
+                        </div>
+                        <div >
+                            <label for="apellidoMaterno">Apellido Materno:</label>
+                            <input type="text" id="apellidoMaterno" name="apellidoMaterno" class="form-control" placeholder="Apellido Materno" required>
+                        </div>
+                    </div>
+                </div>`;
+            detailedFields.style.display = 'block';
+        } else {
+            // Muestra un mensaje básico si no hay resultados
+            searchResults.innerHTML = `
+                <div>
+                    <p>No se encontraron pacientes.</p>
+                </div>`;
+            detailedFields.style.display = 'none';
+        }
+    }
 
 
     function selectPatient(pacienteid, patientName, pacienteEdad, PacienteSexo, PacienteTP) {
@@ -727,6 +739,19 @@ function handleNoResults(searchQuery, searchResults, detailedFields) {
         // Oculta el mensaje de sugerencia
         document.getElementById('suggestionMessage').style.display = 'none';
     });
+
+
+    document.getElementById('medicamento_propioON').addEventListener('click', function() {
+        const medicamento_propio = document.getElementById('medicamento_propio');
+        const medicamento_propioON = document.getElementById('medicamento_propioON');
+
+        if (medicamento_propioON.checked) { // 'checked' es una propiedad booleana, no una cadena
+            medicamento_propio.value = "true";
+        } else {
+            medicamento_propio.value = "false";
+        }
+    });
+
 
 
 
@@ -937,6 +962,7 @@ function handleNoResults(searchQuery, searchResults, detailedFields) {
         const medicamentoNombre = document.getElementById('selectedMedicamento').value.trim();
         const costo = document.getElementById('CostoMedicamento').value.trim();
         const CantidadMedicamento = document.getElementById('CantidadMedicamento').value.trim();
+        const PropioMedicamento = document.getElementById('medicamento_propio').value.trim();
 
         // Validar que los campos no estén vacíos
         if (!medicamentoId || !medicamentoNombre || !costo || !CantidadMedicamento) {
@@ -963,7 +989,9 @@ function handleNoResults(searchQuery, searchResults, detailedFields) {
             id: medicamentoId,
             nombre: medicamentoNombre,
             costo: costo,
-            cantidad: CantidadMedicamento
+            cantidad: CantidadMedicamento,
+            propio : PropioMedicamento
+
         };
 
         // Agregar el objeto al arreglo
@@ -973,9 +1001,13 @@ function handleNoResults(searchQuery, searchResults, detailedFields) {
         actualizarListaMedicamentos();
 
         // Limpiar los campos después de agregar
-        document.getElementById('CostoMedicamento').value = '';
         document.getElementById('selectedMedicamento').value = '';
         document.getElementById('selectedMedicamentoId').value = '';
+        document.getElementById('CostoMedicamento').value = '';
+        document.getElementById('CantidadMedicamento').value = '';
+        document.getElementById('medicamento_propio').value = "false";
+        document.getElementById('medicamento_propioON').checked = false;
+
     }
 
     function actualizarListaMedicamentos() {
@@ -1016,11 +1048,12 @@ function handleNoResults(searchQuery, searchResults, detailedFields) {
             // Actualizar el texto del input con el resumen de tratamientos
 
             inputTratamiento.value +=
-                `${medicamento.nombre} - Costo: $${medicamento.costo} - Cantidad: ${medicamento.cantidad}\n`;
-            closeModal();
+                `${medicamento.nombre} - Costo: $${medicamento.costo} - Cantidad: ${medicamento.cantidad} - Propio: ${medicamento.propio}\n`;
+
         });
 
         actualizarTotal();
+        closeModal();
     }
 
     function eliminarTratamiento(index) {

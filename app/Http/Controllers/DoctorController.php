@@ -127,9 +127,9 @@ class DoctorController extends Controller
         $medicamentosArray = array_map(function($medicamento) {
             return str_replace(['-', ','], '', $medicamento); // Elimina guiones y comas
         }, $medicamentosArray);
-
-        $data = compact('receta', 'doctor', 'paciente','medicamentosArray');
         session()->flash('pdf_generated', true);
+        $data = compact('receta', 'doctor', 'paciente','medicamentosArray');
+
 
         // Generar el PDF
         $pdf = Pdf::loadView('pdf.receta', $data);

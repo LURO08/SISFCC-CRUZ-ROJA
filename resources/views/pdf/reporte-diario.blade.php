@@ -20,6 +20,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            page-break-inside: avoid;
         }
         th, td {
             border: 1px solid #ddd;
@@ -77,23 +78,41 @@
 </head>
 <body>
     <div class="header" style="margin-top: -25px;">
-        <table style="border: 0px solid #fff; background-color: #fff;  width: 110%; border-collapse: collapse; vertical-align: middle; margin-left: -10px;">
+        <table style="border: none; background-color: #fff; width: 100%; border-collapse: collapse; vertical-align: middle; margin: auto;">
             <tr>
-                <td style="width: 10%; text-align: left; border: 0px solid #fff; background-color: #fff;">
-                    <img src="{{ public_path('img/logosvg.png') }}" alt="Logo Cruz Roja" style="width: 60px; height: 50px;">
+                <td style="width: 10%; text-align: left; border: none; background-color: #fff;" rowspan="2">
+                    <img src="{{ public_path('img/logo.png') }}" alt="Logo Cruz Roja" style="width: 70px;">
                 </td>
-                <td style="width: 100%; text-align: center; display: block; border: 0px solid #fff; background-color: #fff;">
-                        <h2 style="margin: 0; font-size: 1.5em; font-weight: bold; color: #333;">Cruz Roja Mexicana</h2>
-                        <h3 style="margin: 0; font-size: 1.2em; font-weight: normal; color: #555;">Delegación Chilpancingo</h3>
+                <td rowspan="2" style="width: 90%; text-align: center; border: none; background-color: #fff; ">
+                    <p style=" font-size: 1.5em; font-weight: bold; color: #333;">CRUZ ROJA MEXICANA DELEGACIÓN CHILPANCINGO</p>
+                    <p style="font-size: 1.3em; color: #333; ">REPORTE DIARIO DETALLADO</p>
                 </td>
             </tr>
         </table>
     </div>
-    <div style="text-align: center; margin-bottom: 20px; display: flex;">
-        <h1 style="font-size: 24px; color: #333; margin: 0;">Reporte Diario</h1>
-        <p style="font-size: 18px; color: #555; margin: 5px 0;">
-            {{ \Carbon\Carbon::parse($fecha)->locale('es')->translatedFormat('l, d \d\e F \d\e Y') }}
-        </p>
+    <div class="fecha">
+        <table style="width: 100%; border: 0px solid #fff; background-color: #fff;">
+            <tr>
+                <td style="width: 50%; border: 0px solid #fff; background-color: #fff;"></td>
+                <td style="width: 30%; border: 0px solid #fff; background-color: #fff;">
+                    <table style="width: 100%;  text-align: center;">
+                        <tr>
+                            <th colspan="3" style="border: 1px solid black; padding: 5px; text-align: center;">FECHA</th>
+                        </tr>
+                        <tr>
+                            <td id="dia" style="border: 1px solid black; padding: 5px; text-align: center;">DÍA</td>
+                            <td id="mes" style="border: 1px solid black; padding: 5px; text-align: center;">MES</td>
+                            <td id="año" style="border: 1px solid black; padding: 5px; text-align: center;">AÑO</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 5px; text-align: center;">{{ \Carbon\Carbon::parse($fecha)->format('d') }}</td>
+                            <td style="border: 1px solid black; padding: 5px; text-align: center;">{{ \Carbon\Carbon::parse($fecha)->translatedFormat('F') }}</td>
+                            <td style="border: 1px solid black; padding: 5px; text-align: center;">{{ \Carbon\Carbon::parse($fecha)->format('Y') }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
 
     @php
@@ -104,16 +123,20 @@
 
     <!-- Turno Matutino -->
     <div class="turno">
-        <h2 class="header">Turno Matutino (7:00 AM - 1:00 PM)</h2>
-        @if ($matutino->isEmpty())
-            <p class="no-data">No hay registros en este turno.</p>
-        @else
             <div class="content">
                 <table >
                     <thead >
+                        <tr>
+                            <th  class="header" colspan="6">
+                                Turno Matutino (7:00 AM - 1:00 PM)
+                            </th>
+                        </tr>
+                        @if ($matutino->isEmpty())
+                            <th class="no-data" colspan="6" >No hay registros en este turno.</th>
+                        @else
                         <tr >
                             <th style="text-align: center;">Paciente</th>
-                            <th style="text-align: center;">Servicio</th>
+                            <th style="text-align: center;">Servicios</th>
                             <th style="text-align: center;">Medicamentos</th>
                             <th style="text-align: center;">Monto</th>
                             <th style="text-align: center;">Facturación</th>
@@ -123,6 +146,92 @@
                     <tbody>
 
                         @foreach ($matutino as $registro)
+                            <tr>
+                                <td style="text-align: center;">
+                                    {{ $registro->paciente->nombre ?? 'Sin Asignar' }} {{ $registro->paciente->apellidopaterno ?? '' }} {{ $registro->paciente->apellidomaterno ?? '' }}
+                                </td>
+                                <td style="text-align: center;">
+                                    @if(is_array($registro->servicios))
+                                        @foreach($registro->servicios as $servicio)
+                                            <div>{{ $servicio['nombre'] }}</div>
+                                        @endforeach
+                                    @else
+                                        <div style="text-align: center;">
+                                            Sin Servicios
+                                        </div>
+                                    @endif
+                                </td>
+                                <td style="text-align: center;">
+                                    @if(is_array($registro->medicamentos))
+                                        @foreach($registro->medicamentos as $medicamento)
+                                            <div>{{ $medicamento['nombre'] }}  </div>
+                                        @endforeach
+                                    @else
+                                        <div style="text-align: center;">
+                                            Sin medicamento
+                                        </div>
+                                    @endif
+                                </td>
+                                <td style="text-align: center;">${{ $registro->monto }}</td>
+                                <td style="text-align: center;">{{ $registro->facturación ? 'Sí' : 'No' }}</td>
+                                <td style="text-align: center;">{{ \Carbon\Carbon::parse($registro->created_at)->format('H:i:s') }}</td>
+                            </tr>
+                            @php
+                            $totalTurnoMatutino +=  $registro->monto;
+                            @endphp
+                        @endforeach
+
+                        <tr>
+                            <td style="text-align: center; font-weight: 800; font-size: 18px;">Total:</td>
+                            <td colspan="5" style="text-align: right; font-weight: 800; font-size: 18px;">
+                               {{ number_format($totalTurnoMatutino, 2, '.', '') }}
+                            </td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
+
+        <!-- Firma -->
+        <div class="firma-container" style="margin-top: 20px; text-align: center;">
+            @if (!empty($matutino->first()->personal))
+                <div class="firma-line" style="border-top: 1px solid #000; width: 200px; "></div>
+                <div class="firma-label">
+                    {{ $matutino->first()->personal->Nombre ?? '' }}
+                    {{ $matutino->first()->personal->apellido_paterno ?? '' }}
+                    {{ $matutino->first()->personal->apellido_materno ?? '' }}
+                </div>
+            @else
+                <p class="no-data">Firma no disponible.</p>
+            @endif
+        </div>
+    </div>
+
+    <!-- Turno Vespertino -->
+    <div class="turno">
+            <div class="content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th  class="header" colspan="6">
+                                Turno Vespertino (1:00 PM - 7:00 PM)
+                            </th>
+                        </tr>
+                        @if ($vespertino->isEmpty())
+                            <th class="no-data" colspan="6" >No hay registros en este turno.</th>
+                        @else
+                        <tr>
+                            <th style="text-align: center;">Paciente</th>
+                            <th style="text-align: center;">Servicios</th>
+                            <th style="text-align: center;">Medicamentos</th>
+                            <th style="text-align: center;">Monto</th>
+                            <th style="text-align: center;">Facturación</th>
+                            <th style="text-align: center;">Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($vespertino as $registro)
                             <tr>
                                 <td style="text-align: center;">
                                     {{ $registro->paciente->nombre ?? 'Sin Asignar' }} {{ $registro->paciente->apellidopaterno ?? '' }} {{ $registro->paciente->apellidomaterno ?? '' }}
@@ -154,85 +263,21 @@
                                 <td style="text-align: center;">{{ \Carbon\Carbon::parse($registro->created_at)->format('H:i:s') }}</td>
                             </tr>
                             @php
-                            $totalTurnoMatutino +=  $registro->monto;
-                            @endphp
-                        @endforeach
-
-                        <tr>
-                            <td style="text-align: center; font-weight: 800; font-size: 18px;">Total:</td>
-                            <td colspan="4" style="text-align: right; font-weight: 800; font-size: 18px;">
-                               {{ number_format($totalTurnoMatutino, 2, '.', '') }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        @endif
-
-        <!-- Firma -->
-        <div class="firma-container" style="margin-top: 20px; text-align: center;">
-            @if (!empty($matutino->first()->personal))
-                <div class="firma-line" style="border-top: 1px solid #000; width: 200px; "></div>
-                <div class="firma-label">
-                    {{ $matutino->first()->personal->Nombre ?? '' }}
-                    {{ $matutino->first()->personal->apellido_paterno ?? '' }}
-                    {{ $matutino->first()->personal->apellido_materno ?? '' }}
-                </div>
-            @else
-                <p class="no-data">Firma no disponible.</p>
-            @endif
-        </div>
-    </div>
-
-    <!-- Turno Vespertino -->
-    <div class="turno">
-        <h2 class="header">Turno Vespertino (1:00 PM - 7:00 PM)</h2>
-        @if ($vespertino->isEmpty())
-            <p class="no-data">No hay registros en este turno.</p>
-        @else
-            <div class="content">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="text-align: center;">Paciente</th>
-                            <th style="text-align: center;">Servicio</th>
-                            <th style="text-align: center;">Monto</th>
-                            <th style="text-align: center;">Facturación</th>
-                            <th style="text-align: center;">Hora</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($vespertino as $registro)
-                            <tr>
-                                <td style="text-align: center;">
-                                    {{ $registro->paciente->nombre ?? 'Sin Asignar' }} {{ $registro->paciente->apellidopaterno ?? '' }} {{ $registro->paciente->apellidomaterno ?? '' }}
-                                </td>
-                                <td style="text-align: center;">
-                                    @if(is_array($registro->servicios))
-                                        @foreach($registro->servicios as $servicio)
-                                            <div>{{ $servicio['nombre'] }}</div>
-                                        @endforeach
-                                    @endif
-                                </td>
-                                <td style="text-align: center;">${{ $registro->monto }}</td>
-                                <td style="text-align: center;">{{ $registro->facturación ? 'Sí' : 'No' }}</td>
-                                <td style="text-align: center;">{{ \Carbon\Carbon::parse($registro->created_at)->format('H:i:s') }}</td>
-                            </tr>
-                            @php
                             $totalTurnoVespertino +=  $registro->monto;
                             @endphp
                         @endforeach
 
                         <tr>
                             <td style="text-align: center; font-weight: 800; font-size: 18px;">Total:</td>
-                            <td colspan="4" style="text-align: center; font-weight: 800; font-size: 18px;">
+                            <td colspan="5" style="text-align: right; font-weight: 800; font-size: 18px;">
                                {{ number_format($totalTurnoVespertino, 2, '.', '') }}
                             </td>
                         </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
-        @endif
+
 
         <!-- Firma -->
         <div class="firma-container" style="margin-top: 20px; text-align: center;">
@@ -251,16 +296,21 @@
 
     <!-- Turno Nocturno -->
     <div class="turno">
-        <h2 class="header">Turno Nocturno (7:00 PM - 7:00 AM)</h2>
-        @if ($nocturno->isEmpty())
-            <p class="no-data">No hay registros en este turno.</p>
-        @else
             <div class="content">
                 <table>
                     <thead>
                         <tr>
+                            <th  class="header" colspan="6">
+                                Turno Nocturno (7:00 PM - 7:00 AM)
+                            </th>
+                        </tr>
+                        @if ($nocturno->isEmpty())
+                            <th class="no-data" colspan="6" >No hay registros en este turno.</th>
+                        @else
+                        <tr>
                             <th style="text-align: center;">Paciente</th>
-                            <th style="text-align: center;">Servicio</th>
+                            <th style="text-align: center;">Servicios</th>
+                            <th style="text-align: center;">Medicamentos</th>
                             <th style="text-align: center;">Monto</th>
                             <th style="text-align: center;">Facturación</th>
                             <th style="text-align: center;">Hora</th>
@@ -275,6 +325,21 @@
                                         @foreach($registro->servicios as $servicio)
                                             <div>{{ $servicio['nombre'] }}</div>
                                         @endforeach
+                                    @else
+                                        <div style="text-align: center;">
+                                            Sin Servicios
+                                        </div>
+                                    @endif
+                                </td>
+                                <td style="text-align: center;">
+                                    @if(is_array($registro->medicamentos))
+                                        @foreach($registro->medicamentos as $medicamento)
+                                            <div>{{ $medicamento['nombre'] }}</div>
+                                        @endforeach
+                                    @else
+                                        <div style="text-align: center;">
+                                            Sin medicamento
+                                        </div>
                                     @endif
                                 </td>
                                 <td style="text-align: center;">${{ $registro->monto }}</td>
@@ -288,14 +353,15 @@
 
                         <tr>
                             <td style="text-align: center; font-weight: 800; font-size: 18px;">Total:</td>
-                            <td colspan="4" style="text-align: right; font-weight: 800; font-size: 18px;">
+                            <td colspan="5" style="text-align: right; font-weight: 800; font-size: 18px;">
                                ${{ number_format($totalTurnoNocturno, 2, '.', '') }}
                             </td>
                         </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
-        @endif
+
 
         <!-- Firma -->
         <div class="firma-container" style="margin-top: 20px; text-align: center;">

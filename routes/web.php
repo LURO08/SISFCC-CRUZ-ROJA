@@ -51,6 +51,10 @@ Route::middleware('auth')->group(function () {
             Route::put('/admin/personal/{user}', [PersonalController::class, 'update'])->name('admin.personals.update');
             Route::delete('/admin/personal/{personal}', [PersonalController::class, 'destroy'])->name('admin.personals.destroy');
 
+            //Guardias
+            Route::get('/admin/guardias', [PersonalController::class, 'GuardiasIndex'])->name('admin.guardias.index');
+            Route::post('/admin/guardia/formato/descargar', [PersonalController::class, 'descargarformato'])->name('guardia.formato.descargar');
+
             //Facturas
             Route::get('admin/facturas', [AdminController::class, 'facturas'])->name('facturas.index');
             Route::get('admin//factura/{id}/download', [AdminController::class, 'facturadownload'])->name('admin.factura.download');
@@ -103,23 +107,24 @@ Route::middleware('auth')->group(function () {
             Route::get('/cajero', [CajeroController::class, 'index'])->name('cajero.index');
             Route::get('/cajero/cobros/lista', [CajeroController::class, 'indexlistaCobros'])->name('cajero.cobros.lista.index');
 
-            Route::get('/cajero/cobros', [CajeroController::class, 'RegistroCobro'])->name('cajero.cobro.register');
             Route::post('/cajero/cobros/store', [CajeroController::class, 'storeCobros'])->name('cajero.cobros.store')->middleware('auth');
-
-            Route::post('/cajero/cobro/store', [CajeroController::class, 'storeNuevoCobro'])->name('cajero.cobro.store')->middleware('auth');
-            Route::get('/cajero/cobro/editar', [CajeroController::class, 'EditarCobro'])->name('cajero.cobro.editar');
-            Route::put('/cajero/cobro/update/{id}', [CajeroController::class, 'UpdateNuevoCobro'])->name('cajero.cobro.update')->middleware('auth');
-
-
-            Route::post('/cajero/cobros', [CajeroController::class, 'storeCobro'])->name('cajero.cobros.store')->middleware('auth');
-            Route::put('/cajero/cobros/update/{id}', [CajeroController::class, 'updateCobro'])->name('cajero.cobros.update')->middleware('auth');
-
+            Route::get('/cajero/cobros', [CajeroController::class, 'RegistroCobro'])->name('cajero.cobro.register');
             Route::post('/cajero/facturas', [CajeroController::class, 'storeSolicitudFactura'])->name('cajero.solicitar.factura.store')->middleware('auth');
+
 
             Route::get('/ticket/{id}/descargar', [CajeroController::class, 'GenerarTicketCobroServicios'])->name('ticket.descargar');
             Route::get('/factura/{id}/descargar', [CajeroController::class, 'DescargarFactura'])->name('factura.descargar');
+
+            Route::get('/cajero/cobros', [CajeroController::class, 'RegistroCobro'])->name('cajero.cobro.register');
+            Route::get('/cajero/cobro/editar/{id}', [CajeroController::class, 'EditarCobrosServicios'])->name('cajero.cobros.editar')->middleware('auth');
+            Route::put('/cajero/cobro/update/{id}', [CajeroController::class, 'updateNuevoCobro'])->name('cajero.cobro.update')->middleware('auth');
+            Route::post('/cajero/cobro/store', [CajeroController::class, 'storeNuevoCobro'])->name('cajero.cobro.store')->middleware('auth');            Route::put('/cajero/cobro/update/{id}', [CajeroController::class, 'UpdateNuevoCobro'])->name('cajero.cobro.update')->middleware('auth');
+
             Route::get('/cobros/reporte', [CajeroController::class, 'generarReporteDiario'])->name('reporte.diario');
+
             Route::post('/cobros/reporte/descargar', [CajeroController::class, 'descargarReporte'])->name('cobros.reporte.descargar');
+            Route::get('/cobros/reporte/medicamentos/descargar', [CajeroController::class, 'generarReporteMedicementos'])->name('cobros.reporte.medicamentos.descargar');
+            Route::get('/cobros/reporteDiarioIngresos/descargar', [CajeroController::class, 'generarReporteDiarioIngresos'])->name('cobros.reporte.ingresos.descargar');
 
 
 
@@ -226,6 +231,4 @@ Route::middleware('auth')->group(function () {
             Route::put('/emergency/update/{id}', [EmergenciasController::class, 'emergencyUpdate'])->name('emergencia.update');
             Route::get('/Socorros/emergency/generate-pdf/{id}', [EmergenciasController::class, 'generatePDF'])->name('emergencia.generatePDF');
         });
-
-
 });

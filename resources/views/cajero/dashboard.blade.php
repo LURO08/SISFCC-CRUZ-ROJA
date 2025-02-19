@@ -700,6 +700,7 @@
                             {{-- Se asume que 'cobros' es una colección de cobros obtenidos del modelo --}}
                             @foreach ($paginador as $cobro)
 
+                            {{-- @if ($cobro->personal->user_id == Auth::id()) --}}
                                 <tr>
                                     <td>{{ $cobro->getID() }}</td>
                                     <td>{{ $cobro->paciente->nombre ?? 'Sin Asignar' }} {{ $cobro->paciente->apellidopaterno ?? '' }}
@@ -975,6 +976,7 @@
                                         </div>
                                     </div>
                                 </div>
+                            {{-- @endif --}}
                             @endforeach
                         @endif
                     </tbody>

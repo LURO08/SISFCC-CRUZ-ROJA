@@ -322,7 +322,7 @@
                                         </a>
 
                                         <!-- Botón Eliminar -->
-                                        <form action="{{ route('doctor.pacientes.destroy', $paciente->id) }}"
+                                        {{-- <form action="{{ route('doctor.pacientes.destroy', $paciente->id) }}"
                                             method="POST" style="flex: 1;">
                                             @csrf
                                             @method('DELETE')
@@ -330,7 +330,7 @@
                                                 style="background-color: #dc3545; color: white; padding: 10px 20px; text-align: center; border: none; border-radius: 5px; width: 100%;">
                                                 Eliminar
                                             </button>
-                                        </form>
+                                        </form> --}}
                                     </div>
                                 </div>
                             </td>

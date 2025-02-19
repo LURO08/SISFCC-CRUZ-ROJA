@@ -8,7 +8,6 @@
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
-            width: 58mm; /* Ancho típico de ticket */
             margin: 0;
             padding: 0;
         }
@@ -70,7 +69,6 @@
         .table {
             width: 100%;
             margin: 10px 0;
-            border-spacing: 0;
         }
 
         .table td,

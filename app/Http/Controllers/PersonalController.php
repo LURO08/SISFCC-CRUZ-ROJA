@@ -278,4 +278,18 @@ class PersonalController extends Controller
         // Si decides usar Excel
         // return Excel::download(new ReportePersonalYDoctoresExport($doctores, $personals), 'reporte_completo.xlsx');
     }
+
+
+    public function GuardiasIndex(){
+
+        return view('admin.guardia.index');
+    }
+
+    public function descargarformato(Request $request){
+        $dias = $request->dias;
+        $data = compact('dias');
+        $pdf = PDF::loadView('pdf.guardia_formato',$data );
+        // return $pdf->download('reporte_Personal.pdf');
+        return $pdf->stream('formato_guardias.pdf');
+    }
 }

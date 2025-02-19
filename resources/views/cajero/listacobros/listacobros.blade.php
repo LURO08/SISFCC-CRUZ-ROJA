@@ -165,6 +165,10 @@
     }
 
 
+    #modalReporte .modal-content {
+        max-width: 700px;
+        width: 450px;
+    }
 
     .tratamientoModal .modal-content {
         max-width: 700px;
@@ -177,7 +181,8 @@
     .modalinfoCobro .modal-content {
         max-width: 600px;
     }
-    .modalSolicitudFactura .modal-content{
+
+    .modalSolicitudFactura .modal-content {
         max-width: 500px;
     }
 
@@ -484,8 +489,8 @@
         }
     }
 
-      /* Estilos para la tabla con tema azul */
-      .table-blue {
+    /* Estilos para la tabla con tema azul */
+    .table-blue {
         width: 100%;
         border-collapse: collapse;
     }
@@ -509,59 +514,57 @@
     .table-blue tbody tr:hover {
         background-color: #d1e7fd;
     }
-
-
 </style>
 
 <link rel="stylesheet" href="{{ asset('css/component/modal.css') }}">
 
-    @if (session('success'))
-        <div id="successNotification" class="notification alert alert-success alert-dismissible fade show" role="alert"
-            style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
+@if (session('success'))
+    <div id="successNotification" class="notification alert alert-success alert-dismissible fade show" role="alert"
+        style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
         background-color: #4CAF50; color: white; border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
-            <a type="button" class="btn-close" href=""
-                style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
+        <a type="button" class="btn-close" href=""
+            style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
         text-decoration: none; opacity: 0.8;">
-                &times;</a>
-            <strong>Éxito!</strong> {{ session('success') }}
-        </div>
-        <script>
-            // Oculta la notificación después de 5 segundos (5000 ms)
-            setTimeout(() => {
-                const notification = document.getElementById('successNotification');
-                if (notification) {
-                    notification.style.transition = "opacity 0.5s ease";
-                    notification.style.opacity = "0"; // Transición de desvanecimiento
-                    setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
-                }
-            }, 3000);
-        </script>
-    @endif
+            &times;</a>
+        <strong>Éxito!</strong> {{ session('success') }}
+    </div>
+    <script>
+        // Oculta la notificación después de 5 segundos (5000 ms)
+        setTimeout(() => {
+            const notification = document.getElementById('successNotification');
+            if (notification) {
+                notification.style.transition = "opacity 0.5s ease";
+                notification.style.opacity = "0"; // Transición de desvanecimiento
+                setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
+            }
+        }, 3000);
+    </script>
+@endif
 
-    @if (session('error'))
-        <div id="successNotification" class="notification alert alert-error alert-dismissible fade show" role="alert"
-            style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
+@if (session('error'))
+    <div id="successNotification" class="notification alert alert-error alert-dismissible fade show" role="alert"
+        style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;
         background-color: #f63737; color: white; border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); padding: 20px; padding-top: 30px; text-align: center;">
-            <a type="button" class="btn-close" href=""
-                style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
+        <a type="button" class="btn-close" href=""
+            style="position: absolute; top: 10px; right: 10px; font-size: 22px; color: white;
         text-decoration: none; opacity: 0.8;">
-                &times;</a>
-            <strong>Error!</strong> {{ session('error') }}
-        </div>
-        <script>
-            // Oculta la notificación después de 5 segundos (5000 ms)
-            setTimeout(() => {
-                const notification = document.getElementById('successNotification');
-                if (notification) {
-                    notification.style.transition = "opacity 0.5s ease";
-                    notification.style.opacity = "0"; // Transición de desvanecimiento
-                    setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
-                }
-            }, 3000);
-        </script>
-    @endif
+            &times;</a>
+        <strong>Error!</strong> {{ session('error') }}
+    </div>
+    <script>
+        // Oculta la notificación después de 5 segundos (5000 ms)
+        setTimeout(() => {
+            const notification = document.getElementById('successNotification');
+            if (notification) {
+                notification.style.transition = "opacity 0.5s ease";
+                notification.style.opacity = "0"; // Transición de desvanecimiento
+                setTimeout(() => notification.remove(), 500); // Elimina el elemento tras la transición
+            }
+        }, 3000);
+    </script>
+@endif
 
 <aside id="aside">
     <div class="toggle" onclick="toggleMenu()">
@@ -593,7 +596,7 @@
             </a>
         </li>
         <li>
-            <a class="btn" href="{{route('cajero.cobro.register')}}" id="facturasBtn" >
+            <a class="btn" href="{{ route('cajero.cobro.register') }}" id="facturasBtn">
                 <span class="icon">🧾</span>
                 <span class="text" style="font-weight: bold;">Cobros de Servicios</span>
             </a>
@@ -631,41 +634,99 @@
         <!-- Botón para generar reporte diario -->
         <div class="acciones-reporte">
 
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="fecha" style="font-weight: 600; margin-bottom: 0.5rem; display: block;">
+            <div class="form-group">
+                <label for="fecha" style="font-weight: 600; display: block;">
                     Seleccione una Fecha para el Reporte y Busque Servicios:
                 </label>
+
+
+
                 <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
 
+                    <a href="#modalReporte" class="btn btn-primary">Generar Reporte</a>
 
-                    <!-- Botón Generar Reporte -->
+                    <!-- Modal -->
+                    <div class="modal" id="modalReporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
+                            <div class="modal-content" >
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalReporteLabel">Generar Reporte</h5>
+                                    <a type="button" class="close text-white"
+                                        aria-label="Close" href="#">
+                                        <span aria-hidden="true">&times;</span>
+                                    </a>
+                                </div>
+                                <div class="modal-body" style="padding: 15px;">
+                                    <form id="formReporte" method="GET" target="_blank">
+                                        @csrf
+                                        <!-- Selector de Fecha -->
+                                        <div class="mb-3">
+                                            <label for="fecha" class="form-label">Seleccione una fecha:</label>
+                                            <select name="fecha" id="fecha" class="form-control" required>
+                                                <option value="" disabled selected>Seleccione una fecha</option>
+                                                @foreach ($fechasDisponibles as $fecha)
+                                                    <option value="{{ $fecha }}">{{ \Carbon\Carbon::parse($fecha)->format('d/m/Y') }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <!-- Botones de Reporte -->
+                                        <div class="d-grid gap-2" style="display: flex;">
+                                            <button type="submit" class="btn btn-primary" data-route="{{ route('reporte.diario') }}" onclick="setAction(this)">
+                                                Diario Detallado
+                                            </button>
+                                            <button type="submit" class="btn btn-primary" data-route="{{ route('cobros.reporte.medicamentos.descargar') }}" onclick="setAction(this)">
+                                                Diario Medicamentos
+                                            </button>
+                                            <button type="submit" class="btn btn-secondary" data-route="{{ route('cobros.reporte.ingresos.descargar') }}" onclick="setAction(this)">
+                                                Diario de Ingresos
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                    </div>
+
+                    {{-- <!-- Botón Generar Reporte -->
                     <form action="{{ route('reporte.diario') }}" method="GET" target="_black" style="display: flex;">
                         @csrf
-                        <!-- Selector de Fecha -->
-                        <select
-                            name="fecha"
-                            id="fecha"
-                            class="form-control"
-                            required
-                            style="flex: 1; padding:  10 20px; border-radius: 4px; border: 1px solid #ccc; min-width: 180px; width: 200px;">
-                            <option value="" disabled selected>Seleccione una fecha</option>
-                            @foreach ($fechasDisponibles as $fecha)
-                                <option value="{{ $fecha }}">{{ \Carbon\Carbon::parse($fecha)->format('d/m/Y') }}</option>
-                            @endforeach
-                        </select>
+                        <div>
+                            <span style="font-weight: bold; font-size: 18px; text-align: center;">Generar Reporte</span>
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            style="padding: 0.5rem 1rem; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
-                            Generar Reporte Diario
-                        </button>
-                    </form>
+                            <div style="display: flex; align-items: center; gap: 15px; ">
+
+                                <div>
+                                    <!-- Selector de Fecha -->
+                                    <select
+                                        name="fecha"
+                                        id="fecha"
+                                        class="form-control"
+                                        required
+                                        style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; min-width: 200px; width: auto; text-align: center;">
+                                        <option value="" disabled selected>Seleccione una fecha</option>
+                                        @foreach ($fechasDisponibles as $fecha)
+                                            <option value="{{ $fecha }}">{{ \Carbon\Carbon::parse($fecha)->format('d/m/Y') }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Botones de Reporte -->
+                                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px;">
+                                    <button type="submit" class="btn btn-primary" style=" border-radius: 6px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                                        Diario Detallado
+                                    </button>
+
+                                    <button type="submit" class="btn btn-primary" style=" border-radius: 6px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                                        Diario de Ingresos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form> --}}
 
                     <!-- Campo de Búsqueda -->
                     <div style="flex: 2; display: flex; align-items: center;">
                         <input type="search" class="form-control" placeholder="Buscar cobro..." id="buscarcobro"
-                    style="padding: 10px; flex: 1; border-radius: 4px;" onkeyup="buscarcobro()">
+                            style="padding: 10px; flex: 1; border-radius: 4px;" onkeyup="buscarcobro()">
                     </div>
                 </div>
             </div>
@@ -678,10 +739,11 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-striped " style="min-width: 100%;">
                     <thead class="thead-dark">
-                        <tr >
+                        <tr>
                             <th style="text-align: center;">Folio</th>
                             <th style="text-align: center;">Paciente</th>
                             <th style="text-align: center;">Servicio</th>
+                            <th style="text-align: center;">Medicamento</th>
                             <th style="text-align: center;">Monto</th>
                             <th style="text-align: center;">Facturo</th>
                             <th style="text-align: center;">Acciones</th>
@@ -690,34 +752,48 @@
                     <tbody id="tbodycobros">
                         @if ($cobros->isEmpty())
                             <tr>
-                                <td  style="text-align: center;" colspan="6">No hay datos de cobros disponibles.</td>
+                                <td style="text-align: center;" colspan="6">No hay datos de cobros disponibles.
+                                </td>
                             </tr>
                         @else
                             {{-- Se asume que 'cobros' es una colección de cobros obtenidos del modelo --}}
                             @foreach ($paginador as $cobro)
-
                                 <tr>
                                     <td>{{ $cobro->getID() }}</td>
-                                    <td>{{ $cobro->paciente->nombre ?? 'Sin Asignar' }} {{ $cobro->paciente->apellidopaterno ?? '' }}
+                                    <td>{{ $cobro->paciente->nombre ?? 'Sin Asignar' }}
+                                        {{ $cobro->paciente->apellidopaterno ?? '' }}
                                         {{ $cobro->paciente->apellidomaterno ?? '' }}</td>
-                                        <td style="text-align: center;">
-                                            @if(is_array($cobro->servicios))
-                                                @foreach($cobro->servicios as $servicio)
-                                                    <div>{{ $servicio['nombre'] }}</div>
+                                    <td style="text-align: center;">
+                                        @if (is_array($cobro->servicios))
+                                            @foreach ($cobro->servicios as $servicio)
+                                                <div>{{ $servicio['nombre'] }}</div>
+                                            @endforeach
+                                        @else
+                                            <div> Sin Servicios</div>
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @if (!empty($cobro->medicamentos) && is_array($cobro->medicamentos))
+                                            <ol>
+                                                @foreach ($cobro->medicamentos as $medicamento)
+                                                    <li>{{ $medicamento['nombre'] ?? 'Nombre no disponible' }}</li>
                                                 @endforeach
-                                            @else
-                                                <div> Sin Servicios</div>
-                                            @endif
-                                        </td>
+                                            </ol>
+                                        @else
+                                            <div>Sin medicamentos</div>
+                                        @endif
+
+                                    </td>
                                     <td>${{ number_format($cobro->monto, 2) }}</td>
                                     <td>{{ $cobro->facturación ? 'Sí' : 'No' }}</td>
                                     <td>
                                         <div style="display: flex;">
-                                            @if (!$cobro->facturación)
-                                            <a class="btn"
-                                                href="#solicitarFacturaModal-{{ $cobro->id }}">Facturar</a>
-                                            @endif
-                                            <a class="btn descargar-btn"  href="{{ route('ticket.descargar', $cobro->id) }}" target="_blank">Descargar</a>
+                                            <a class="btn descargar-btn"
+                                                href="{{ route('cajero.cobros.editar', $cobro->id) }}"
+                                                >Editar</a>
+                                            <a class="btn descargar-btn"
+                                                href="{{ route('ticket.descargar', $cobro->id) }}"
+                                                target="_blank">Descargar</a>
                                         </div>
 
                                         <a class="btn" href="#modalInfoCobro-{{ $cobro->id }}">Ver</a>
@@ -752,7 +828,8 @@
                                                         <p><strong>Paciente:</strong>{{ $cobro->paciente->nombre ?? 'Sin Asignar' }}
                                                             {{ $cobro->paciente->apellidopaterno ?? '' }}
                                                             {{ $cobro->paciente->apellidomaterno ?? '' }}</p>
-                                                        <p><strong>Edad:</strong> {{ $cobro->paciente->edad ?? 'Sin Asignar'}}</p>
+                                                        <p><strong>Edad:</strong>
+                                                            {{ $cobro->paciente->edad ?? 'Sin Asignar' }}</p>
                                                         <p><strong>Monto:</strong>{{ $cobro->monto }}</p>
                                                     </div>
                                                     <div class="form-group">
@@ -817,22 +894,27 @@
                                         </div>
 
                                         <!-- Cuerpo del Modal -->
-                                        <div class="modal-body" style="padding: 10px 20px; height: 75vh; overflow: auto;">
+                                        <div class="modal-body"
+                                            style="padding: 10px 20px; height: 75vh; overflow: auto;">
 
                                             <div style="display: flex; justify-content: center; width: 100%;">
                                                 <div style="margin-right: 10px;">
                                                     <!-- Información del Paciente -->
-                                                    <h2 style="font-size: 1.2rem; color: #007bff; margin-bottom: 10px;">
+                                                    <h2
+                                                        style="font-size: 1.2rem; color: #007bff; margin-bottom: 10px;">
                                                         Información del Paciente</h2>
-                                                    <p><strong>Nombre:</strong> {{ $cobro->paciente->nombre ?? 'Sin Asignar' }}
+                                                    <p><strong>Nombre:</strong>
+                                                        {{ $cobro->paciente->nombre ?? 'Sin Asignar' }}
                                                         {{ $cobro->paciente->apellidopaterno ?? '' }}
-                                                        {{ $cobro->paciente->apellidomaterno ?? ''}}</p>
-                                                    <p><strong>Edad:</strong> {{ $cobro->paciente->edad ?? 'Sin Asignar' }}</p>
-                                                    <p><strong>Sexo:</strong> {{ $cobro->paciente->sexo  ?? 'Sin Asignar'}}</p>
+                                                        {{ $cobro->paciente->apellidomaterno ?? '' }}</p>
+                                                    <p><strong>Edad:</strong>
+                                                        {{ $cobro->paciente->edad ?? 'Sin Asignar' }}</p>
+                                                    <p><strong>Sexo:</strong>
+                                                        {{ $cobro->paciente->sexo ?? 'Sin Asignar' }}</p>
                                                 </div>
                                                 <div>
                                                     <!-- Datos del Servicio -->
-                                                        <h2
+                                                    <h2
                                                         style="font-size: 1.2rem; color: #007bff;  margin-bottom: 10px;">
                                                         Datos del Servicio</h2>
                                                     {{-- <p><strong>Servicio:</strong> {{ $cobro->Servicio->nombre }}</p> --}}
@@ -844,7 +926,8 @@
 
 
 
-                                            <div style="display: flex; justify-content: center; text-align: center; width: 100%;">
+                                            <div
+                                                style="display: flex; justify-content: center; text-align: center; width: 100%;">
 
                                                 <!-- Información de Medicamentos -->
                                                 <div class="form-group">
@@ -884,61 +967,68 @@
                                                 <!-- Información de Material -->
                                                 <div>
                                                     <h2
-                                                    style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">
-                                                    Material Utilizado</h2>
+                                                        style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">
+                                                        Material Utilizado</h2>
 
                                                     <div class="form-group">
                                                         @php $totalMaterial = 0; @endphp
-                                                                @foreach ($recetas as $receta )
+                                                        @foreach ($recetas as $receta)
+                                                            @if ($receta->id == $cobro->receta_id)
+                                                                @if (!empty($receta->material) && is_array($receta->material))
+                                                                    @foreach ($receta->material as $material)
+                                                                        @foreach ($inventarioMedico as $materialMedico)
+                                                                            @if ($material['nombre'] === $materialMedico->nombre)
+                                                                                @php
+                                                                                    $subtotalMaterial =
+                                                                                        $material['cantidad'] *
+                                                                                        $materialMedico->precio;
+                                                                                    $totalMaterial += $subtotalMaterial;
+                                                                                @endphp
 
-                                                                    @if ($receta->id == $cobro->receta_id)
-                                                                        @if (!empty($receta->material) && is_array($receta->material))
-                                                                            @foreach ($receta->material as $material )
-                                                                                @foreach ($inventarioMedico as $materialMedico)
+                                                                                <div
+                                                                                    style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin-bottom: 10px;">
+                                                                                    <p style="margin: 0;">
+                                                                                        <strong>Material:</strong>
+                                                                                        {{ $material['nombre'] }}</p>
 
-                                                                                        @if ($material['nombre'] === $materialMedico->nombre)
-                                                                                            @php
-                                                                                                $subtotalMaterial =
-                                                                                                $material['cantidad'] *
-                                                                                                $materialMedico->precio;
-                                                                                                $totalMaterial += $subtotalMaterial;
-                                                                                            @endphp
+                                                                                    <p style="margin: 0;">
+                                                                                        <strong>Cantidad:</strong>
+                                                                                        {{ number_format($material['cantidad']) }}
+                                                                                    </p>
 
-                                                                                            <div
-                                                                                            style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin-bottom: 10px;">
-                                                                                                <p style="margin: 0;"><strong>Material:</strong>
-                                                                                                    {{$material['nombre']}}</p>
+                                                                                    <p style="margin: 0;">
+                                                                                        <strong>Precio
+                                                                                            Unitario:</strong>
+                                                                                        $
+                                                                                        {{ number_format($materialMedico->precio) }}
+                                                                                    </p>
 
-                                                                                                <p style="margin: 0;"><strong>Cantidad:</strong>
-                                                                                                    {{number_format($material['cantidad'])}}</p>
+                                                                                    <p style="margin: 0;">
+                                                                                        <strong>SubTotal:</strong>
+                                                                                        ${{ number_format($material['cantidad'] * $materialMedico->precio) }}
+                                                                                    </p>
+                                                                                </div>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @endforeach
+                                                                @else
+                                                                    <table>
+                                                                        <tr>
+                                                                            <th style="text-align: center;">
+                                                                                Ningún Material Utilizado
+                                                                            </th>
+                                                                        </tr>
+                                                                    </table>
+                                                                @endif
+                                                            @endif
+                                                        @endforeach
 
-                                                                                                <p style="margin: 0;"><strong>Precio Unitario:</strong>
-                                                                                                    $ {{number_format($materialMedico->precio)}}</p>
-
-                                                                                                <p style="margin: 0;"><strong>SubTotal:</strong>
-                                                                                                    ${{ number_format($material['cantidad'] * $materialMedico->precio)}}</p>
-                                                                                            </div>
-                                                                                        @endif
-
-                                                                                @endforeach
-                                                                            @endforeach
-                                                                        @else
-                                                                            <table>
-                                                                                <tr>
-                                                                                    <th style="text-align: center;">
-                                                                                        Ningún Material Utilizado
-                                                                                    </th>
-                                                                                </tr>
-                                                                            </table>
-                                                                        @endif
-                                                                    @endif
-                                                                @endforeach
-
-                                                                <div
-                                                                    style="background-color: #e9ecef; border-radius: 5px; padding: 10px; margin-top: 10px;">
-                                                                    <p style="margin: 0; font-weight: bold;">Total Material Utilizado:
-                                                                        ${{ number_format($totalMaterial, 2) }}</p>
-                                                                </div>
+                                                        <div
+                                                            style="background-color: #e9ecef; border-radius: 5px; padding: 10px; margin-top: 10px;">
+                                                            <p style="margin: 0; font-weight: bold;">Total Material
+                                                                Utilizado:
+                                                                ${{ number_format($totalMaterial, 2) }}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -951,16 +1041,23 @@
                                                 Detalles del Cobro</h2>
                                             <div style="display: flex;">
                                                 <div style="margin-right: 10px;">
-                                                    <p><strong>Pago: </strong> {{$cobro->nombre}}</p>
-                                                    <p><strong>Monto:</strong> ${{ number_format($cobro->monto, 2) }}</p>
+                                                    <p><strong>Pago: </strong> {{ $cobro->nombre }}</p>
+                                                    <p><strong>Monto:</strong> ${{ number_format($cobro->monto, 2) }}
+                                                    </p>
                                                 </div>
                                                 <div>
-                                                    <p><strong>Facturación:</strong> {{ $cobro->facturación ? 'Sí' : 'No' }}
+                                                    <p><strong>Facturación:</strong>
+                                                        {{ $cobro->facturación ? 'Sí' : 'No' }}
                                                     </p>
                                                     <p><strong>Fecha de cobro:</strong>
                                                         {{ $cobro->created_at->format('d/m/Y H:i') }}</p>
                                                 </div>
                                             </div>
+
+                                            @if (!$cobro->facturación)
+                                                <a class="btn"
+                                                    href="#solicitarFacturaModal-{{ $cobro->id }}">Facturar</a>
+                                            @endif
 
 
                                         </div>
@@ -977,9 +1074,18 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="pagination-wrapper">
-                    {{ $paginador->links() }}
-                </div>
+                {{-- <div class="pagination-wrapper" style="display: flex; align-items: center; gap: 5px; font-size: 14px; color: #6c757d;">
+                    <span>{{ __('Mostrando') }}</span>
+                    <span class="fw-semibold">{{ $paginador->firstItem() }}</span>
+                    <span>{{ __('a') }}</span>
+                    <span class="fw-semibold">{{ $paginador->lastItem() }}</span>
+                    <span>{{ __('de') }}</span>
+                    <span class="fw-semibold">{{ $paginador->total() }}</span>
+                    <span>{{ __('resultados') }}</span>
+                </div> --}}
+
+                {{ $paginador->links() }}
+
             </div>
         </div>
     </div>
@@ -1038,17 +1144,21 @@
                             <td>{{ $factura->estatus }}</td>
                             <td style="display: flex;">
                                 <a href="#modalSolicitudFactura-{{ $factura->id }}" class="btn ver-btn">Ver</a>
-                                <a class="btn descargar-btn" href="{{ $factura->rutafactura }}" target="_blank">Descargar</a>
+                                <a class="btn descargar-btn" href="{{ $factura->rutafactura }}"
+                                    target="_blank">Descargar</a>
                             </td>
                         </tr>
 
 
-                        <div class="modal modalSolicitudFactura" id="modalSolicitudFactura-{{ $factura->id }}" style="font-family: Arial, sans-serif;">
+                        <div class="modal modalSolicitudFactura" id="modalSolicitudFactura-{{ $factura->id }}"
+                            style="font-family: Arial, sans-serif;">
                             <div class="modal-content">
                                 <!-- Encabezado del Modal -->
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Detalles de Solicitud de Factura - #{{ $factura->id }}</h5>
-                                    <a type="button" class="close" href="" aria-label="Cerrar" style="text-decoration: none; font-size: 1.5rem;">
+                                    <h5 class="modal-title">Detalles de Solicitud de Factura - #{{ $factura->id }}
+                                    </h5>
+                                    <a type="button" class="close" href="" aria-label="Cerrar"
+                                        style="text-decoration: none; font-size: 1.5rem;">
                                         &times;
                                     </a>
                                 </div>
@@ -1056,7 +1166,7 @@
                                 <!-- Cuerpo del Modal -->
                                 <div class="modal-body" style="padding: 20px; height: 75vh; overflow: auto;">
 
-                                     <!-- Información del Paciente -->
+                                    <!-- Información del Paciente -->
                                     <h2 style="font-size: 1.2rem; color: #007bff; margin-bottom: 10px;">
                                         Información del Paciente</h2>
                                     <p><strong>Nombre:</strong> {{ $factura->cobro->paciente->nombre }}
@@ -1067,7 +1177,8 @@
 
 
                                     <!-- Información de la Solicitud de Factura -->
-                                    <h2 style="font-size: 1.2rem; color: #007bff; margin-bottom: 10px;">Información de la Factura</h2>
+                                    <h2 style="font-size: 1.2rem; color: #007bff; margin-bottom: 10px;">Información de
+                                        la Factura</h2>
                                     <p><strong>Nombre:</strong> {{ $factura->nombre }}</p>
                                     <p><strong>RFC:</strong> {{ $factura->rfc }}</p>
                                     <p><strong>Dirección:</strong> {{ $factura->direccion }}</p>
@@ -1077,37 +1188,43 @@
                                     <!-- Monto y Estado de la Solicitud -->
 
                                     <h2
-                                    style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">
-                                    Datos del Servicio</h2>
+                                        style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">
+                                        Datos del Servicio</h2>
                                     <p><strong>Servicio:</strong> {{ $factura->cobro->Servicio->nombre }}</p>
                                     <p><strong>Costo del Servicio:</strong>
-                                    ${{ number_format($factura->cobro->Servicio->costo, 2) }}</p>
+                                        ${{ number_format($factura->cobro->Servicio->costo, 2) }}</p>
 
-                                    <h2 style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">Detalles del Monto</h2>
+                                    <h2
+                                        style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">
+                                        Detalles del Monto</h2>
                                     <p><strong>Monto:</strong> ${{ number_format($factura->monto, 2) }}</p>
                                     <p><strong>Estatus:</strong> {{ $factura->estatus }}</p>
 
                                     <!-- Ruta de la Factura -->
-                                    <h2 style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">Factura Generada</h2>
+                                    <h2
+                                        style="font-size: 1.2rem; color: #007bff; margin-top: 20px; margin-bottom: 10px;">
+                                        Factura Generada</h2>
                                     <p><strong>Ruta de la Factura:</strong>
-                                        @if($factura->rutafactura)
-                                            <a href="{{ $factura->rutafactura }}" target="_blank">Descargar Factura</a>
+                                        @if ($factura->rutafactura)
+                                            <a href="{{ $factura->rutafactura }}" target="_blank">Descargar
+                                                Factura</a>
                                         @else
                                             No disponible
                                         @endif
                                     </p>
 
                                     <!-- Fecha de Creación -->
-                                    <p><strong>Fecha de Solicitud:</strong> {{ $factura->created_at->format('d/m/Y H:i') }}</p>
+                                    <p><strong>Fecha de Solicitud:</strong>
+                                        {{ $factura->created_at->format('d/m/Y H:i') }}</p>
                                 </div>
 
                                 <!-- Pie del Modal -->
                                 <div class="modal-footer" style="background-color: #f5f5f5; padding: 15px;">
-                                    <a type="button" class="btn btn-secondary" href="" data-dismiss="modal" style="text-decoration: none; color: #333; padding: 8px 20px; border: 1px solid #ccc; border-radius: 5px;">Cerrar</a>
+                                    <a type="button" class="btn btn-secondary" href="" data-dismiss="modal"
+                                        style="text-decoration: none; color: #333; padding: 8px 20px; border: 1px solid #ccc; border-radius: 5px;">Cerrar</a>
                                 </div>
                             </div>
                         </div>
-
                     @endforeach
                 </tbody>
             </table>
@@ -1131,141 +1248,149 @@
         @else
             <div class="list-group">
 
-                    @foreach ($recetas as $receta)
+                @foreach ($recetas as $receta)
+                    @if (!$receta->cobrada)
+                        <table class="tableConsultas">
+                            <tr style="text-align: center; align-items: center; justify-content: center;">
+                                <td><strong>{{ $receta->paciente->nombre }}
+                                        {{ $receta->paciente->apellidopaterno }}
+                                        {{ $receta->paciente->apellidomaterno }}</strong></td>
+                                <td rowspan="2"
+                                    style="text-align: center; align-items: center; justify-content: center;">
+                                    <!-- Botón para abrir el modal -->
+                                    <a class="btn btn-info" href="#cobrodeServicios-{{ $receta->id }}"
+                                        data-id="{{ $receta->id }}">
+                                        👁️
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Fecha:</strong> {{ $receta->created_at->format('d/m/Y') }}<br>
+                                    <strong>Hora:</strong> {{ $receta->created_at->format('H:i') }}
+                                </td>
+                            </tr>
+                        </table>
+                    @endif
 
-                        @if (!$receta->cobrada)
-                            <table class="tableConsultas">
-                                <tr style="text-align: center; align-items: center; justify-content: center;">
-                                    <td><strong>{{ $receta->paciente->nombre }}
-                                            {{ $receta->paciente->apellidopaterno }}
-                                            {{ $receta->paciente->apellidomaterno }}</strong></td>
-                                    <td rowspan="2"
-                                        style="text-align: center; align-items: center; justify-content: center;">
-                                        <!-- Botón para abrir el modal -->
-                                        <a class="btn btn-info" href="#cobrodeServicios-{{ $receta->id }}"
-                                            data-id="{{ $receta->id }}">
-                                            👁️
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Fecha:</strong> {{ $receta->created_at->format('d/m/Y') }}<br>
-                                        <strong>Hora:</strong> {{ $receta->created_at->format('H:i') }}
-                                    </td>
-                                </tr>
-                            </table>
-                        @endif
 
+                    <div class="modal cobrodeServicios" id="cobrodeServicios-{{ $receta->id }}">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title" id="tratamientoModalLabel-{{ $receta->id }}">
+                                    Cobro de Servicios del Paciente: {{ $receta->paciente->nombre }}
+                                </h5>
+                                <a type="button" class="close text-white" data-id="{{ $receta->id }}"
+                                    aria-label="Close" href="#">
+                                    <span aria-hidden="true">&times;</span>
+                                </a>
+                            </div>
 
-                            <div class="modal cobrodeServicios" id="cobrodeServicios-{{ $receta->id }}">
-                                <div class="modal-content" >
-                                    <!-- Modal Header -->
-                                    <div class="modal-header bg-primary text-white">
-                                        <h5 class="modal-title" id="tratamientoModalLabel-{{ $receta->id }}">
-                                            Cobro de Servicios del Paciente: {{ $receta->paciente->nombre }}
-                                        </h5>
-                                        <a type="button" class="close text-white" data-id="{{ $receta->id }}"
-                                            aria-label="Close" href="#">
-                                            <span aria-hidden="true">&times;</span>
-                                        </a>
-                                    </div>
+                            <!-- Modal Body -->
+                            <div class="modal-body">
+                                <!-- Formulario de Cobro -->
+                                <form action="{{ route('cajero.cobros.store', $receta->id) }}" method="POST">
+                                    @csrf
 
-                                    <!-- Modal Body -->
-                                    <div class="modal-body">
-                                        <!-- Formulario de Cobro -->
-                                        <form action="{{ route('cajero.cobros.store', $receta->id) }}" method="POST">
-                                            @csrf
+                                    <div class="ServiciosPaneles"
+                                        style=" justify-content: space-between; margin-top: 10px;">
+                                        <div class="Panel IzquieroCobro">
+                                            @php
+                                                $totalMedicamentos = 0.0;
+                                                $totalMaterial = 0.0;
+                                                $totalServicio = 0.0;
+                                            @endphp
 
-                                            <div class="ServiciosPaneles"
-                                                style=" justify-content: space-between; margin-top: 10px;">
-                                                <div class="Panel IzquieroCobro">
-                                                    @php
-                                                        $totalMedicamentos = 0.0;
-                                                        $totalMaterial = 0.0;
-                                                        $totalServicio = 0.0;
-                                                    @endphp
+                                            <div style="display: flex;">
 
-                                                    <div style="display: flex;">
+                                                <div style="width: 50%; margin-right: 10px;">
+                                                    <!-- Información del Paciente -->
+                                                    <div class="form-group">
+                                                        <div class="paciente-info mb-4"
+                                                            style="border-top: 1px solid #ddd; padding-top: 15px;">
+                                                            <h5>Información del Paciente</h5>
+                                                            <input type="hidden" id="paciente_id" name="paciente_id"
+                                                                value="{{ $receta->paciente->id }}">
 
-                                                        <div style="width: 50%; margin-right: 10px;">
-                                                            <!-- Información del Paciente -->
-                                                            <div class="form-group">
-                                                                <div class="paciente-info mb-4"
-                                                                    style="border-top: 1px solid #ddd; padding-top: 15px;">
-                                                                    <h5>Información del Paciente</h5>
-                                                                    <input type="hidden" id="paciente_id" name="paciente_id"
-                                                                        value="{{ $receta->paciente->id }}">
-
-                                                                    <input type="hidden" id="receta_id" name="receta_id"
-                                                                        value="{{ $receta->id }}">
-                                                                    <p><strong>Paciente:</strong> {{ $receta->paciente->nombre }}
-                                                                        {{ $receta->paciente->apellidopaterno }}
-                                                                        {{ $receta->paciente->apellidomaterno }}</p>
-                                                                    <p><strong>Edad:</strong> {{ $receta->paciente->edad }}</p>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label for="nombre">Nombre del DerechoHabiente:</label>
-                                                                <input type="text" name="nombre" id="nombre" class="form-control"
-                                                                    placeholder="Ingrese el nombre del cobro" required>
-                                                            </div>
-
-                                                            <!-- Información del Servicio -->
-                                                            <div class="form-group">
-                                                                <div class="servicio-info mb-4"
-                                                                    style="border-top: 1px solid #ddd; padding-top: 15px;">
-                                                                    <h5>Detalles del Servicio</h5>
-                                                                    <select name="servicio" id="servicio-{{ $receta->id }}"
-                                                                        class="form-control" required
-                                                                        onchange="actualizarCosto({{ $receta->id }})">
-                                                                        <option value="" selected disabled>Seleccione una opción
-                                                                        </option>
-                                                                        @foreach ($servicios as $servicio)
-                                                                            <option value="{{ $servicio->id }}"
-                                                                                data-costo="{{ $servicio->costo }}">
-                                                                                {{ $servicio->nombre }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                    <p><strong>Fecha del Servicio:</strong>
-                                                                        {{ \Carbon\Carbon::parse($receta->fecha)->format('d/m/Y') }}</p>
-                                                                    <p><strong>Costo Estimado:</strong> <span
-                                                                            id="costo-{{ $receta->id }}">{{ $servicio->costo ?? '0.00' }}</span>
-                                                                    </p>
-
-                                                                    <input type="hidden" name="costo2" id="costo2-{{ $receta->id }}"
-                                                                        value="{{ $servicio->costo }}" step="0.01" />
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Monto Total -->
-                                                            <div class="form-group">
-                                                                <label for="montotext">Monto Total:</label>
-                                                                <input type="text" name="monto" id="monto-{{ $receta->id }}"
-                                                                    class="form-control" value="0.0" step="0.01" readonly required>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label for="fecha">Fecha del Cobro:</label>
-                                                                <input type="date" name="fecha" id="fecha" class="form-control"
-                                                                    value="{{ date('Y-m-d') }}" required>
-                                                            </div>
-
-                                                            <div
-                                                                style="margin-left: 20px; display: flex; justify-content: space-between; align-items: center; padding-right: 10px; width: 100%;">
-                                                                <label for="facturacion">Facturación</label>
-                                                                <input type="checkbox" name="facturacion"
-                                                                    id="facturacion-{{ $receta->id }}"
-                                                                    onclick="toggleFacturacion({{ $receta->id }})">
-                                                            </div>
-
+                                                            <input type="hidden" id="receta_id" name="receta_id"
+                                                                value="{{ $receta->id }}">
+                                                            <p><strong>Paciente:</strong>
+                                                                {{ $receta->paciente->nombre }}
+                                                                {{ $receta->paciente->apellidopaterno }}
+                                                                {{ $receta->paciente->apellidomaterno }}</p>
+                                                            <p><strong>Edad:</strong> {{ $receta->paciente->edad }}
+                                                            </p>
                                                         </div>
+                                                    </div>
 
-                                                        <div style="width: 50%;">
+                                                    <div class="form-group">
+                                                        <label for="nombre">Nombre del DerechoHabiente:</label>
+                                                        <input type="text" name="nombre" id="nombre"
+                                                            class="form-control"
+                                                            placeholder="Ingrese el nombre del cobro" required>
+                                                    </div>
+
+                                                    <!-- Información del Servicio -->
+                                                    <div class="form-group">
+                                                        <div class="servicio-info mb-4"
+                                                            style="border-top: 1px solid #ddd; padding-top: 15px;">
+                                                            <h5>Detalles del Servicio</h5>
+                                                            <select name="servicio"
+                                                                id="servicio-{{ $receta->id }}"
+                                                                class="form-control" required
+                                                                onchange="actualizarCosto({{ $receta->id }})">
+                                                                <option value="" selected disabled>Seleccione una
+                                                                    opción
+                                                                </option>
+                                                                @foreach ($servicios as $servicio)
+                                                                    <option value="{{ $servicio->id }}"
+                                                                        data-costo="{{ $servicio->costo }}">
+                                                                        {{ $servicio->nombre }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <p><strong>Fecha del Servicio:</strong>
+                                                                {{ \Carbon\Carbon::parse($receta->fecha)->format('d/m/Y') }}
+                                                            </p>
+                                                            <p><strong>Costo Estimado:</strong> <span
+                                                                    id="costo-{{ $receta->id }}">{{ $servicio->costo ?? '0.00' }}</span>
+                                                            </p>
+
+                                                            <input type="hidden" name="costo2"
+                                                                id="costo2-{{ $receta->id }}"
+                                                                value="{{ $servicio->costo }}" step="0.01" />
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Monto Total -->
+                                                    <div class="form-group">
+                                                        <label for="montotext">Monto Total:</label>
+                                                        <input type="text" name="monto"
+                                                            id="monto-{{ $receta->id }}" class="form-control"
+                                                            value="0.0" step="0.01" readonly required>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="fecha">Fecha del Cobro:</label>
+                                                        <input type="date" name="fecha" id="fecha"
+                                                            class="form-control" value="{{ date('Y-m-d') }}"
+                                                            required>
+                                                    </div>
+
+                                                    <div
+                                                        style="margin-left: 20px; display: flex; justify-content: space-between; align-items: center; padding-right: 10px; width: 100%;">
+                                                        <label for="facturacion">Facturación</label>
+                                                        <input type="checkbox" name="facturacion"
+                                                            id="facturacion-{{ $receta->id }}"
+                                                            onclick="toggleFacturacion({{ $receta->id }})">
+                                                    </div>
+
+                                                </div>
+
+                                                <div style="width: 50%;">
 
 
-                                                            {{-- <!-- Información del Tratamiento -->
+                                                    {{-- <!-- Información del Tratamiento -->
                                                             <div class="form-group">
                                                                 <div class="tratamiento-container mb-4"
                                                                     style="border-top: 1px solid #ddd; padding-top: 15px;">
@@ -1285,150 +1410,81 @@
 
 
 
-                                                            <!-- Medicamentos Surtidos -->
-                                                            <div class="form-group">
-                                                                <div class="medicamentos-surtidos mb-4"
-                                                                    style="border-top: 1px solid #ddd; padding-top: 15px;">
+                                                    <!-- Medicamentos Surtidos -->
+                                                    <div class="form-group">
+                                                        <div class="medicamentos-surtidos mb-4"
+                                                            style="border-top: 1px solid #ddd; padding-top: 15px;">
 
-                                                                    <div>
-                                                                                @php
-                                                                                    $recetasFiltradas = $recetasSurtidas->filter(function ($recetaSurtida) use ($receta) {
-                                                                                        return $recetaSurtida->receta_id == $receta->id;
-                                                                                    });
+                                                            <div>
+                                                                @php
+                                                                    $recetasFiltradas = $recetasSurtidas->filter(
+                                                                        function ($recetaSurtida) use ($receta) {
+                                                                            return $recetaSurtida->receta_id ==
+                                                                                $receta->id;
+                                                                        },
+                                                                    );
 
-                                                                                @endphp
-                                                                                @if ($recetasFiltradas->isNotEmpty())
-                                                                                <table class="table table-blue">
-                                                                                    <thead class="thead-light">
-                                                                                        <tr>
-                                                                                            <th colspan="4">Medicamentos Surtidos</th>
-                                                                                        </tr>
+                                                                @endphp
+                                                                @if ($recetasFiltradas->isNotEmpty())
+                                                                    <table class="table table-blue">
+                                                                        <thead class="thead-light">
+                                                                            <tr>
+                                                                                <th colspan="4">Medicamentos
+                                                                                    Surtidos</th>
+                                                                            </tr>
 
-                                                                                    </thead>
-                                                                                    <thead class="thead-light">
-                                                                                        <tr>
-                                                                                            <td>Medicamento</td>
-                                                                                            <td>Cantidad</td>
-                                                                                            <td>Precio</td>
-                                                                                            <td>Total</td>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody >
-                                                                                    @foreach ($recetasSurtidas as $recetaSurtida)
-                                                                                        @if ($recetaSurtida->receta_id == $receta->id && !empty($recetaSurtida))
-                                                                                            @php
-                                                                                                $subtotal =
-                                                                                                    $recetaSurtida->cantidad *
-                                                                                                    $recetaSurtida->medicamento->precio;
-                                                                                                $totalMedicamentos += $subtotal;
-                                                                                            @endphp
-
-                                                                                            <tr >
-                                                                                                <td style="text-align: left;">{{ $recetaSurtida->medicamento->nombre }}
-                                                                                                </td>
-                                                                                                <td style="text-align: center;">{{ $recetaSurtida->cantidad }}</td>
-                                                                                                <td style="text-align: center;">${{ number_format($recetaSurtida->medicamento->precio, 2) }}
-                                                                                                </td>
-                                                                                                <td style="text-align: center;">${{ number_format($subtotal, 2) }}</td>
-                                                                                            </tr>
-                                                                                        @endif
-                                                                                    @endforeach
-                                                                                @else
-                                                                                    <tr>
-                                                                                        <th style="text-align: center;">
-                                                                                            Ningún Medicamento Surtido
-                                                                                        </th>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                                @endif
-
-                                                                    </div>
-                                                                    <div
-
-                                                                        style="display: flex; padding: 10px; justify-content: right; margin-right: 20px;">
-
-                                                                        <table class="table" style="width: 100%;">
-                                                                            <thead>
-                                                                            <tr style="border-top: 2px solid #ddd;">
-                                                                                <!-- Primera columna -->
-                                                                                <th colspan="2"></th>
-                                                                                <!-- Segunda columna: Título del total -->
-                                                                                <th style="text-align: left; padding: 8px; font-weight: bold;">Total:</th>
-                                                                                <!-- Tercera columna: Espaciador o contenido adicional si necesario -->
-                                                                                <td style="text-align: center; padding: 8px;"></td>
-                                                                                <!-- Cuarta columna: Total en formato numérico -->
-                                                                                <td style="text-align: right; padding: 8px; font-weight: bold;">
-                                                                                    ${{ number_format($totalMedicamentos, 2) }}
-                                                                                    <input type="hidden" name="totalMedicamentos" id="MedicamentosTotal-{{ $receta->id }}" value="{{ $totalMedicamentos }}">
-                                                                                </td>
+                                                                        </thead>
+                                                                        <thead class="thead-light">
+                                                                            <tr>
+                                                                                <td>Medicamento</td>
+                                                                                <td>Cantidad</td>
+                                                                                <td>Precio</td>
+                                                                                <td>Total</td>
                                                                             </tr>
                                                                         </thead>
-                                                                        </table>
+                                                                        <tbody>
+                                                                            @foreach ($recetasSurtidas as $recetaSurtida)
+                                                                                @if ($recetaSurtida->receta_id == $receta->id && !empty($recetaSurtida))
+                                                                                    @php
+                                                                                        $subtotal =
+                                                                                            $recetaSurtida->cantidad *
+                                                                                            $recetaSurtida->medicamento
+                                                                                                ->precio;
+                                                                                        $totalMedicamentos += $subtotal;
+                                                                                    @endphp
 
+                                                                                    <tr>
+                                                                                        <td style="text-align: left;">
+                                                                                            {{ $recetaSurtida->medicamento->nombre }}
+                                                                                        </td>
+                                                                                        <td
+                                                                                            style="text-align: center;">
+                                                                                            {{ $recetaSurtida->cantidad }}
+                                                                                        </td>
+                                                                                        <td
+                                                                                            style="text-align: center;">
+                                                                                            ${{ number_format($recetaSurtida->medicamento->precio, 2) }}
+                                                                                        </td>
+                                                                                        <td
+                                                                                            style="text-align: center;">
+                                                                                            ${{ number_format($subtotal, 2) }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @else
+                                                                            <tr>
+                                                                                <th style="text-align: center;">
+                                                                                    Ningún Medicamento Surtido
+                                                                                </th>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                @endif
 
-
-                                                                    </div>
-                                                                </div>
                                                             </div>
-
-                                                            <div class="form-group">
-                                                                <table class="table table-blue">
-                                                                    <thead class="thead-light">
-                                                                        <tr>
-                                                                            <th colspan="4">Material Utilizado</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <thead class="thead-light">
-                                                                        <tr>
-                                                                            <th>Nombre</th>
-                                                                            <th>Cantidad</th>
-                                                                            <th>Precio</th>
-                                                                            <th>Total</th>
-                                                                        </tr>
-                                                                    </thead>
-
-                                                                    <tbody >
-
-                                                                        @if (!empty($receta->material) && is_array($receta->material))
-                                                                        @foreach ($receta->material as $material )
-                                                                            @if (!empty($material))
-                                                                                @foreach ($inventarioMedico as $materialMedico)
-
-                                                                                        @if ($material['nombre'] === $materialMedico->nombre)
-                                                                                            @php
-                                                                                                $subtotalMaterial =
-                                                                                                $material['cantidad'] *
-                                                                                                $materialMedico->precio;
-                                                                                                $totalMaterial += $subtotalMaterial;
-                                                                                            @endphp
-
-                                                                                            <tr>
-                                                                                                <td style="text-align: left;">
-                                                                                                    {{$material['nombre']}}
-                                                                                                </td>
-                                                                                                <td style="text-align: center;">
-                                                                                                    {{number_format($material['cantidad'])}}
-                                                                                                </td>
-                                                                                                <td style="text-align: center;">
-                                                                                                    $ {{number_format($materialMedico->precio)}}
-                                                                                                </td style="text-align: center;">
-                                                                                                <td>  ${{ number_format($material['cantidad'] * $materialMedico->precio)}}</td>
-                                                                                            </tr>
-                                                                                        @endif
-
-                                                                                @endforeach
-                                                                            @else
-                                                                                <tr>
-                                                                                    <th style="text-align: center;">
-                                                                                        Ningún Material Utilizado
-                                                                                    </th>
-                                                                                </tr>
-                                                                            @endif
-                                                                        @endforeach
-                                                                        @endif
-                                                                    </tbody >
-                                                                </table>
+                                                            <div
+                                                                style="display: flex; padding: 10px; justify-content: right; margin-right: 20px;">
 
                                                                 <table class="table" style="width: 100%;">
                                                                     <thead>
@@ -1436,74 +1492,170 @@
                                                                             <!-- Primera columna -->
                                                                             <th colspan="2"></th>
                                                                             <!-- Segunda columna: Título del total -->
-                                                                            <th style="text-align: left; padding: 8px; font-weight: bold;">Total:</th>
+                                                                            <th
+                                                                                style="text-align: left; padding: 8px; font-weight: bold;">
+                                                                                Total:</th>
                                                                             <!-- Tercera columna: Espaciador o contenido adicional si necesario -->
-                                                                            <td style="text-align: center; padding: 8px;"></td>
+                                                                            <td
+                                                                                style="text-align: center; padding: 8px;">
+                                                                            </td>
                                                                             <!-- Cuarta columna: Total en formato numérico -->
-                                                                            <td style="text-align: right; padding: 8px; font-weight: bold;">
-                                                                                ${{ number_format($totalMaterial, 2) }}
-                                                                                <input type="hidden" name="totalMaterial" id="materialTotal-{{$receta->id}}" value="{{ $totalMaterial }}">
+                                                                            <td
+                                                                                style="text-align: right; padding: 8px; font-weight: bold;">
+                                                                                ${{ number_format($totalMedicamentos, 2) }}
+                                                                                <input type="hidden"
+                                                                                    name="totalMedicamentos"
+                                                                                    id="MedicamentosTotal-{{ $receta->id }}"
+                                                                                    value="{{ $totalMedicamentos }}">
                                                                             </td>
                                                                         </tr>
                                                                     </thead>
                                                                 </table>
+
+
+
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <div class="form-group">
+                                                        <table class="table table-blue">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th colspan="4">Material Utilizado</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th>Nombre</th>
+                                                                    <th>Cantidad</th>
+                                                                    <th>Precio</th>
+                                                                    <th>Total</th>
+                                                                </tr>
+                                                            </thead>
+
+                                                            <tbody>
+
+                                                                @if (!empty($receta->material) && is_array($receta->material))
+                                                                    @foreach ($receta->material as $material)
+                                                                        @if (!empty($material))
+                                                                            @foreach ($inventarioMedico as $materialMedico)
+                                                                                @if ($material['nombre'] === $materialMedico->nombre)
+                                                                                    @php
+                                                                                        $subtotalMaterial =
+                                                                                            $material['cantidad'] *
+                                                                                            $materialMedico->precio;
+                                                                                        $totalMaterial += $subtotalMaterial;
+                                                                                    @endphp
+
+                                                                                    <tr>
+                                                                                        <td style="text-align: left;">
+                                                                                            {{ $material['nombre'] }}
+                                                                                        </td>
+                                                                                        <td
+                                                                                            style="text-align: center;">
+                                                                                            {{ number_format($material['cantidad']) }}
+                                                                                        </td>
+                                                                                        <td
+                                                                                            style="text-align: center;">
+                                                                                            $
+                                                                                            {{ number_format($materialMedico->precio) }}
+                                                                                        </td
+                                                                                            style="text-align: center;">
+                                                                                        <td> ${{ number_format($material['cantidad'] * $materialMedico->precio) }}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endif
+                                                                            @endforeach
+                                                                        @else
+                                                                            <tr>
+                                                                                <th style="text-align: center;">
+                                                                                    Ningún Material Utilizado
+                                                                                </th>
+                                                                            </tr>
+                                                                        @endif
+                                                                    @endforeach
+                                                                @endif
+                                                            </tbody>
+                                                        </table>
+
+                                                        <table class="table" style="width: 100%;">
+                                                            <thead>
+                                                                <tr style="border-top: 2px solid #ddd;">
+                                                                    <!-- Primera columna -->
+                                                                    <th colspan="2"></th>
+                                                                    <!-- Segunda columna: Título del total -->
+                                                                    <th
+                                                                        style="text-align: left; padding: 8px; font-weight: bold;">
+                                                                        Total:</th>
+                                                                    <!-- Tercera columna: Espaciador o contenido adicional si necesario -->
+                                                                    <td style="text-align: center; padding: 8px;"></td>
+                                                                    <!-- Cuarta columna: Total en formato numérico -->
+                                                                    <td
+                                                                        style="text-align: right; padding: 8px; font-weight: bold;">
+                                                                        ${{ number_format($totalMaterial, 2) }}
+                                                                        <input type="hidden" name="totalMaterial"
+                                                                            id="materialTotal-{{ $receta->id }}"
+                                                                            value="{{ $totalMaterial }}">
+                                                                    </td>
+                                                                </tr>
+                                                            </thead>
+                                                        </table>
+                                                    </div>
                                                 </div>
-
-                                                <!-- Contenedor para los datos de facturación -->
-                                                <div id="datosFacturacion-{{ $receta->id }}"
-                                                    style="display: none; margin-top: 40px; ">
-                                                    <!-- Nombre del Cliente -->
-                                                    <h2
-                                                        style="width: 100%; font-size: 20px; text-align: center; font-weight: 700; box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2); margin-bottom: 20px;  ">
-                                                        Datos de Factura</h2>
-                                                    <div class="form-group">
-                                                        <label for="nombreCliente">Nombre del Facturador</label>
-                                                        <input type="text" class="form-control" id="nombreCliente"
-                                                            name="nombreCliente">
-                                                    </div>
-                                                    <!-- RFC -->
-                                                    <div class="form-group">
-                                                        <label for="rfcCliente">RFC</label>
-                                                        <input type="text" class="form-control" id="rfcCliente"
-                                                            name="rfcCliente">
-                                                    </div>
-                                                    <!-- Dirección -->
-                                                    <div class="form-group">
-                                                        <label for="direccionCliente">Dirección</label>
-                                                        <input type="text" class="form-control" id="direccionCliente"
-                                                            name="direccionCliente">
-                                                    </div>
-
-                                                    <!-- Correo Electrónico -->
-                                                    <div class="form-group">
-                                                        <label for="emailCliente">Correo Electrónico</label>
-                                                        <input type="email" class="form-control" id="emailCliente"
-                                                            name="emailCliente">
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label for="telefono">Telefono</label>
-                                                        <input type="telefono" class="form-control" id="telefono"
-                                                            name="telefono">
-                                                    </div>
-                                                </div>
-
                                             </div>
-                                            <!-- Modal Footer Buttons -->
-                                            <div class="modal-footer mt-4">
-                                                <button type="submit" class="btn btn-success">Confirmar y Cobrar</button>
-                                                <a type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                                        </div>
+
+                                        <!-- Contenedor para los datos de facturación -->
+                                        <div id="datosFacturacion-{{ $receta->id }}"
+                                            style="display: none; margin-top: 40px; ">
+                                            <!-- Nombre del Cliente -->
+                                            <h2
+                                                style="width: 100%; font-size: 20px; text-align: center; font-weight: 700; box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2); margin-bottom: 20px;  ">
+                                                Datos de Factura</h2>
+                                            <div class="form-group">
+                                                <label for="nombreCliente">Nombre del Facturador</label>
+                                                <input type="text" class="form-control" id="nombreCliente"
+                                                    name="nombreCliente">
                                             </div>
-                                        </form>
+                                            <!-- RFC -->
+                                            <div class="form-group">
+                                                <label for="rfcCliente">RFC</label>
+                                                <input type="text" class="form-control" id="rfcCliente"
+                                                    name="rfcCliente">
+                                            </div>
+                                            <!-- Dirección -->
+                                            <div class="form-group">
+                                                <label for="direccionCliente">Dirección</label>
+                                                <input type="text" class="form-control" id="direccionCliente"
+                                                    name="direccionCliente">
+                                            </div>
+
+                                            <!-- Correo Electrónico -->
+                                            <div class="form-group">
+                                                <label for="emailCliente">Correo Electrónico</label>
+                                                <input type="email" class="form-control" id="emailCliente"
+                                                    name="emailCliente">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="telefono">Telefono</label>
+                                                <input type="telefono" class="form-control" id="telefono"
+                                                    name="telefono">
+                                            </div>
+                                        </div>
+
                                     </div>
-                                </div>
+                                    <!-- Modal Footer Buttons -->
+                                    <div class="modal-footer mt-4">
+                                        <button type="submit" class="btn btn-success">Confirmar y Cobrar</button>
+                                        <a type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                                    </div>
+                                </form>
                             </div>
-
-
-                    @endforeach
+                        </div>
+                    </div>
+                @endforeach
 
             </div>
 
@@ -1521,54 +1673,65 @@
     var derecha = document.querySelectorAll('.derecha');
     var ServicioTotal = 0;
 
-    const todosLoscobros = @json($cobros); // Traer todos los cobros
+    const todosLoscobros = @json($cobrosAll); // Traer todos los cobros
 
     function buscarcobro() {
-    const searchValue = document.getElementById('buscarcobro').value.toLowerCase();
+        const searchValue = document.getElementById('buscarcobro').value.toLowerCase();
 
-    // Si la búsqueda está vacía, recargar la página
-    if (searchValue.trim() === '') {
-        window.location.reload();
-        return;
-    }
+        // Si la búsqueda está vacía, recargar la página
+        if (searchValue.trim() === '') {
+            window.location.reload();
+            return;
+        }
 
-    const tbody = document.getElementById('tbodycobros');
-    tbody.innerHTML = ''; // Limpiar la tabla
+        const tbody = document.getElementById('tbodycobros');
+        tbody.innerHTML = ''; // Limpiar la tabla
 
-    function normalizarTexto(texto) {
-        return texto
-            .normalize("NFD") // Descompone caracteres con acentos en sus componentes base
-            .replace(/[̀-ͯ]/g, "") // Elimina los diacríticos (acentos)
-            .toLowerCase(); // Convierte a minúsculas
-    }
+        function normalizarTexto(texto) {
+            return texto
+                .normalize("NFD") // Descompone caracteres con acentos en sus componentes base
+                .replace(/[̀-ͯ]/g, "") // Elimina los diacríticos (acentos)
+                .toLowerCase(); // Convierte a minúsculas
+        }
 
-    // Filtrar los cobros
-    const resultados = todosLoscobros.filter(cobro => {
-        // Normalizar valores para evitar errores
-        const idcobro = String(cobro.id || '').padStart(3, '0');
-        const nombrePaciente = normalizarTexto(`${cobro.paciente?.nombre || ''} ${cobro.paciente?.apellidopaterno || ''} ${cobro.paciente?.apellidomaterno || ''}`);
-        const servicios = cobro.servicios ? cobro.servicios.map(s => normalizarTexto(s.nombre)).join(' ') : '';
-        const monto = parseFloat(cobro.monto).toFixed(2);
-        const facturado = cobro.facturacion ? 'sí' : 'no';
-        const searchNormalized = normalizarTexto(searchValue);
+        // Filtrar los cobros
+        const resultados = todosLoscobros.filter(cobro => {
+            // Normalizar valores para evitar errores
+            const idcobro = String(cobro.id || '').padStart(3, '0');
+            const nombrePaciente = normalizarTexto(
+                `${cobro.paciente?.nombre || ''} ${cobro.paciente?.apellidopaterno || ''} ${cobro.paciente?.apellidomaterno || ''}`
+                );
+            const servicios = cobro.servicios ? cobro.servicios.map(s => normalizarTexto(s.nombre)).join(' ') :
+                '';
+            const medicamentos = cobro.medicamentos && cobro.medicamentos.length > 0 ?
+                cobro.medicamentos.map(a => normalizarTexto(a.nombre)).join(' ') :
+                'sin medicamentos';
 
-        // Comparar los valores normalizados
-        return (
-            idcobro.includes(searchValue) ||
-            nombrePaciente.includes(searchNormalized) ||
-            servicios.includes(searchNormalized) ||
-            monto.includes(searchNormalized) ||
-            facturado.includes(searchNormalized)
-        );
-    });
+            const monto = parseFloat(cobro.monto).toFixed(2);
+            const facturado = cobro.facturacion ? 'sí' : 'no';
+            const searchNormalized = normalizarTexto(searchValue);
 
-    // Mostrar resultados
-    if (resultados.length > 0) {
-        resultados.forEach(cobro => {
-            const servicios = cobro.servicios?.map(servicio => `<div>${servicio.nombre}</div>`).join('') || 'Sin servicios';
+            // Comparar los valores normalizados
+            return (
+                idcobro.includes(searchValue) ||
+                nombrePaciente.includes(searchNormalized) ||
+                servicios.includes(searchNormalized) ||
+                medicamentos.includes(searchNormalized) ||
+                monto.includes(searchNormalized) ||
+                facturado.includes(searchNormalized)
+            );
+        });
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
+        // Mostrar resultados
+        if (resultados.length > 0) {
+            resultados.forEach(cobro => {
+                const servicios = cobro.servicios?.map(servicio => `<div>${servicio.nombre}</div>`).join('') ||
+                    'Sin servicios';
+                const medicamentos = cobro.medicamentos?.map(medicamento => `<div>${medicamento.nombre}</div>`)
+                    .join('') || 'Sin medicamentos';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
                 <td style="text-align: center;">${String(cobro.id).padStart(3, '0')}</td>
                 <td style="text-align: center;">
                     ${cobro.paciente?.nombre || 'Sin Asignar'}
@@ -1576,6 +1739,7 @@
                     ${cobro.paciente?.apellidomaterno || ''}
                 </td>
                 <td style="text-align: center;">${servicios}</td>
+                 <td style="text-align: center;">${medicamentos}</td>
                 <td style="text-align: center;">
                     $${parseFloat(cobro.monto).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </td>
@@ -1594,12 +1758,12 @@
             `;
 
 
-            tbody.appendChild(row);
-        });
-    } else {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No se encontraron resultados</td></tr>`;
+                tbody.appendChild(row);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No se encontraron resultados</td></tr>`;
+        }
     }
-}
 
 
 
@@ -1698,7 +1862,8 @@
         document.getElementById(`costo-${recetaId}`).innerHTML = costoServicio;
         document.getElementById(`costo2-${recetaId}`).value = costoServicio;
 
-        console.log("Costo Servicio: " + costoServicio + " | Medicamentos: " + valorMedicamentos + "| Material: " + valorMaterial +  " | Total: " +
+        console.log("Costo Servicio: " + costoServicio + " | Medicamentos: " + valorMedicamentos + "| Material: " +
+            valorMaterial + " | Total: " +
             montoTotal);
     }
 
@@ -1720,5 +1885,9 @@
         } else {
             datosFacturacion.style.display = "none";
         }
+    }
+
+    function setAction(button) {
+        document.getElementById('formReporte').action = button.getAttribute('data-route');
     }
 </script>

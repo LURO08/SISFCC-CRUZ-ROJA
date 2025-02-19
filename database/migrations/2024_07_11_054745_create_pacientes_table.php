@@ -254,6 +254,21 @@ return new class extends Migration
             $table->timestamps(); // created_at y updated_at
         });
 
+        Schema::create('guardias', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('idpersonalsolicitante')->nullable()->index();
+            $table->unsignedBigInteger('idpersonalsuplente')->nullable()->index();
+            $table->string('dias');
+            $table->string('rutaimg');
+
+            $table->timestamps();
+
+            $table->foreign('idpersonalsolicitante')->references('id')->on('personal')->onDelete('cascade');
+            $table->foreign('idpersonalsuplente')->references('id')->on('personal')->onDelete('cascade');
+        });
+
+        DB::statement("ALTER TABLE guardias ADD formato MEDIUMBLOB");
+
         Schema::create('documentos', function (Blueprint $table) {
             $table->id();
             $table->date('fecha');
@@ -273,7 +288,6 @@ return new class extends Migration
 
             $table->foreign('ambulance_id')->references('id')->on('inventario_vehiculos')->onDelete('cascade');
         });
-
 
         //Emergency Phase
         //Fase 1
@@ -473,6 +487,9 @@ return new class extends Migration
             $table->foreign('folio')->references('id')->on('emergency_phase1')->onDelete('cascade');
             $table->foreign('id_phase')->references('id')->on('emergency_phase8')->onDelete('cascade');
         });
+
+        DB::statement("ALTER TABLE emergency_phase8_zonas MODIFY capturas MEDIUMBLOB");
+
         //Fase 9
         Schema::create('Emergency_Phase9', function (Blueprint $table) {
             $table->id();
@@ -525,6 +542,20 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('users');
+
+        Schema::dropIfExists('documentos');
+        Schema::dropIfExists('ambulance_services');
+
+        Schema::dropIfExists('Emergency_Phase1');
+        Schema::dropIfExists('Emergency_Phase2');
+        Schema::dropIfExists('Emergency_Phase3');
+        Schema::dropIfExists('Emergency_Phase4');
+        Schema::dropIfExists('Emergency_Phase5');
+        Schema::dropIfExists('Emergency_Phase6');
+        Schema::dropIfExists('Emergency_Phase7');
+        Schema::dropIfExists('Emergency_Phase8');
+        Schema::dropIfExists('emergency_phase8_zonas');
+        Schema::dropIfExists('Emergency_Phase9');
 
         Schema::dropIfExists('receta_medicas');
         Schema::dropIfExists('pacientes');

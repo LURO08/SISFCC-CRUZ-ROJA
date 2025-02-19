@@ -51,7 +51,7 @@ class MedicamentoController extends Controller
         'cantidad' => $request->cantidad,
         'caducidad' => $request->caducidad,
         'precio' => $request->precio,
-        'imagen' => $rutaImagen,
+        'imagen' => $rutaImagen ?? null,
     ]);
 
     return redirect()->back()->with('success', 'Medicamento creado con éxito.');

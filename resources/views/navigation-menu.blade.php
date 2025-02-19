@@ -83,6 +83,9 @@
                 <x-dropdown-link href="{{ route('admin.personal.index') }}" :active="request()->routeIs('admin.personal.index')">
                     {{ __('Personal') }}
                 </x-dropdown-link>
+                <x-dropdown-link href="{{ route('admin.guardias.index') }}" :active="request()->routeIs('admin.guardias.index')">
+                    {{ __('Guardias') }}
+                </x-dropdown-link>
                 <x-dropdown-link href="{{ route('farmacia.proveedores.index') }}" :active="request()->routeIs('farmacia.proveedores.index')">
                     {{ __('Proveedores') }}
                 </x-dropdown-link>

@@ -8,9 +8,10 @@
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
-            width: 63mm; /* Ancho típico de ticket */
             margin: 0 0px;
             padding: 0;
+            /* width: 60mm; */
+            /* margin-left: -10px; */
         }
 
         .header {
