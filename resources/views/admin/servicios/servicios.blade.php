@@ -397,7 +397,7 @@
 
                                             <div class="form-group">
                                                 <label for="descripcion">Descripción</label><br>
-                                                <textarea name="descripcion" id="descripcion" class="form-control" rows="4" required>{{ $servicio->descripcion }}</textarea>
+                                                <textarea name="descripcion" id="descripcion" class="form-control" rows="4">{{ $servicio->descripcion }}</textarea>
                                             </div>
 
                                             <!-- Botones centrados -->
@@ -457,7 +457,7 @@
                                 <div class="form-group">
                                     <label for="descripcion">Descripción</label><br>
                                     <textarea name="descripcion" id="descripcion" class="form-control" rows="4"
-                                        placeholder="Ingrese una descripción detallada del servicio" required></textarea>
+                                        placeholder="Ingrese una descripción detallada del servicio"></textarea>
                                 </div>
                             </div>
 

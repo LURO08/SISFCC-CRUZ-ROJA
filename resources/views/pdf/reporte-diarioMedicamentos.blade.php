@@ -25,7 +25,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            page-break-inside: avoid;
+            /* page-break-inside: avoid; */
         }
 
         th,
@@ -220,12 +220,18 @@
                         </tr>
                     @endfor
 
-                    <tr>
-                        <td colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total Propios:</td>
-                        <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
-                            ${{ number_format($totalpropios, 2, '.', '') }}
-                        </td>
-                    </tr>
+                    @if(!$totalpropios <= 0)
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total Propios:</td>
+                            <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalpropios, 2, '.', '') }}
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="5" style="text-align: center; font-size: 12px;">NINGÚN MEDICAMENTO REGISTRADO</td>
+                        </tr>
+                    @endif
 
                     <tr>
                         <th style="text-align: center;">MEDICAMENTO NO PROPIOS</th>
@@ -258,13 +264,35 @@
                         </tr>
                     @endfor
 
-                    <tr>
+                    @if(!number_format($totalnoPropios) <= 0)
 
-                        <td  colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total No Propios:</td>
-                        <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
-                            ${{ number_format($totalnoPropios, 2, '.', '') }}
-                        </td>
-                    </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-weight: 800; font-size: 15px;">CRUZ ROJA</td>
+                                <td  style="text-align: center; font-weight: 800; font-size: 15px;"> 20%</td>
+                                <td style="text-align: center; font-weight: 800; font-size: 18px;">
+                                    ${{ number_format($totalnoPropios * 0.20, 2, '.', '') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-weight: 800; font-size: 15px;">MEDICOS</td>
+                                <td  style="text-align: center; font-weight: 800; font-size: 15px;">80%</td>
+                                <td style="text-align: center; font-weight: 800; font-size: 18px;">
+                                    ${{ number_format($totalnoPropios * 0.80, 2, '.', '') }}
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td  colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total No Propios:</td>
+                                <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
+                                    ${{ number_format($totalnoPropios, 2, '.', '') }}
+                                </td>
+                            </tr>
+
+                            @else
+                            <tr>
+                                <td colspan="5" style="text-align: center; font-size: 12px;">NINGÚN MEDICAMENTO REGISTRADO</td>
+                            </tr>
+                            @endif
 
                     <tr>
                         <td style="text-align: center; font-weight: 900; font-size: 20px;" colspan="3">
@@ -370,12 +398,18 @@
                         </tr>
                     @endfor
 
-                    <tr>
-                        <td colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total Propios:</td>
-                        <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
-                            ${{ number_format($totalpropios, 2, '.', '') }}
-                        </td>
-                    </tr>
+                    @if(!$totalpropios <= 0)
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total Propios:</td>
+                            <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalpropios, 2, '.', '') }}
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="5" style="text-align: center; font-size: 12px;">NINGÚN MEDICAMENTO REGISTRADO</td>
+                        </tr>
+                    @endif
 
                     <tr>
                         <th style="text-align: center;">MEDICAMENTO NO PROPIOS</th>
@@ -408,13 +442,32 @@
                         </tr>
                     @endfor
 
-                    <tr>
-
-                        <td  colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total No Propios:</td>
-                        <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
-                            ${{ number_format($totalnoPropios, 2, '.', '') }}
-                        </td>
-                    </tr>
+                    @if(!number_format($totalnoPropios) <= 0)
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 15px;">CRUZ ROJA</td>
+                            <td  style="text-align: center; font-weight: 800; font-size: 15px;"> 20%</td>
+                            <td style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalnoPropios * 0.20, 2, '.', '') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 15px;">MEDICOS</td>
+                            <td  style="text-align: center; font-weight: 800; font-size: 15px;">80%</td>
+                            <td style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalnoPropios * 0.80, 2, '.', '') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total No Propios:</td>
+                            <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalnoPropios, 2, '.', '') }}
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="5" style="text-align: center; font-size: 12px;">NINGÚN MEDICAMENTO REGISTRADO</td>
+                        </tr>
+                    @endif
 
                     <tr>
                         <td style="text-align: center; font-weight: 900; font-size: 20px;" colspan="3">
@@ -515,12 +568,18 @@
                         </tr>
                     @endfor
 
-                    <tr>
-                        <td colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total Propios:</td>
-                        <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
-                            ${{ number_format($totalpropios, 2, '.', '') }}
-                        </td>
-                    </tr>
+                    @if(!$totalpropios <= 0)
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total Propios:</td>
+                            <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalpropios, 2, '.', '') }}
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="5" style="text-align: center; font-size: 12px;">NINGÚN MEDICAMENTO REGISTRADO</td>
+                        </tr>
+                    @endif
 
                     <tr>
                         <th style="text-align: center;">MEDICAMENTO NO PROPIOS</th>
@@ -553,13 +612,32 @@
                         </tr>
                     @endfor
 
-                    <tr>
-
-                        <td  colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total No Propios:</td>
-                        <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
-                            ${{ number_format($totalnoPropios, 2, '.', '') }}
-                        </td>
-                    </tr>
+                    @if(!number_format($totalnoPropios) <= 0)
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 15px;">CRUZ ROJA</td>
+                            <td  style="text-align: center; font-weight: 800; font-size: 15px;"> 20%</td>
+                            <td style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalnoPropios * 0.20, 2, '.', '') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: 800; font-size: 15px;">MEDICOS</td>
+                            <td  style="text-align: center; font-weight: 800; font-size: 15px;">80%</td>
+                            <td style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalnoPropios * 0.80, 2, '.', '') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  colspan="3" style="text-align: center; font-weight: 800; font-size: 18px;">Total No Propios:</td>
+                            <td colspan="2" style="text-align: center; font-weight: 800; font-size: 18px;">
+                                ${{ number_format($totalnoPropios, 2, '.', '') }}
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="5" style="text-align: center; font-size: 12px;">NINGÚN MEDICAMENTO REGISTRADO</td>
+                        </tr>
+                    @endif
 
                     <tr>
                         <td style="text-align: center; font-weight: 900; font-size: 20px;" colspan="3">

@@ -128,7 +128,7 @@
                     <thead >
                         <tr>
                             <th  class="header" colspan="6">
-                                Turno Matutino (7:00 AM - 1:00 PM)
+                                Turno Matutino (7:00 AM - 2:00 PM)
                             </th>
                         </tr>
                         @if ($matutino->isEmpty())
@@ -215,7 +215,7 @@
                     <thead>
                         <tr>
                             <th  class="header" colspan="6">
-                                Turno Vespertino (1:00 PM - 7:00 PM)
+                                Turno Vespertino (2 :00 PM - 9:00 PM)
                             </th>
                         </tr>
                         @if ($vespertino->isEmpty())
@@ -301,7 +301,7 @@
                     <thead>
                         <tr>
                             <th  class="header" colspan="6">
-                                Turno Nocturno (7:00 PM - 7:00 AM)
+                                Turno Nocturno (9:00 PM - 7:00 AM)
                             </th>
                         </tr>
                         @if ($nocturno->isEmpty())

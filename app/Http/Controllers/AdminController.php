@@ -414,7 +414,7 @@ class AdminController extends Controller
             'nombre' => 'required|string|max:255',
             'icono' => 'nullable|string',
             'costo' => 'nullable|numeric|between:0,999999.99',
-            'descripcion' => 'required|string',
+            'descripcion' => 'nullable|string',
         ]);
 
         $servicio = new Servicio();
@@ -433,7 +433,7 @@ class AdminController extends Controller
               'nombre' => 'required|string|max:255',
               'icono' => 'nullable|string',
               'costo' => 'nullable|numeric|between:0,999999.99',
-              'descripcion' => 'required|string',
+              'descripcion' => 'nullable|string',
           ]);
 
           $servicio = Servicio::findOrFail($id);

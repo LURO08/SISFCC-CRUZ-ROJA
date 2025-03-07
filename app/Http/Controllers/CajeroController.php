@@ -1041,10 +1041,8 @@ class CajeroController extends Controller
 
     //REPORTES GENERADOS
 
-    public function generarReporteDiario(Request $request)
+    public function ProcesarTurnos($fecha)
     {
-        $fecha = $request->input('fecha');
-
         // Validar que la fecha no sea nula
         if (!$fecha) {
             return redirect()->back()->withErrors(['fecha' => 'Debe seleccionar una fecha válida.']);
@@ -1053,32 +1051,36 @@ class CajeroController extends Controller
         // Filtrar registros por turnos
         $matutino = CobrosServicios::whereDate('created_at', $fecha)
             ->whereTime('created_at', '>=', '07:00:00')
-            ->whereTime('created_at', '<=', '13:00:00')
+            ->whereTime('created_at', '<=', '13:59:59')
             ->get();
 
         $vespertino = CobrosServicios::whereDate('created_at', $fecha)
-            ->whereTime('created_at', '>=', '13:00:00')
-            ->whereTime('created_at', '<=', '19:00:00')
+            ->whereTime('created_at', '>=', '14:00:00')
+            ->whereTime('created_at', '<=', '20:59:59')
             ->get();
 
-            $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
-                $query->whereBetween('created_at', [
-                    $fecha . ' 19:00:00',
-                    date('Y-m-d', strtotime($fecha . ' +1 day')) . ' 06:59:59'
-                ]);
-            })->get();
+        $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
+            $query->whereBetween('created_at', [
+                "$fecha 21:00:00",
+                date('Y-m-d', strtotime("$fecha +1 day")) . ' 06:59:59'
+            ]);
+        })->get();
 
-
-        // Procesar servicios en cada turno
+        // Función para procesar servicios y medicamentos
         $procesarServicios = function ($cobros) {
-            $cobros->each(function ($cobro) {
+            // Procesamos cada cobro y luego retornamos la colección modificada
+            return $cobros->map(function ($cobro) {
+                // Obtener nombre del personal
+                $cobro->nombre_personal = optional($cobro->personal)->Nombre . ' ' .
+                                        optional($cobro->personal)->apellido_paterno . ' ' .
+                                        optional($cobro->personal)->apellido_materno;
 
                 if (!empty($cobro->servicios)) {
                     $cobro->servicios = array_map(function ($linea) {
                         preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)$/i', $linea, $matches);
                         return [
-                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
-                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
+                            'nombre' => isset($matches[1]) ? preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1])) : '',
+                            'costo'  => isset($matches[2]) ? (float)$matches[2] : null,
                         ];
                     }, array_map('trim', explode("\n", $cobro->servicios)));
                 }
@@ -1087,40 +1089,42 @@ class CajeroController extends Controller
                     $cobro->medicamentos = array_map(function ($linea) {
                         preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
                         return [
-                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
-                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
-                            'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
-
+                            'nombre'   => isset($matches[1]) ? trim($matches[1]) : '',
+                            'costo'    => isset($matches[2]) ? (float)$matches[2] : null,
+                            'cantidad' => isset($matches[4]) ? (int)$matches[4] : null,
+                            'propio'   => isset($matches[5]) ? filter_var($matches[5], FILTER_VALIDATE_BOOLEAN) : false,
                         ];
                     }, array_map('trim', explode("\n", $cobro->medicamentos)));
                 }
 
+                return $cobro;
             });
         };
 
-        $procesarServicios($matutino);
-        $procesarServicios($vespertino);
-        $procesarServicios($nocturno);
+        return [
+            'matutino'   => $procesarServicios($matutino),
+            'vespertino' => $procesarServicios($vespertino),
+            'nocturno'   => $procesarServicios($nocturno),
+        ];
+    }
 
+    public function generarReporteDiario(Request $request)
+    {
+        $fecha = $request->input('fecha');
 
-        // Generar el PDF con los datos y el diseño de la vista
+        $turnos = $this->ProcesarTurnos($fecha);
+
+        // Extrae los datos
+        $matutino = $turnos['matutino'];
+        $vespertino = $turnos['vespertino'];
+        $nocturno = $turnos['nocturno'];
+
         $pdf = Pdf::loadView('pdf.reporte-diario', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
 
-        // Define la ruta donde se guardará el PDF
-        $directoryPath = public_path('reportesDiarios');
-        $filename = "reporte-diario-{$fecha}.pdf";
-        $filePath = $directoryPath . '/' . $filename;
+        $filename = "reporte-DiariosDetallados-{$fecha}.pdf";
 
-        // Crear la carpeta si no existe
-        if (!file_exists($directoryPath)) {
-            mkdir($directoryPath, 0777, true);
-        }
-
-        // Guardar el PDF en la ruta especificada
-        $pdf->save($filePath);
-
-        // Retornar el archivo para que se visualice en otra página
-        return response()->file($filePath, [
+        // Retornar el archivo para que se visualice en otra página sin guardarlo en disco
+        return $pdf->stream($filename, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);
@@ -1130,72 +1134,43 @@ class CajeroController extends Controller
     {
         $fecha = $request->input('fecha');
 
-        // Validar que la fecha no sea nula
-        if (!$fecha) {
-            return redirect()->back()->withErrors(['fecha' => 'Debe seleccionar una fecha válida.']);
-        }
+        // Llama a ProcesarTurnos y obtiene las colecciones procesadas
+        $turnos = $this->ProcesarTurnos($fecha);
 
-        // Filtrar registros por turnos
-        $matutino = CobrosServicios::whereDate('created_at', $fecha)
-            ->whereTime('created_at', '>=', '07:00:00')
-            ->whereTime('created_at', '<=', '13:00:00')
-            ->get();
+        // Extrae los datos
+        $matutino = $turnos['matutino'];
+        $vespertino = $turnos['vespertino'];
+        $nocturno = $turnos['nocturno'];
 
-        $vespertino = CobrosServicios::whereDate('created_at', $fecha)
-            ->whereTime('created_at', '>=', '13:00:00')
-            ->whereTime('created_at', '<=', '19:00:00')
-            ->get();
-
-            $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
-                $query->whereBetween('created_at', [
-                    $fecha . ' 19:00:00',
-                    date('Y-m-d', strtotime($fecha . ' +1 day')) . ' 06:59:59'
-                ]);
-            })->get();
-
-
-        // Procesar servicios en cada turno
-        $procesarServicios = function ($cobros) {
-            $cobros->each(function ($cobro) {
-
-                if (!empty($cobro->medicamentos)) {
-                    $cobro->medicamentos = array_map(function ($linea) {
-                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
-                        return [
-                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
-                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
-                            'cantidad' => isset($matches[4]) ? (int)$matches[4] : null, // Extraer la cantidad como int
-                            'propio' => trim($matches[5] ?? '' ), // Extraer la cantidad como int
-                        ];
-                    }, array_map('trim', explode("\n", $cobro->medicamentos)));
-                }
-
-            });
-        };
-
-        $procesarServicios($matutino);
-        $procesarServicios($vespertino);
-        $procesarServicios($nocturno);
-
-
-        // Generar el PDF con los datos y el diseño de la vista
         $pdf = Pdf::loadView('pdf.reporte-diarioMedicamentos', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
 
-        // Define la ruta donde se guardará el PDF
-        $directoryPath = public_path('reportesDiarios');
-        $filename = "reporte-diario-{$fecha}.pdf";
-        $filePath = $directoryPath . '/' . $filename;
+        $filename = "reporte-MedicamentosDiarios-{$fecha}.pdf";
 
-        // Crear la carpeta si no existe
-        if (!file_exists($directoryPath)) {
-            mkdir($directoryPath, 0777, true);
-        }
+        // Retornar el archivo para que se visualice en otra página sin guardarlo en disco
+        return $pdf->stream($filename, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
 
-        // Guardar el PDF en la ruta especificada
-        $pdf->save($filePath);
+    public function generarReporteServicios(Request $request)
+    {
+        $fecha = $request->input('fecha');
 
-        // Retornar el archivo para que se visualice en otra página
-        return response()->file($filePath, [
+        // Llama a ProcesarTurnos y obtiene las colecciones procesadas
+        $turnos = $this->ProcesarTurnos($fecha);
+
+        // Extrae los datos
+        $matutino = $turnos['matutino'];
+        $vespertino = $turnos['vespertino'];
+        $nocturno = $turnos['nocturno'];
+
+        $pdf = Pdf::loadView('pdf.reporte-diarioServicios', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
+
+        $filename = "reporte-ServiciosDiarios-{$fecha}.pdf";
+
+        // Retornar el archivo para que se visualice en otra página sin guardarlo en disco
+        return $pdf->stream($filename, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);
@@ -1205,81 +1180,20 @@ class CajeroController extends Controller
     {
         $fecha = $request->input('fecha');
 
-        // Validar que la fecha no sea nula
-        if (!$fecha) {
-            return redirect()->back()->withErrors(['fecha' => 'Debe seleccionar una fecha válida.']);
-        }
+        // Llama a ProcesarTurnos y obtiene las colecciones procesadas
+        $turnos = $this->ProcesarTurnos($fecha);
 
-        // Filtrar registros por turnos
-        $matutino = CobrosServicios::whereDate('created_at', $fecha)
-            ->whereTime('created_at', '>=', '07:00:00')
-            ->whereTime('created_at', '<=', '13:00:00')
-            ->get();
+        // Extrae los datos
+        $matutino = $turnos['matutino'];
+        $vespertino = $turnos['vespertino'];
+        $nocturno = $turnos['nocturno'];
 
-        $vespertino = CobrosServicios::whereDate('created_at', $fecha)
-            ->whereTime('created_at', '>=', '13:00:00')
-            ->whereTime('created_at', '<=', '19:00:00')
-            ->get();
-
-            $nocturno = CobrosServicios::where(function ($query) use ($fecha) {
-                $query->whereBetween('created_at', [
-                    $fecha . ' 19:00:00',
-                    date('Y-m-d', strtotime($fecha . ' +1 day')) . ' 06:59:59'
-                ]);
-            })->get();
-
-
-
-        // Procesar servicios en cada turno
-        $procesarServicios = function ($cobros) {
-            $cobros->each(function ($cobro) {
-
-                if (!empty($cobro->servicios)) {
-                    $cobro->servicios = array_map(function ($linea) {
-                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)$/i', $linea, $matches);
-                        return [
-                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
-                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
-                        ];
-                    }, array_map('trim', explode("\n", $cobro->servicios)));
-                }
-
-                if (!empty($cobro->medicamentos)) {
-                    $cobro->medicamentos = array_map(function ($linea) {
-                        preg_match('/^(.*?)-?\s*Costo:\s*\$(\d+(\.\d{2})?)\s*-\s*Cantidad:\s*(\d+)\s*-\s*Propio:\s*(true|false)$/i', $linea, $matches);
-                        return [
-                            'nombre' => preg_replace('/[^\w\sáéíóúÁÉÍÓÚñÑ\.,-]/u', '', trim($matches[1] ?? '')),
-                            'costo' => isset($matches[2]) ? (float)$matches[2] : null,
-                        ];
-                    }, array_map('trim', explode("\n", $cobro->medicamentos)));
-                }
-
-            });
-        };
-
-        $procesarServicios($matutino);
-        $procesarServicios($vespertino);
-        $procesarServicios($nocturno);
-
-
-        // Generar el PDF con los datos y el diseño de la vista
         $pdf = Pdf::loadView('pdf.reporte-diarioIngresos', compact('fecha', 'matutino', 'vespertino', 'nocturno'));
 
-        // Define la ruta donde se guardará el PDF
-        $directoryPath = public_path('reportesDiarios');
-        $filename = "reporte-diario-{$fecha}.pdf";
-        $filePath = $directoryPath . '/' . $filename;
+        $filename = "reporte-DiariosIngresos-{$fecha}.pdf";
 
-        // Crear la carpeta si no existe
-        if (!file_exists($directoryPath)) {
-            mkdir($directoryPath, 0777, true);
-        }
-
-        // Guardar el PDF en la ruta especificada
-        $pdf->save($filePath);
-
-        // Retornar el archivo para que se visualice en otra página
-        return response()->file($filePath, [
+        // Retornar el archivo para que se visualice en otra página sin guardarlo en disco
+        return $pdf->stream($filename, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);

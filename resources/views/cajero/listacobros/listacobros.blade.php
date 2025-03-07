@@ -669,18 +669,18 @@
                                             </select>
                                         </div>
 
-                                        <!-- Botones de Reporte -->
-                                        <div class="d-grid gap-2" style="display: flex;">
-                                            <button type="submit" class="btn btn-primary" data-route="{{ route('reporte.diario') }}" onclick="setAction(this)">
-                                                Diario Detallado
-                                            </button>
-                                            <button type="submit" class="btn btn-primary" data-route="{{ route('cobros.reporte.medicamentos.descargar') }}" onclick="setAction(this)">
-                                                Diario Medicamentos
-                                            </button>
-                                            <button type="submit" class="btn btn-secondary" data-route="{{ route('cobros.reporte.ingresos.descargar') }}" onclick="setAction(this)">
-                                                Diario de Ingresos
-                                            </button>
+                                        <div>
+                                            <select class="form-select" id="reporteSelect" onchange="setAction(this)">
+                                                <option value="" selected disabled>Selecciona un reporte</option>
+                                                <option value="{{ route('reporte.diario') }}">Diario Detallado</option>
+                                                <option value="{{ route('cobros.reporte.medicamentos.descargar') }}">Medicamentos Diarios</option>
+                                                <option value="{{ route('cobros.reporte.servicios.descargar') }}">Servicios Diarios</option>
+                                                <option value="{{ route('cobros.reporte.ingresos.descargar') }}">Diario de Ingresos</option>
+                                                o
+                                            </select>
                                         </div>
+
+                                        <button type="submit" class="btn btn-primary mt-2">Generar Reporte</button>
                                     </form>
                                 </div>
                             </div>
@@ -1887,7 +1887,7 @@
         }
     }
 
-    function setAction(button) {
-        document.getElementById('formReporte').action = button.getAttribute('data-route');
+    function setAction(select) {
+        document.getElementById('formReporte').action = select.value;
     }
 </script>

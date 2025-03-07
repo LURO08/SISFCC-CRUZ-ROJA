@@ -10,7 +10,7 @@ class DocumentController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'document' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'document' => 'required|file|mimes:jpg,jpeg,png,pdf',
         ]);
 
         $path = $request->file('document')->store('documents', 'public');

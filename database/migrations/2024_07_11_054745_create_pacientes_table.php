@@ -136,7 +136,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('icono')->nullable();
             $table->decimal('costo', 8, 2)->nullable();
-            $table->text('descripcion');
+            $table->text('descripcion')->nullable();
             $table->timestamps();
         });
 

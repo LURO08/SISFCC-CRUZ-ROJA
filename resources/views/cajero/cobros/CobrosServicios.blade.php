@@ -249,7 +249,8 @@
 </style>
 
 <link rel="stylesheet" href="{{ asset('css/component/modal.css') }}">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/bootstrap2.js') }}"></script>
+<link rel="script" href="{{ asset('js/bootstrap2.js') }}">
 
 @if (session('success'))
     <div id="successNotification" class="notification alert alert-success alert-dismissible fade show" role="alert"

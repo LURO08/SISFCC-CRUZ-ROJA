@@ -124,6 +124,7 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/cobros/reporte/descargar', [CajeroController::class, 'descargarReporte'])->name('cobros.reporte.descargar');
             Route::get('/cobros/reporte/medicamentos/descargar', [CajeroController::class, 'generarReporteMedicementos'])->name('cobros.reporte.medicamentos.descargar');
+            Route::get('/cobros/reporte/servicios/descargar', [CajeroController::class, 'generarReporteServicios'])->name('cobros.reporte.servicios.descargar');
             Route::get('/cobros/reporteDiarioIngresos/descargar', [CajeroController::class, 'generarReporteDiarioIngresos'])->name('cobros.reporte.ingresos.descargar');
 
 
